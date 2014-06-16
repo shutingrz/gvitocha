@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>vitocha</title>
+
+    <script src="./js/lib/jquery-2.1.1.min.js"></script>
+    <script src="./js/app.js"></script>
+    
+    <link rel="stylesheet" type="text/css" href="top.css" />
+  </head>
+  <body onLoad="wsConnection()">
+
+    <div class="top">
+
+      <div class="header">
+        <div class="left">
+          <div>
+            GUI Vitocha
+          </div>  
+        </div>
+        <div class="right">
+          <div>
+            <input type="button" class="connect" value="接続">
+            <input type="button" class="disconnect" value="切断">
+          </div>
+        </div>
+      </div>
+  
+      <hr>
+
+      <div class="console">
+        Console<br>
+        <div id="contxt" class="console" ></div>
+        <br>
+        <input size="85" id="console" type="text">
+      </div>
+
+
+
+      <div class="status">
+        Status<br>
+        <div id="statxt" class="status"></div>
+        <br>
+      </div>
+
+      <div class="server">
+        Server<br>
+        <select id="serverList" class="list" size="7"></select>
+        <div id="serverProperty" class="property" >
+          <div class="name">
+            Name<br>
+            <input type="text" name="name">
+          </div>
+          <div class="machineType">
+            <hr>MachineType<br>
+            <select class="machineType">
+              <option value="1">Server</option>
+              <option value="2">Router</option>
+              <option value="3">Bridge</option>
+            </select>
+          </div>
+          <div class="templete">
+            <hr>Templete<br>
+            <select class="templete">
+              <option value="1">default</option>
+            </select>
+          </div>
+          <div class="ip"></div>
+          <div class="package">
+            <hr>Package<br>
+            <select class="packafe">
+              <option value="1">default</option> 
+            </select>
+          </div>
+          <div class="subscription">
+            <hr>コメント<br>
+            <input class="subscription" type="text">
+          </div>
+          <div class="submitType">
+            <hr>
+            <input type="button" class="new" value="new">
+            <input type="button" class="modify" value="modify">
+            <input type="button" class="delete" value="delete">
+          </div>
+
+        </div>
+        <br>
+        <input size="85" id="makeServerText" type="text">
+      </div>
+
+
+      <div class="network">Network</div>
+
+      <div class="disk">Disk</div>
+    
+
+    
+    <br>
+    <div class="test">
+    Test
+
+  
+  </body>
+</html>

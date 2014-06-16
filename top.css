@@ -1,0 +1,93 @@
+p { margin:0px; padding:0px }
+
+
+div.top{
+	width : 100%;
+}
+
+div.top div.header{
+	width : 100%;
+	height: 30px;
+}
+
+div.top div.header div.left{
+	float : left;
+}
+
+div.top div.header div.right{
+	float : right;
+	text-align : right;
+}
+
+div.top div.console{
+	clear :both;
+	width : 50%;
+	height : 300px;
+	float : left;
+	border-right : 1px solid;
+}
+
+#contxt{
+	overflow-y : scroll;
+	overflow-x : hidden;
+	width : 98%;
+	height : 240px;
+	border : 2px solid;
+	padding-left : 1px;
+	color : lime;
+	background-color : #111111;
+}
+
+div.top div.status{
+	float : right;
+	width : 49%;
+	height : 290px;
+}
+#statxt{
+	overflow-y : scroll;
+	overflow-x : hidden;
+	width : 100%;
+	height : 240px;
+	border : 2px solid;
+	background-color : lightgray;
+}
+
+div.network{
+	clear : both;
+	height : 200px;
+	border : 1px solid;
+}
+
+div.server{
+	clear : both;
+	border : 1px solid;
+	height : 300px;
+}
+
+#serverList{
+	float : left;
+	width : 60%;
+	padding-left :2px;
+	border : 1px solid;
+	margin-left : 2px;
+}
+
+#serverProperty{
+	float : right;
+	overflow : scroll;
+	width : 39%;
+	height : 270px;
+	border : 1px solid;
+	margin-right : 3px;
+
+}
+
+div.disk{
+	clear : both;
+	border : 1px solid;
+	height : 200px;
+}
+
+div.test{
+
+}
