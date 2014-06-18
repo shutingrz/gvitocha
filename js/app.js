@@ -1,11 +1,20 @@
+
+//Message Type用
+var CONSOLE = 1;
+var STATUS = 2;
+var SERVER = 3;
+var NETWORK = 4;
+var ETC = 10;
 var ws;
+var sendMsg = {
+  msgType : "",
+  data : ""
+}
 
 //WebSocket
 function wsConnection(){
   ws = new WebSocket("ws://192.168.56.102:3000");
     
-
-
   //接続時
   ws.onopen = function(event){
     status("connected.")
@@ -13,16 +22,16 @@ function wsConnection(){
 
   // メッセージ受信時の処理
   ws.onmessage = function(event){
-
     //console,status,network,server,disk,etc
-    var msg = event.data.split(",", 2)
-    if (msg[0] == "console") {
-      console(msg[1])
-    }
-    else if (msg[0] == "status") {
-      status(msg[1])
-    }
+    msg = $.parseJSON(event.data)
+      if(msg.msgType == CONSOLE) {
+        console(msg.data)
+      }
+      else if (msg.msgType == STATUS) {
+        status(msg.data)
+      }
   }
+
       
   //エラー時のメッセージ
   ws.onerror = function (event) {
@@ -33,7 +42,9 @@ function wsConnection(){
   ws.onclose = function (event) {
     status("disconnected");
   }
-  
+
+}
+
   //コンソールへのメッセージ
   function console(msg){
     //今までのデータに追加
@@ -47,7 +58,20 @@ function wsConnection(){
     $("#statxt").append("<p>" + msg + "</p>")
     go_bottom("statxt")
   }  
-}
+
+  //送信処理
+  function send(msgType,msg){
+    sendMsg.msgType = msgType
+    sendMsg.data = msg
+    var jsonSendMsg = JSON.stringify(sendMsg);
+    status(jsonSendMsg)
+    ws.send(jsonSendMsg)
+  }
+
+  //切断処理
+  function close(no,msg){
+    ws.close(no,msg)
+  }
 
 
 
@@ -64,7 +88,8 @@ $(document).ready(function(){
 
     //Enter key
    if (e.which == 13) {
-      ws.send("console," + $("#console").val())
+
+      send(CONSOLE,$("#console").val())
       $("#console").val("")
    } 
   });
@@ -83,7 +108,7 @@ $(document).ready(function(){
 
   //切断ボタン
   $(".top .header .right .disconnect").click(function(){
-    ws.close(4001,"切断ボタン")
+    close(4001,"切断ボタン")
   });
 });
 

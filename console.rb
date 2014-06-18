@@ -1,20 +1,19 @@
 	#console msg
 	#gvitocha.rbよりws、massageを受け取る
 	def console(ws,message)
-		ws.send("console,>" + message)
-		puts "コマンド：" + message
+		send(ws,CONSOLE,">" + message)
 		begin
 			Open3.popen3(message) do |stdin, stdout, stderr, thread|
 				stdout.each do |line|
-					ws.send("console," + line)
+					send(ws,CONSOLE,line)
 				end
 				stderr.each do |line|
-					ws.send("console," + line)
+					send(ws,CONSOLE,line)
 				end
-				ws.send("console, ")
+				send(ws,CONSOLE,"")
 			end
 		rescue => exc		#存在しないコマンドが打たれた時
 			p exc
-			ws.send("console,command not found: " + message + "\n")
+			send(ws,CONSOLE,"command not found: " + message + "\n")
 		end
 	end
