@@ -8,7 +8,9 @@ require 'json'
 
 require './console.rb'
 require './status.rb'
-#require './sendMsg.rb'
+require './machine.rb'
+require './sql.rb'
+
 
 STDIN .set_encoding( Encoding.locale_charmap, "UTF-8" )
 STDOUT.set_encoding( Encoding.locale_charmap, "UTF-8" )
@@ -16,25 +18,24 @@ STDERR.set_encoding( Encoding.locale_charmap, "UTF-8" )
 
 CONSOLE = 1;
 STATUS = 2;
-SERVER = 3;
+MACHINE = 3;
 NETWORK = 4;
 ETC = 10;
-
+INIT = 101;
 
 $jails = "/jails"
 $Jls = Array.new
 $Line = Array.new
 $list = Hash.new
 $NetName
-$gws
 tomocha=Operator.new
 
 Process.daemon(nochdir=true) if ARGV[0] == "-D"
 
 EventMachine::WebSocket.start(host: "0.0.0.0", port: 3000) do |ws|
-	$gws = ws
 #start network then connect to client
 	ws.onopen do
+		machine(ws,INIT)
 		#console(ws,"echo Hello. Type shell command.")
 
 	end
@@ -53,8 +54,8 @@ EventMachine::WebSocket.start(host: "0.0.0.0", port: 3000) do |ws|
 		elsif (msg["msgType"] == STATUS) then
         	p "STATUS"
 
-        elsif (msg["msgType"] == SERVER) then
-        	p "SERVER"
+        elsif (msg["msgType"] == MACHINE) then
+        	p "MACHINE"
 
         elsif (msg["msgType"] == NETWORK) then
         	p "NETWORK"	

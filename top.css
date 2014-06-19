@@ -58,13 +58,13 @@ div.network{
 	border : 1px solid;
 }
 
-div.server{
+div.machine{
 	clear : both;
 	border : 1px solid;
 	height : 300px;
 }
 
-#serverList{
+#machineList{
 	float : left;
 	width : 60%;
 	padding-left :2px;
@@ -72,7 +72,7 @@ div.server{
 	margin-left : 2px;
 }
 
-#serverProperty{
+#machineProperty{
 	float : right;
 	overflow : scroll;
 	width : 39%;

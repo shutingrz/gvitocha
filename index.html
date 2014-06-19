@@ -1,15 +1,15 @@
-<!DOCTYPE html>
 <html>
   <head>
     <meta charset="UTF-8">
     <title>vitocha</title>
 
     <script src="./js/lib/jquery-2.1.1.min.js"></script>
+    <script src="./js/lib/sql.js"></script>
     <script src="./js/app.js"></script>
     
     <link rel="stylesheet" type="text/css" href="top.css" />
   </head>
-  <body onLoad="wsConnection()">
+  <body onLoad="init()">
 
     <div class="top">
 
@@ -44,10 +44,10 @@
         <br>
       </div>
 
-      <div class="server">
-        Server<br>
-        <select id="serverList" class="list" size="7"></select>
-        <div id="serverProperty" class="property" >
+      <div class="machine">
+        Machine<br>
+        <select id="machineList" class="list" size="15"></select>
+        <div id="machineProperty" class="property" >
           <div class="name">
             Name<br>
             <input type="text" name="name">
@@ -63,7 +63,7 @@
           <div class="templete">
             <hr>Templete<br>
             <select class="templete">
-              <option value="1">default</option>
+              <option value="1">minimum</option>
             </select>
           </div>
           <div class="ip"></div>
@@ -86,7 +86,7 @@
 
         </div>
         <br>
-        <input size="85" id="makeServerText" type="text">
+        <input size="85" id="makeMachineText" type="text">
       </div>
 
 
