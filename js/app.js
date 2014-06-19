@@ -92,6 +92,7 @@ function machine(msg){
 /*  取得したデータの全てを表示
   res = db.exec("select * from machine")
   console.log(res)
+  culumn = res[0].columns.length                 //列数取得
   row = db.exec("select count(*) from machine")   //行数取得
   row = row[0].values[0][0]
   for (var i=0 ; i<row ; i++){
@@ -100,14 +101,12 @@ function machine(msg){
     }
   }
 */
-} 
-
+}
 //送信処理
 function send(msgType,msg){
   sendMsg.msgType = msgType
   sendMsg.data = msg
   var jsonSendMsg = JSON.stringify(sendMsg);
-  status(jsonSendMsg)
   ws.send(jsonSendMsg)
 }
 
@@ -116,11 +115,28 @@ function close(no,msg){
   ws.close(no,msg)
 }
 
+//新規マシン情報送信
+function createNewMachine(){
+  var data = { mode : "new",
+                machine : {
+                            name : $("#newMachineForm [name=name]").val(),
+                            machineType : $("#newMachineForm [name=machineType]").val(),
+                            templete : $("#newMachineForm [name=templete]").val(),
+                            comment : $("#newMachineForm [name=comment]").val()
+                          }
+              }
+  send(MACHINE,data)
+}
+
 
 
 
 //各種イベント系
 $(document).ready(function(){
+  
+
+  //各種初期化
+
 
   //キーイベント
   $("#console").keypress(function(e) {
@@ -139,25 +155,8 @@ $(document).ready(function(){
 
   //クリックイベント
   //Machine.newボタン
-  $("#machineProperty .submitType .new").click(function(){
-
-   // db.run("create table machine"
-
-   // console.log(res)
-   // console.log(res[0].values[0][0])
-
-
- //   status(obj.columns[0][0] + ":" + obj.values[0] + "," + obj.columns[1] + ":" + obj.values[1])
-   // alert(db.run("insert into machine (id, name, type, templete, comment) values (0, 'testmachine', 'server',  'minimum', 'testMachineだよ');"))
-
-  /*  SQLと返り値の関係 
-    db.run("create table machine (id , name);")
-    db.run("insert into machine (id, name) values ('aiai','test')")
-    var res = db.exec("select name from machine where id='aiai';");
-    
-   // res[0].columns[0] => name , res[0].values[0][0] => test
-   */
-
+  $(".top .machine .new").click(function(){
+    alert()
   });
 
   //接続ボタン
@@ -170,6 +169,33 @@ $(document).ready(function(){
   $(".top .header .right .disconnect").click(function(){
     close(4001,"切断ボタン")
   });
+
+  //新しいマシンを作成ボタン
+
+  $("#newMachineForm").submit(function() {
+    $("#newMachineModal").modal("hide")
+    $("#nowLoadingModal .modal-dialog .modal-content .modal-header").append("<span>新しいマシンを作成中...</span>")
+    createNewMachine()
+  //  console.log($("#newMachineForm .name").val())
+    $("#nowLoadingModal").modal("show")
+  });
+
+  $("#nowLoadingModalCancel").click(function() {//追加したspan要素を全て削除
+    $("#nowLoadingModal .modal-dialog .modal-content span").remove()
+  });
+
+
+
+  //フォーカスイベント
+  //MachineListのフォーカス
+  $("#machineList").change(function(){    //プロパティにフォーカスした項目のname,machineType,commentを表示する
+    var id = ($("#machineList option:selected").val())
+    machine = db.exec("select * from machine where id == '" +id+ "'")
+    $("#machineProperty .name .name").val(machine[0].values[0][1])
+    $("#machineProperty .machineType .machineType").val(machine[0].values[0][2])
+    $("#machineProperty .comment .comment").val(machine[0].values[0][4])      
+  });
+
 });
 
 

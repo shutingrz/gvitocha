@@ -5,9 +5,12 @@
 
     <script src="./js/lib/jquery-2.1.1.min.js"></script>
     <script src="./js/lib/sql.js"></script>
+    <script src="./js/lib/bootstrap.min.js"></script>
     <script src="./js/app.js"></script>
     
-    <link rel="stylesheet" type="text/css" href="top.css" />
+    <link rel="stylesheet" type="text/css" href="./css/top.css" />
+    <link rel="stylesheet" type="text/css" href="./css/lib/bootstrap.min.css" />
+
   </head>
   <body onLoad="init()">
 
@@ -46,18 +49,18 @@
 
       <div class="machine">
         Machine<br>
-        <select id="machineList" class="list" size="15"></select>
+        <select id="machineList" class="list" size="13"></select>
         <div id="machineProperty" class="property" >
           <div class="name">
             Name<br>
-            <input type="text" name="name">
+            <input type="text" class="name">
           </div>
           <div class="machineType">
             <hr>MachineType<br>
             <select class="machineType">
-              <option value="1">Server</option>
-              <option value="2">Router</option>
-              <option value="3">Bridge</option>
+              <option value="0">Server</option>
+              <option value="1">Router</option>
+              <option value="2">Bridge</option>
             </select>
           </div>
           <div class="templete">
@@ -69,24 +72,77 @@
           <div class="ip"></div>
           <div class="package">
             <hr>Package<br>
-            <select class="packafe">
-              <option value="1">default</option> 
-            </select>
+            <select class="package" size="4"></select>
           </div>
-          <div class="subscription">
+          <div class="comment">
             <hr>コメント<br>
-            <input class="subscription" type="text">
+            <input class="comment" type="text">
           </div>
           <div class="submitType">
             <hr>
-            <input type="button" class="new" value="new">
             <input type="button" class="modify" value="modify">
             <input type="button" class="delete" value="delete">
           </div>
 
         </div>
-        <br>
-        <input size="85" id="makeMachineText" type="text">
+        <br><br>
+
+        <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#newMachineModal">新しいマシンを作成</button>
+
+        <!-- 新しいマシン設定のモーダル -->
+        <div class="modal fade" id="newMachineModal" tabindex="-1" role="dialog" aria-labelledby="newMachineModal" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="newMachineModalTitle">新しいマシンを作成</h4>
+              </div>
+              <form method="post" id="newMachineForm" action="javascript:void(0);">
+                <div class="modal-body">  
+                    Name<br>
+                    <input type="text" class="name" name="name" required>
+                    <hr>MachineType<br>
+                    <select class="machineType" name="machineType">
+                      <option value="0">Server</option>
+                      <option value="1">Router</option>
+                      <option value="2">Bridge</option>
+                    </select>
+                    <hr>Templete<br>
+                    <select class="templete" name="templete">
+                      <option value="1">minimum</option>
+                    </select>
+                    <hr>Package<br>
+                    <select class="package" size="4"></select>
+                    <hr>コメント<br>
+                    <input class="comment" type="text" name="comment">
+
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
+                  <button type="submit" class="btn btn-primary" id="newMachineSubmitButton">作成</button>
+                </div>
+              </form>
+            </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+        <!-- NowLoadingのモーダル -->
+        <div class="modal fade" id="nowLoadingModal" tabindex="-1" role="dialog" aria-labelledby="nowLoadingModal" aria-hidden="true" data-backdrop="static">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+              </div>
+              <div class="modal-body" >  
+                  <img src="./img/loading.gif" alt="loading..." />
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="nowLoadingModalCancel">キャンセル</button>
+              </div>
+            </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+
       </div>
 
 
