@@ -40,8 +40,15 @@ Process.daemon(nochdir=true) if ARGV[0] == "-D"
 EventMachine::WebSocket.start(host: "0.0.0.0", port: 3000) do |ws|
 #start network then connect to client
 	ws.onopen do
-		machine(ws,INIT)
 		#console(ws,"echo Hello. Type shell command.")
+		msg = "test1"
+		ws.send(msg)
+		sleep(3)
+		msg = "test1"
+		ws.send(msg)
+		sleep(3)
+		msg = "test1"
+		ws.send(msg)
 
 	end
 	ws.onmessage do |message|
@@ -53,7 +60,6 @@ EventMachine::WebSocket.start(host: "0.0.0.0", port: 3000) do |ws|
         if (msg["msgType"] == CONSOLE) then
         	p "CONSOLE"
         	console(ws,msg["data"])
-			status(ws,"console command:" + msg["data"])
 
 		elsif (msg["msgType"] == STATUS) then
         	p "STATUS"
@@ -79,6 +85,7 @@ EventMachine::WebSocket.start(host: "0.0.0.0", port: 3000) do |ws|
 		puts msg
 		ws.send(msg)
 	end
+
 	
 
 end

@@ -27,11 +27,13 @@ function wsConnection(){
     
   //接続時
   ws.onopen = function(event){
-    status("connected.")
+    status({"mode":STATUS, "msg" : "connected."})
+    send(MACHINE,{"mode":"get"})
   }
 
   // メッセージ受信時の処理
   ws.onmessage = function(event){
+    console.log("ログきてる！！")
     //console,status,network,machine,disk,etc
     msg = $.parseJSON(event.data)
       if(msg.msgType == CONSOLE) {
@@ -67,9 +69,13 @@ function vconsole(msg){
 
 //通知へのメッセージ
 function status(msg){
-  //今までのデータに追加
-  $("#statxt").append("<p>" + msg + "</p>")
-  go_bottom("statxt")
+  if (msg.mode == STATUS){//今までのデータに追加
+    $("#statxt").append("<p>" + msg.msg + "</p>")
+    go_bottom("statxt")
+  }
+  else if(msg.mode == MACHINE){
+    getMachineLog(msg.msg)    
+  }
 } 
 
 //machineへのメッセージ
@@ -128,6 +134,26 @@ function createNewMachine(){
   send(MACHINE,data)
 }
 
+function getMachineLog(machineLog){
+  console.log(machineLog)
+  if (machineLog.msgType == "success"){
+    send(MACHINE,{"mode":"get"})
+    $("#state"+Number($("#state").text())).css("color","black")
+    $("#state").text(　Number($("#state").text()) + 1)
+    $("#nowLoadingModal .modal-dialog .modal-content .modal-body .img").attr("src","./img/check.png")
+    setTimeout(void(0),2000) 
+    $("#newMachineModal").modal("hide")
+  }
+  else if(machineLog.msgType== "failed"){
+
+  }
+  else if(machineLog.msgType == "report"){
+    $("#state"+Number($("#state").text())).css("color","black")
+    $("#state").text(　Number($("#state").text()) + 1)
+  }
+}
+
+
 
 
 
@@ -174,7 +200,15 @@ $(document).ready(function(){
 
   $("#newMachineForm").submit(function() {
     $("#newMachineModal").modal("hide")
-    $("#nowLoadingModal .modal-dialog .modal-content .modal-header").append("<span>新しいマシンを作成中...</span>")
+
+    $("#nowLoadingModal .modal-dialog .modal-content .modal-header").append("<span>新しいマシンを作成中...(</span><span id='state'>1</span>/4)")
+    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='state1'>jailへ登録しています...</span>")
+    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='state2'>データベースへ登録しています...</span>")
+    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='state3'>画面を更新しています...</span>")
+    $("#state1").css("color","gray")
+    $("#state2").css("color","gray")
+    $("#state3").css("color","gray")
+  
     createNewMachine()
   //  console.log($("#newMachineForm .name").val())
     $("#nowLoadingModal").modal("show")
@@ -183,6 +217,8 @@ $(document).ready(function(){
   $("#nowLoadingModalCancel").click(function() {//追加したspan要素を全て削除
     $("#nowLoadingModal .modal-dialog .modal-content span").remove()
   });
+
+
 
 
 
@@ -195,6 +231,8 @@ $(document).ready(function(){
     $("#machineProperty .machineType .machineType").val(machine[0].values[0][2])
     $("#machineProperty .comment .comment").val(machine[0].values[0][4])      
   });
+
+
 
 });
 
