@@ -31,6 +31,8 @@ def machine (ws,data)
 		end
 
 =end
+=begin
+
 		msg = { "mode" => MACHINE, "msg" => {"msgType" => "report", "msg" => "jailへの登録が完了しました。"} } 
 		send(ws,STATUS,msg)
 		sleep(1)
@@ -39,7 +41,9 @@ def machine (ws,data)
 		sleep(1)
 		msg = { "mode" => MACHINE, "msg" => {"msgType" => "success", "msg" => "完了しました。"} } 
 		send(ws,STATUS,msg)
-
+=end
+		
+		
 
 
 	end

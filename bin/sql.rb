@@ -7,9 +7,16 @@ require 'json'
 
 include SQLite3
 
+db_file = File.expand_path(File.dirname(__FILE__) + '/gvitocha.db')
 
 def sql(mode,sql)
-	db = Database.new("/jails/gvitocha.db")
+	begin
+		db = Database.new(db_file)
+	rescue SQLite3::CantOpenException
+		puts "cant open sqlite database. create new file."
+		File.open(db_file, "w").close()
+		retry
+	end
 	
 	if(mode == "MAXID") then
 		return db.execute("select max(id) from machine")

@@ -10,9 +10,23 @@
 #   ex. mkrouter router0 ; mkrouter bridge0
 
 require File.expand_path(File.dirname(__FILE__) + '/vitocha.rb')
-
 # jails path
-$jails="/jails"
+$jails="/usr/jails"
+
+machine = "router02"
+tomocha=Operator.new
+
+server0=Server.new(machine)
+tomocha.createpair
+ifconfig("epair0a inet 192.168.11.1 netmask 255.255.255.0")
+ifconfig("epair0a up")
+server0.connect("epair0b") # connect to realhost
+server0.assignip("epair0b","192.168.11.254","255.255.255.0") 
+tomocha.register("epair0b",machine,"192.168.11.254","255.255.255.0") # you need this if you did not use $tomocha.assignip .
+server0.up("epair0b")
+
+
+=begin
 
 ################################################################
 # Main
@@ -186,3 +200,5 @@ f.close
 system("nwdiag -o #{$jails}/data/net.png #{$jails}/data/net.diag")
 
 puts "Finish!"
+
+=end

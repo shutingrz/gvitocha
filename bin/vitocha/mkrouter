@@ -1,12 +1,13 @@
 #!/bin/sh
-dist="/jails"
+dist="/usr/jails"
 ezjail-admin create -f router -r $1 $1 0.0.0.0
 /usr/sbin/jail -c vnet host.hostname=$1 name=$1 path=${dist}/$1 persist
 mount -t devfs devfs ${dist}/$1/dev
 mount_nullfs ${dist}/basejail ${dist}/$1/basejail
+
 for pkg in `ls ${dist}/flavours/router/pkg`
 do 
-  jexec $1 pkg_add /pkg/$pkg
+  jexec $1 pkg-static add /pkg/$pkg
 done
 echo $1 ' created.'
 #

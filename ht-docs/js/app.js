@@ -23,7 +23,7 @@ function init(){
 
 //WebSocket
 function wsConnection(){
-  ws = new WebSocket("ws://192.168.56.102:3000");
+  ws = new WebSocket("ws://192.168.100.129:3000");
     
   //接続時
   ws.onopen = function(event){
