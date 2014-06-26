@@ -7,17 +7,23 @@ require 'json'
 
 include SQLite3
 
-db_file = File.expand_path(File.dirname(__FILE__) + '/gvitocha.db')
 
 def sql(mode,sql)
+	db_file = File.expand_path(File.dirname(__FILE__) + '/db/gvitocha.db')
+
 	begin
 		db = Database.new(db_file)
 	rescue SQLite3::CantOpenException
-		puts "cant open sqlite database. create new file."
-		File.open(db_file, "w").close()
-		retry
+		puts "cant open sqlite database."
+
 	end
-	
+=begin
+	begin
+		db.execute(sql)
+	rescue SQLite3::IOException
+		db.execute("create table machine (id integer, name text, type integer, templete text, comment text);")
+	end		
+=end
 	if(mode == "MAXID") then
 		return db.execute("select max(id) from machine")
 	else
