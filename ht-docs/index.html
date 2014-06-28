@@ -60,7 +60,7 @@
             <select class="machineType">
               <option value="0">Server</option>
               <option value="1">Router</option>
-              <option value="2">Bridge</option>
+              <option value="2">Switch</option>
             </select>
           </div>
           <div class="templete">
@@ -105,14 +105,18 @@
                     <select class="machineType" name="machineType">
                       <option value="0">Server</option>
                       <option value="1">Router</option>
-                      <option value="2">Bridge</option>
+                      <option value="2">Switch</option>
                     </select>
                     <hr>Templete<br>
                     <select class="templete" name="templete">
-                      <option value="1">minimum</option>
+                      <option value="0">default</option>
                     </select>
                     <hr>Package<br>
                     <select class="package" size="4"></select>
+                    <hr>Flavour<br>
+                      <select class="templete" name="templete">
+                      <option value="0">default</option>
+                    </select>
                     <hr>コメント<br>
                     <input class="comment" type="text" name="comment">
 
@@ -133,7 +137,7 @@
               <div class="modal-header">
               </div>
               <div class="modal-body" >  
-                  <img src="./img/loading.gif" alt="loading..." />
+                  <img />
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" id="nowLoadingModalCancel">キャンセル</button>

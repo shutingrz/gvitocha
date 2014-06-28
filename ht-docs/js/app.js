@@ -23,17 +23,16 @@ function init(){
 
 //WebSocket
 function wsConnection(){
-  ws = new WebSocket("ws://192.168.100.129:3000");
+  ws = new WebSocket("ws://192.168.56.101:3000");
     
   //接続時
   ws.onopen = function(event){
     status({"mode":STATUS, "msg" : "connected."})
-    send(MACHINE,{"mode":"get"})
+    send(MACHINE,{"mode":"select", "id":"all"})
   }
 
   // メッセージ受信時の処理
   ws.onmessage = function(event){
-    console.log("ログきてる！！")
     //console,status,network,machine,disk,etc
     msg = $.parseJSON(event.data)
       if(msg.msgType == CONSOLE) {
@@ -82,19 +81,37 @@ function status(msg){
 function machine(msg){
   //  status(msg.key0.name)
   var row,culumn
-
-  for(var i in msg){//サーバから送られたMachineデータを全てローカルsqlに保存
-    db.run("insert into machine (id, name, type, templete, comment) values ('" + msg[i].id + "','" + msg[i].name + "','" + msg[i].type + "','" + msg[i].templete + "','" + msg[i].comment + "');");
+  $("#machineList option").remove();
+  db.run("delete from machine;")
+  if (msg == "none"){}  //何もデータがない場合はsqlを保存しない
+  else{
+    for(var i in msg){//サーバから送られたMachineデータを全てローカルsqlに保存
+      sql("insert",msg[i])
+    }
   }
-  res = db.exec("select id, name from machine")    //idとnameを取得
-  
-  row = db.exec("select count(*) from machine")   //全行数取得
-  row = row[0].values[0][0]
+    showMachine("all")//全マシン表示
+}
 
-  for(var i=0 ; i<row ; i++){//Machineリストに全マシンのnameとidを登録
-    $("#machineList").append($("<option>").html(res[0].values[i][1]).val(res[0].values[i][0])); 
-  } 
 
+//db内の指定されたidのmachineを表示する
+function showMachine(id){
+  var row,culumn
+
+  if(id == "all"){//db内の全てのmachineを表示する
+    res = db.exec("select id, name from machine")    //idとnameを取得
+    row = db.exec("select count(*) from machine")   //全行数取得
+    row = row[0].values[0][0]
+
+    for(var i=0 ; i<row ; i++){//Machineリストに全マシンのnameとidを登録
+      $("#machineList").append($("<option>").html(res[0].values[i][1]).val(res[0].values[i][0])); 
+    }
+  }
+  else{
+    res = db.exec("select id, name from machine where id='" + id + "';")
+    $("#machineList").append($("<option>").html(res[0].values[0][1]).val(res[0].values[0][0])); 
+  }
+
+}
 /*  取得したデータの全てを表示
   res = db.exec("select * from machine")
   console.log(res)
@@ -107,7 +124,28 @@ function machine(msg){
     }
   }
 */
+
+//sql処理
+function sql(mode,msg){
+  if (mode == "delete"){
+    db.run("delete from machine where id='" + msg +"';")
+  }
+
+  else if (mode == "select"){
+    if (msg == "all"){
+      db.run("select * from machine ;")
+    }
+    else{
+      db.run("select * from machine where id='" + msg +"';")
+    }
+  }
+
+  else if (mode == "insert"){
+    db.run("insert into machine (id, name, type, templete, comment) values ('" + msg.id + "','" + msg.name + "','" + msg.type + "','" + msg.templete + "','" + msg.comment + "');");
+  }
+
 }
+
 //送信処理
 function send(msgType,msg){
   sendMsg.msgType = msgType
@@ -135,22 +173,26 @@ function createNewMachine(){
 }
 
 function getMachineLog(machineLog){
-  console.log(machineLog)
-  if (machineLog.msgType == "success"){
-    send(MACHINE,{"mode":"get"})
-    $("#state"+Number($("#state").text())).css("color","black")
-    $("#state").text(　Number($("#state").text()) + 1)
-    $("#nowLoadingModal .modal-dialog .modal-content .modal-body .img").attr("src","./img/check.png")
-    setTimeout(void(0),2000) 
-    $("#newMachineModal").modal("hide")
+  console.log(machineLog.msgType)
+  if (machineLog.msgType == "success"){   //successメッセージが届いたら、
+    send(MACHINE,{"mode":"select", "id":"all"})
+    $("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/check.png")
+    setTimeout(function(){
+      $("#nowLoadingModal").modal("hide")
+      $("#nowLoadingModal .modal-dialog .modal-content .modal-header span").remove()
+      $("#nowLoadingModal .modal-dialog .modal-content .modal-body span").remove()
+    },1500);
   }
   else if(machineLog.msgType== "failed"){
-
+    $("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/failed.png")
+    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='failed'>"+ machineLog.msg +"</span>")
   }
+  /*
   else if(machineLog.msgType == "report"){
     $("#state"+Number($("#state").text())).css("color","black")
     $("#state").text(　Number($("#state").text()) + 1)
   }
+  */
 }
 
 
@@ -200,14 +242,13 @@ $(document).ready(function(){
 
   $("#newMachineForm").submit(function() {
     $("#newMachineModal").modal("hide")
+    $("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/loading.gif").addClass("nowloadingIcon")
+    $("#nowLoadingModal .modal-dialog .modal-content .modal-header").append("<span>新しいマシンを作成中...</span>")
+    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='state1'>・jailへ登録</span>")
+    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='state2'>・データベースへ登録</span>")
+    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='state3'>・画面の更新</span>")
+    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='he'><hr></span>")
 
-    $("#nowLoadingModal .modal-dialog .modal-content .modal-header").append("<span>新しいマシンを作成中...(</span><span id='state'>1</span>/4)")
-    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='state1'>jailへ登録しています...</span>")
-    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='state2'>データベースへ登録しています...</span>")
-    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='state3'>画面を更新しています...</span>")
-    $("#state1").css("color","gray")
-    $("#state2").css("color","gray")
-    $("#state3").css("color","gray")
   
     createNewMachine()
   //  console.log($("#newMachineForm .name").val())
@@ -216,6 +257,7 @@ $(document).ready(function(){
 
   $("#nowLoadingModalCancel").click(function() {//追加したspan要素を全て削除
     $("#nowLoadingModal .modal-dialog .modal-content span").remove()
+    $("#nowLoadingModal").modal("hide")
   });
 
 

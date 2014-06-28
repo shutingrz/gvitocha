@@ -5,11 +5,15 @@ require './vitocha/vitocha.rb'
 require 'em-websocket'
 require 'open3'
 require 'json'
+require 'shellwords'
+
 
 require './console.rb'
 require './status.rb'
 require './machine.rb'
 require './sql.rb'
+require './mkjail.rb'
+require './pkg.rb'
 
 
 STDIN .set_encoding( Encoding.locale_charmap, "UTF-8" )
@@ -23,12 +27,17 @@ NETWORK = 4;
 ETC = 10;
 INIT = 101;
 
+#machine
+SERVER = 0;
+ROUTER = 1;
+SWITCH = 2;
+
 #SQL
 CREATE = 201;
 SELECT = 202;
 INSERT = 203;
 
-$jails = "/jails"
+$jails = "/usr/jails"
 $Jls = Array.new
 $Line = Array.new
 $list = Hash.new
@@ -41,14 +50,6 @@ EventMachine::WebSocket.start(host: "0.0.0.0", port: 3000) do |ws|
 #start network then connect to client
 	ws.onopen do
 		#console(ws,"echo Hello. Type shell command.")
-		msg = "test1"
-		ws.send(msg)
-		sleep(3)
-		msg = "test1"
-		ws.send(msg)
-		sleep(3)
-		msg = "test1"
-		ws.send(msg)
 
 	end
 	ws.onmessage do |message|

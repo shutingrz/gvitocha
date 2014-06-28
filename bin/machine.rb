@@ -3,51 +3,66 @@
 
 def machine (ws,data)
 	machineList = { }
+	sqlid = 0
+	id = 1
 
-	num = 0
+	t1 = Thread.new { send(ws,STATUS,msg)}
 
-	if (data["mode"] == "get") then
-		#マシン情報を送信
-		sql(SELECT,"select id, name, type, templete, comment from machine").each do |id, name, type, templete, comment|
-			machineList["key#{num}"] = {"id" => id.to_s, "name" => name, "type" => type.to_s, "templete" => templete, "comment" => comment}
-			num += 1
+	if (data["mode"] == "select") then
+
+		if (data["id"] == "all") then
+			#マシン情報を送信,dummyは送らない(id != 0)
+			maxid = sql("select","maxid")
+		
+			while id <= maxid do #|id, name, type, templete, comment|
+				sql("select",id) do |id, name, type, templete, comment|
+					machineList["key#{id}"] = {"id" => id.to_s, "name" => name, "type" => type.to_s, "templete" => templete, "comment" => comment}
+				end
+				id += 1
+			end
+			if (machineList == {})
+				send(ws,MACHINE,"none")
+			else	
+				send(ws,MACHINE,machineList)
+			end
+			id = 1
+		else
+
 		end
-		send(ws,MACHINE,machineList)
-		num = 0
+
 	elsif (data["mode"] == "new") then
+
+		cmdLog = mkjail(data["machine"]["machineType"],data["machine"]["name"],)
+
+		if(cmdLog == false)
+			status(ws,MACHINE,"failed","jailへの登録に失敗")
+			return
+		end
+
 		machine = data["machine"]
-		nextid = sql("MAXID","dummy")[0][0] + 1
-=begin
-		sql(SELECT,"insert into machine (id, name, type, templete, comment) values ('" + nextid.to_s + "','" + machine['name'] + "','" + machine['machineType'] + "','" + machine['templete'] + "','" + machine['comment'] + "');");
-		sql(SELECT,"select id from machine where id= #{nextid}").each do |id|
+		nextid = sql("select","maxid") + 1
+		sql("insert",machine)
+		sql("select",nextid) do |id|	#作成したmachineのIDを取得
 			sqlid = id
 		end
+		sleep(1)
+		if (sqlid != nextid ) then #sqlidがnextidではない（恐らくnextid-1)場合は、machineが正常に作成されていない
+			status(ws,MACHINE,"failed","machineの作成に失敗")
 
-		if (sqlid == nextid ) then
-			msg = { "mode" => MACHINE, "msg" => "success"} 
-			
 		else
-			msg = { "mode" => MACHINE, "msg" => "failed"}
+			status(ws,MACHINE,"success","完了しました。")
+			
 		end
-
-=end
-=begin
-
-		msg = { "mode" => MACHINE, "msg" => {"msgType" => "report", "msg" => "jailへの登録が完了しました。"} } 
-		send(ws,STATUS,msg)
-		sleep(1)
-		msg = { "mode" => MACHINE, "msg" => {"msgType" => "report", "msg" => "データベースへの登録が完了しました。"} } 
-		send(ws,STATUS,msg)
-		sleep(1)
-		msg = { "mode" => MACHINE, "msg" => {"msgType" => "success", "msg" => "完了しました。"} } 
-		send(ws,STATUS,msg)
-=end
-		
-		
-
-
 	end
-
-
-
+		
 end
+
+
+=begin
+	msg = { "mode" => MACHINE, "msg" => {"msgType" => "report", "msg" => "データベースへの登録が完了しました。"} } 
+			send(ws,STATUS,msg)
+
+			msg = { "mode" => MACHINE, "msg" => {"msgType" => "report", "msg" => "jailへの登録が完了しました。"} } 
+			{send(ws,STATUS,msg)
+
+=end
