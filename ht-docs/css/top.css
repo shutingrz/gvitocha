@@ -90,6 +90,8 @@ div.machine{
 	text-align : center;
 }
 
+
+
 div.disk{
 	clear : both;
 	border : 1px solid;
@@ -107,3 +109,8 @@ img.nowloadingIcon{
 	width: 150px;
 	height: 150px;
 }
+
+#pkgSearchResult{
+	width : 100%;
+}
+

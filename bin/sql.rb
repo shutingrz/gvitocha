@@ -91,34 +91,5 @@ sqlite> insert into machine select id, name, type, templete, comment from table_
 sqlite> drop table table_tmp;
 
 
-{
-	"msgType":3,
-	"data":
-		{
-			"0":{
-				"id":"0",
-				"name":"testmachine",
-				"type":0,
-				"templete":"minimum",
-				"comment":"testMachineだよ"
-				},
-			"1":{
-				"id":"1",
-				"name":"testrouter",
-				"type":"router",
-				"templete":"minimum",
-				"comment":"testMachine2だよ"
-				},
-			"2":
-				{
-				"id":"2",
-				"name":"testswitch",
-				"type":"switch",
-				"templete":"minimum",
-				"comment":"testMachine3だよ"
-				}
-		}
-}
-
 
 =end

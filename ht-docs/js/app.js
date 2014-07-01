@@ -39,7 +39,7 @@ function wsConnection(){
         vconsole(msg.data)
       }
       else if (msg.msgType == STATUS) {
-        status(msg.data)
+        status(msg.data,'info')
       }
       else if (msg.msgType == MACHINE) {
         machine(msg.data)
@@ -67,10 +67,12 @@ function vconsole(msg){
 }
 
 //通知へのメッセージ
-function status(msg){
+function status(msg,type){
   if (msg.mode == STATUS){//今までのデータに追加
     $("#statxt").append("<p>" + msg.msg + "</p>")
     go_bottom("statxt")
+    $.growl(msg.msg, {  type: type,
+                        position: {from: "top", align: "right"}});
   }
   else if(msg.mode == MACHINE){
     getMachineLog(msg.msg)    
@@ -81,12 +83,18 @@ function status(msg){
 function machine(msg){
   //  status(msg.key0.name)
   var row,culumn
-  $("#machineList option").remove();
-  db.run("delete from machine;")
-  if (msg == "none"){}  //何もデータがない場合はsqlを保存しない
-  else{
-    for(var i in msg){//サーバから送られたMachineデータを全てローカルsqlに保存
-      sql("insert",msg[i])
+
+  if (msg.mode == "pkg"){
+
+  }
+  else if(msg.mode == "list"){
+    $("#machineList option").remove();
+      db.run("delete from machine;")
+      if (msg.machine == "none"){}  //何もデータがない場合はsqlを保存しない
+      else{
+        for(var i in msg.machine){//サーバから送られたMachineデータを全てローカルsqlに保存
+          sql("insert",msg.machine[i])
+      }
     }
   }
     showMachine("all")//全マシン表示

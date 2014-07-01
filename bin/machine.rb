@@ -20,9 +20,9 @@ def machine (ws,data)
 				id += 1
 			end
 			if (machineList == {})
-				send(ws,MACHINE,"none")
+				SendMsg.machine("list","none")
 			else	
-				send(ws,MACHINE,machineList)
+				SendMsg.machine("list",machineList)
 			end
 			id = 1
 		else
@@ -36,7 +36,7 @@ def machine (ws,data)
 		cmdLog = Jail.create(machine)
 
 		if(cmdLog == false)
-			status(ws,MACHINE,"failed","jailへの登録に失敗")
+			SendMsg.status(MACHINE,"failed","jailへの登録に失敗")
 			return
 		end
 
@@ -47,13 +47,22 @@ def machine (ws,data)
 		end
 
 		if (sqlid != nextid ) then #sqlidがnextidではない（恐らくnextid-1)場合は、machineが正常に作成されていない
-			status(ws,MACHINE,"failed","machineの作成に失敗")
+			SendMsg.status(MACHINE,"failed","machineの作成に失敗")
 
 		else
-			status(ws,MACHINE,"success","完了しました。")
+			SendMsg.status(MACHINE,"success","完了しました。")
 			
 		end
+
+	elsif (data["mode"] == "pkg" ) then
+		if (data["control"] == "search") then
+			Pkg.search(data["name"]).each_line do |pname|
+				pname = pname.chomp
+				puts pname
+			end
+		end
 	end
+
 		
 end
 
