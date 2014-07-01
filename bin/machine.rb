@@ -6,17 +6,16 @@ def machine (ws,data)
 	sqlid = 0
 	id = 1
 
-	t1 = Thread.new { send(ws,STATUS,msg)}
 
 	if (data["mode"] == "select") then
 
 		if (data["id"] == "all") then
 			#マシン情報を送信,dummyは送らない(id != 0)
-			maxid = sql("select","maxid")
+			maxid = SQL.select("maxid")
 		
 			while id <= maxid do #|id, name, type, templete, comment|
-				sql("select",id) do |id, name, type, templete, comment|
-					machineList["key#{id}"] = {"id" => id.to_s, "name" => name, "type" => type.to_s, "templete" => templete, "comment" => comment}
+				SQL.select("machine",id) do |id, name, type, templete, flavour, comment|
+					machineList["key#{id}"] = {"id" => id.to_s, "name" => name, "type" => type.to_s, "templete" => templete.to_s, "flavour" => flavour.to_s, "comment" => comment}
 				end
 				id += 1
 			end
@@ -32,20 +31,21 @@ def machine (ws,data)
 
 	elsif (data["mode"] == "new") then
 
-		cmdLog = mkjail(data["machine"]["machineType"],data["machine"]["name"],)
+		machine = data["machine"] #machineを入れる
+
+		cmdLog = Jail.create(machine)
 
 		if(cmdLog == false)
 			status(ws,MACHINE,"failed","jailへの登録に失敗")
 			return
 		end
 
-		machine = data["machine"]
-		nextid = sql("select","maxid") + 1
-		sql("insert",machine)
-		sql("select",nextid) do |id|	#作成したmachineのIDを取得
+		nextid = SQL.select("maxid") + 1
+		SQL.insert(machine)
+		SQL.select("machine",nextid) do |id|	#作成したmachineのIDを取得
 			sqlid = id
 		end
-		sleep(1)
+
 		if (sqlid != nextid ) then #sqlidがnextidではない（恐らくnextid-1)場合は、machineが正常に作成されていない
 			status(ws,MACHINE,"failed","machineの作成に失敗")
 

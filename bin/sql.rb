@@ -7,76 +7,74 @@ require 'json'
 
 include SQLite3
 
+class SQL
 
-def sql(mode,id)
-	db_file = "/usr/jails/gvitocha.db"
+	@@db = nil
 
-
-#初期化
-	begin
-		db = Database.new(db_file)
-	rescue SQLite3::CantOpenException
-		puts "cant open sqlite database."
-
-	end
-
-	begin
-		db.execute("select * from machine;")
-	rescue SQLite3::SQLException	#machineテーブルがない場合、初期状態とみなし、各テーブルをcreateし、insertし、masterRouterを作成
-		db.execute("create table machine (id integer, name text, type integer, templete id, flavour id, comment text, jid integer);")
-		db.execute("create table templete(id integer, name text, pkg text);")
-		db.execute("create table flavour (id integer, name text);")
-		db.execute("create table pkg(id integer, name text);")
-		db.execute("insert into templete (id, name, pkg) values (0, 'default', '0');")
-		db.execute("insert into templete (id, name, pkg) values (1, 'router', 'quagga-0.99.22.4_1');")
-		db.execute("insert into flavour (id, name) values (0, 'default');")
-		db.execute("insert into pkg(id, name) values (1, 'quagga-0.99.22.4_1');")
-
-		db.execute("insert into machine (id, name, type, templete, flavour, comment) values ( 0, 'masterRouter', 1, 1, 0, 'master router');")
-		
-		mkjail(ROUTER,"masterRouter",0)
-		tempnum = db.execute("select templete from machine where id = 0;")[0][0]	#masterRouterのtemplete idを取得
-		pkgnum =  db.execute("select pkg from templete where id = #{tempnum};")[0][0]	#templete idのpkg一覧を表示
-
-		
-		s,e = Open3.capture3("pkg-static -j masterRouter add /pkg/quagga-0.99.22.4_1.txz")
-		puts s
-		puts e
-	#	db.execute("select pkg from templete where id=1;")[0][0].split(/,/).each do |pname|
-	#		puts "#{pname} adding..."
-	#		pkg("add", "masterRouter", pname)
-	#	end
-
-
-
-		tomocha=Operator.new
-		router=Router.new("masterRouter")		#tomochaを呼び、machineを作る
-
-		epaira,epairb = tomocha.createpair
-		ifconfig(epaira+" up")
-		router.connect(epairb) # connect to realhost
-	#	router.assignip("epair0b","192.168.11.254","255.255.255.0") 
-	#	tomocha.register("epair0b","router0","192.168.11.254","255.255.255.0") # you need this if you did not use $tomocha.assignip .
-		router.up(epairb)
-		router.start("quagga")
-	end		
-
-#初期化ここまで
-	maxid = db.execute("select max(id) from machine")[0][0]		#maxid
-
-	if(mode == "select") then
-		if(id == "maxid") then		
-			return maxid 	
-		else
-			machine = db.execute("select id, name, type, templete, comment from machine where id=" + id.to_s + ";")[0]
-			yield machine[0],machine[1],machine[2],machine[3],machine[4]	#machineのデータ返却
+	def initialize()
+		db_file = "/usr/jails/gvitocha.db"
+    	begin
+			@@db = Database.new(db_file)
+		rescue SQLite3::CantOpenException
+			puts "cant open sqlite database."
+			return false
 		end
-	elsif(mode == "insert") then
-		machine = id
-		db.execute("insert into machine (id, name, type, templete, comment) values ('" + (maxid+1).to_s + "','" + machine['name'] + "','" + machine['machineType'] + "','" + machine['templete'] + "','" + machine['comment'] + "');");
-	end
-end
 
+		begin
+			@@db.execute("select * from machine;")
+		rescue SQLite3::SQLException	#machineテーブルがない場合、初期状態とみなし、各テーブルをcreateし、insertし、masterRouterを作成
+			@@db.execute("create table machine (id integer, name text, type integer, templete id, flavour id, comment text, jid integer);")
+			@@db.execute("create table templete(id integer, name text, pkg text);")
+			@@db.execute("create table flavour (id integer, name text);")
+			@@db.execute("create table pkg(id integer, name text);")
+			@@db.execute("insert into templete (id, name, pkg) values (0, 'default', '');")
+			@@db.execute("insert into templete (id, name, pkg) values (1, 'router', 'quagga-0.99.22.4_1');")
+			@@db.execute("insert into flavour (id, name) values (0, 'default');")
+			@@db.execute("insert into pkg(id, name) values (1, 'quagga-0.99.22.4_1');")
+
+			@@db.execute("insert into machine (id, name, type, templete, flavour, comment) values ( 0, 'masterRouter', 1, 1, 0, 'master router');")
+		
+			machine = {"name" => "masterRouter", "machineType" => 1, "templete" => 1, "flavour" => 0 }
+			
+			s,e = Open3.capture3("./vitocha/mkrouter masterRouter")
+			s,e = Open3.capture3("pkg-static -j masterRouter add /pkg/quagga-0.99.22.4_1.txz")
+
+			tomocha=Operator.new
+			router=Router.new("masterRouter")		#tomochaを呼び、machineを作る
+
+			epaira,epairb = tomocha.createpair
+			ifconfig(epaira+" up")
+			router.connect(epairb) # connect to realhost
+			router.up(epairb)
+			router.start("quagga")
+		end		
+  	end
+
+	def self.sql(str)
+		begin
+			return @@db.execute(str)
+		rescue
+			puts "sql error"
+		end
+	end
+
+	def self.select(mode,id=nil)
+		if (mode == "maxid")
+			return @@db.execute("select max(id) from machine")[0][0]		#maxid
+		elsif (mode == "pkg") then
+			return @@db.execute("select pkg from templete where id=#{id};")[0][0].split(/,/)
+		elsif (mode == "machine") then
+			machine = @@db.execute("select id, name, type, templete, flavour, comment from machine where id=" + id.to_s + ";")[0]
+			yield machine[0],machine[1],machine[2],machine[3],machine[4],machine[5]	#machineのデータ返却
+		end
+	end
+
+	def self.insert(machine)
+		maxid = @@db.execute("select max(id) from machine")[0][0]		#maxid
+		return @@db.execute("insert into machine (id, name, type, templete, flavour, comment) values ('" + (maxid+1).to_s + "','" + machine['name'] + "','" + machine['machineType'] + "','" + machine['templete'] + "','" + machine['flavour'] + "','" + machine['comment'] + "');");
+	end
+
+end
 
 =begin
 

@@ -12,7 +12,7 @@ require './console.rb'
 require './status.rb'
 require './machine.rb'
 require './sql.rb'
-require './mkjail.rb'
+require './jail.rb'
 require './pkg.rb'
 
 
@@ -42,7 +42,8 @@ $Jls = Array.new
 $Line = Array.new
 $list = Hash.new
 $NetName
-tomocha=Operator.new
+
+sql = SQL.new		#初期化
 
 Process.daemon(nochdir=true) if ARGV[0] == "-D"
 

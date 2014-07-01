@@ -17,7 +17,7 @@ function init(){
   wsConnection()
 
   db = new SQL.Database();
-  db.run("create table machine (id, name, type, templete, comment);")
+  db.run("create table machine (id, name, type, templete, flavour, comment);")
 
 }
 
@@ -141,7 +141,7 @@ function sql(mode,msg){
   }
 
   else if (mode == "insert"){
-    db.run("insert into machine (id, name, type, templete, comment) values ('" + msg.id + "','" + msg.name + "','" + msg.type + "','" + msg.templete + "','" + msg.comment + "');");
+    db.run("insert into machine (id, name, type, templete, flavour, comment) values ('" + msg.id + "','" + msg.name + "','" + msg.type + "','" + msg.templete + "','" + msg.flavour + "','" + msg.comment + "');");
   }
 
 }
@@ -166,6 +166,7 @@ function createNewMachine(){
                             name : $("#newMachineForm [name=name]").val(),
                             machineType : $("#newMachineForm [name=machineType]").val(),
                             templete : $("#newMachineForm [name=templete]").val(),
+                            flavour : $("#newMachineForm [name=flavour]").val(),
                             comment : $("#newMachineForm [name=comment]").val()
                           }
               }
@@ -271,7 +272,9 @@ $(document).ready(function(){
     machine = db.exec("select * from machine where id == '" +id+ "'")
     $("#machineProperty .name .name").val(machine[0].values[0][1])
     $("#machineProperty .machineType .machineType").val(machine[0].values[0][2])
-    $("#machineProperty .comment .comment").val(machine[0].values[0][4])      
+    $("#machineProperty .machineType .templete").val(machine[0].values[0][3])
+    $("#machineProperty .flavour .flavour").val(machine[0].values[0][4])   
+    $("#machineProperty .comment .comment").val(machine[0].values[0][5])      
   });
 
 
