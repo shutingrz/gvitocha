@@ -59,19 +59,37 @@ class SQL
 	end
 
 	def self.select(mode,id=nil)
-		if (mode == "maxid")
-			return @@db.execute("select max(id) from machine")[0][0]		#maxid
-		elsif (mode == "pkg") then
+		if (mode == "pkg") then
+			if (id == "maxid")
+				return @@db.execute("select max(id) from pkg")[0][0]		#maxid
+			else
+				return @@db.execute("select id, name from pkg where id=" + id.to_s + ";")[0]
+			end
+
+		elsif (mode =="pkglist") then 
 			return @@db.execute("select pkg from templete where id=#{id};")[0][0].split(/,/)
+
 		elsif (mode == "machine") then
-			machine = @@db.execute("select id, name, type, templete, flavour, comment from machine where id=" + id.to_s + ";")[0]
-			yield machine[0],machine[1],machine[2],machine[3],machine[4],machine[5]	#machineのデータ返却
+			if (id == "maxid")
+				return @@db.execute("select max(id) from machine")[0][0]		#maxid
+			else
+				machine = @@db.execute("select id, name, type, templete, flavour, comment from machine where id=" + id.to_s + ";")[0]
+				yield machine[0],machine[1],machine[2],machine[3],machine[4],machine[5]	#machineのデータ返却
+			end
 		end
 	end
 
-	def self.insert(machine)
-		maxid = @@db.execute("select max(id) from machine")[0][0]		#maxid
-		return @@db.execute("insert into machine (id, name, type, templete, flavour, comment) values ('" + (maxid+1).to_s + "','" + machine['name'] + "','" + machine['machineType'] + "','" + machine['templete'] + "','" + machine['flavour'] + "','" + machine['comment'] + "');");
+	def self.insert(table,data)
+		maxid = @@db.execute("select max(id) from #{table}")[0][0]		#maxid
+
+		if(table == "machine") then
+			sql = "insert into machine (id, name, type, templete, flavour, comment) values ('" + (maxid+1).to_s + "','" + data['name'] + "','" + data['machineType'] + "','" + data['templete'] + "','" + data['flavour'] + "','" + data['comment'] + "');"
+		elsif(table == "pkg") then
+			sql = "insert into pkg (id,name) values ('" + (maxid+1).to_s + "','" + data + "');"
+		end
+
+		return @@db.execute(sql);
+
 	end
 
 end

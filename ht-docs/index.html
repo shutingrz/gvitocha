@@ -7,11 +7,15 @@
     <script src="./js/lib/sql.js"></script>
     <script src="./js/lib/bootstrap.min.js"></script>
     <script src="./js/lib/bootstrap-growl.js"></script>
+    <script src="./js/lib/jquery-validity.js"></script>
+    <script src="./js/lib/bootstrap-switch.js"></script>
     <script src="./js/app.js"></script>
 
     
     <link rel="stylesheet" type="text/css" href="./css/top.css" />
     <link rel="stylesheet" type="text/css" href="./css/lib/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="./css/lib/jquery-validity.css" />
+    <link rel="stylesheet" type="text/css" href="./css/lib/bootstrap-switch.css" />
 
   </head>
   <body onLoad="init()">
@@ -148,16 +152,22 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 <h4 class="modal-title" id="newMachineModalTitle">パッケージの追加</h4>
               </div>
-              <form method="post" id="newMachineForm" action="javascript:void(0);">
-                <div class="modal-body">  
-                    <select id="pkgSearchResult" class="searchResult" size="7"></select>
-                    <input type="text" class="searchBtn"></input><button type="button">検索</button>
-                </div>
+              <div class="modal-body"> 
+                現在インストール済のパッケージ<img class="installedPkgLoading" />
+                <select id="pkgList" class="pkgList" size="7"></select>
+                <hr>
+                検索ボックスから必要なパッケージを検索し、選択して追加ボタンを押してください。
+                <form method="post" id="packageSearchForm" class="packageSearchForm" action="javascript:void(0);">
+                    <input type="text" class="searchText" required></input><button type="submit" class="searchBtn" required>検索</button> <img class="searchPkgLoading" />  
+                </form>
+                <form method="post" id="packageInstallForm" class="packageInstallForm" action="javascript:void(0);">
+                <select id="pkgSearchResult" class="searchResult" size="7" required></select>
+              </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
-                  <button type="submit" class="btn btn-primary" id="newMachineSubmitButton">作成</button>
+                  <button type="submit" class="btn btn-primary" id="packageInstallSubmitButton">追加</button>
+                </form>
                 </div>
-              </form>
             </div><!-- /.modal-content -->
           </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->

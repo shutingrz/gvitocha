@@ -109,8 +109,12 @@ img.nowloadingIcon{
 	width: 150px;
 	height: 150px;
 }
+img.minimumNowloadingIcon{
+	width : 20px;
+	height : 20px;
+}
 
-#pkgSearchResult{
+#pkgSearchResult, #pkgList{
 	width : 100%;
 }
 

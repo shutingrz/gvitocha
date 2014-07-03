@@ -75,7 +75,11 @@ function status(msg,type){
                         position: {from: "top", align: "right"}});
   }
   else if(msg.mode == MACHINE){
-    getMachineLog(msg.msg)    
+    if (msg.control == "pkg"){
+      getPackageResult(msg.msg)
+    }else{
+    getMachineLog(msg.msg)  
+    } 
   }
 } 
 
@@ -204,6 +208,30 @@ function getMachineLog(machineLog){
   */
 }
 
+function getPackageResult(log){
+  if (log.msgType == "search"){
+    $("#newPackageModal .modal-dialog .modal-content .modal-body .packageSearchForm .searchPkgLoading").css("display","none");  
+    $("#pkgSearchResult").append($("<option>").html(log.msg).val(0));
+  }
+  else if(log.msgType == "list"){
+    $("#newPackageModal .modal-dialog .modal-content .modal-body .installedPkgLoading").css("display","none"); 
+    $("#pkgList").append($("<option>").html(log.msg).val(0)); 
+  }
+  else if (log.msgType == "success"){   //successメッセージが届いたら、
+    send(MACHINE,{"mode":"select", "id":"all"})
+    $("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/check.png")
+    setTimeout(function(){
+      $("#nowLoadingModal").modal("hide")
+
+    },1500);
+  }
+  else if(log.msgType== "failed"){
+    $("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/failed.png")
+    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='failed'>"+ machineLog.msg +"</span>")
+  }
+
+}
+
 
 
 
@@ -248,7 +276,6 @@ $(document).ready(function(){
   });
 
   //新しいマシンを作成ボタン
-
   $("#newMachineForm").submit(function() {
     $("#newMachineModal").modal("hide")
     $("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/loading.gif").addClass("nowloadingIcon")
@@ -256,18 +283,47 @@ $(document).ready(function(){
     $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='state1'>・jailへ登録</span>")
     $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='state2'>・データベースへ登録</span>")
     $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='state3'>・画面の更新</span>")
-    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='he'><hr></span>")
-
-  
+    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='he'><hr></span>")  
     createNewMachine()
   //  console.log($("#newMachineForm .name").val())
     $("#nowLoadingModal").modal("show")
   });
 
-  $("#nowLoadingModalCancel").click(function() {//追加したspan要素を全て削除
-    $("#nowLoadingModal .modal-dialog .modal-content span").remove()
+  //nowLoadingキャンセルボタン
+  $("#nowLoadingModalCancel").click(function() {
     $("#nowLoadingModal").modal("hide")
   });
+
+
+  //パッケージSearchボタン
+  $("#newPackageModal .modal-dialog .modal-content .modal-body .packageSearchForm").submit(function(){
+    var data = { mode : "pkg",
+                 control : "search",
+                 name : $("#newPackageModal .modal-dialog .modal-content .modal-body .searchText").val()
+                }
+    send(MACHINE,data)
+    $("#pkgSearchResult option").remove()   //検索したパッケージリストの中身を全て消す
+    $("#newPackageModal .modal-dialog .modal-content .modal-body .packageSearchForm .searchPkgLoading").css("display","inline");  
+    $("#newPackageModal .modal-dialog .modal-content .modal-body .packageSearchForm .searchPkgLoading").attr("src","./img/loading.gif").addClass("minimumNowloadingIcon")
+  });
+
+  //パッケージ追加ボタン
+  $("#newPackageModal .modal-dialog .modal-content .modal-body .packageInstallForm").submit(function(){
+    var data = { mode : "pkg",
+                 control : "install",
+                 name : $("#pkgSearchResult option:selected").text()
+                }
+    $("#newPackageModal").modal("hide")
+    $("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/loading.gif").addClass("nowloadingIcon")
+    $("#nowLoadingModal .modal-dialog .modal-content .modal-header").append("<span>新しいパッケージを追加中...</span>")
+    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='state1'>・リポジトリからダウンロード</span>")
+    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='state2'>・basejailへコピー</span>")
+    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='state3'>・データベースへ登録</span>")
+    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='he'><hr></span>")  
+    send(MACHINE,data)
+    $("#nowLoadingModal").modal("show")
+  });
+
 
 
 
@@ -283,6 +339,35 @@ $(document).ready(function(){
     $("#machineProperty .machineType .templete").val(machine[0].values[0][3])
     $("#machineProperty .flavour .flavour").val(machine[0].values[0][4])   
     $("#machineProperty .comment .comment").val(machine[0].values[0][5])      
+  });
+
+  //モーダルが開いた時のイベント
+  $('#newPackageModal').on('shown.bs.modal', function() {
+    $("#newPackageModal .modal-dialog .modal-content .modal-body .installedPkgLoading").attr("src","./img/loading.gif").addClass("minimumNowloadingIcon")
+    var data = { mode : "pkg",
+                 control : "list",
+                }
+    send(MACHINE,data)
+  });
+
+
+  //モーダルが消えた場合のイベント
+  $('#newPackageModal').on('hidden.bs.modal', function () { 
+    $("#newPackageModal .modal-dialog .modal-content select option").remove()
+    console.log("removed.")
+  });
+
+  $('#nowLoadingModal').on('hidden.bs.modal', function () {
+   $("#nowLoadingModal .modal-dialog .modal-content span").remove()
+  });
+
+  $('#newMachineModal').on('hidden.bs.modal', function () {
+   $("#newMachineModal .modal-dialog .modal-content .modal-body .name").val("")
+   $("#newMachineModal .modal-dialog .modal-content .modal-body .machineType").val("0")
+   $("#newMachineModal .modal-dialog .modal-content .modal-body .templete").val("0")
+   $("#newMachineModal .modal-dialog .modal-content .modal-body .flavour").val("0")
+   $("#newMachineModal .modal-dialog .modal-content .modal-body .comment").val("")
+   $("#newMachineModal .modal-dialog .modal-content .modal-body .package option").remove()
   });
 
 

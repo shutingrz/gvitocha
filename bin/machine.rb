@@ -11,7 +11,7 @@ def machine (ws,data)
 
 		if (data["id"] == "all") then
 			#マシン情報を送信,dummyは送らない(id != 0)
-			maxid = SQL.select("maxid")
+			maxid = SQL.select("machine","maxid")
 		
 			while id <= maxid do #|id, name, type, templete, comment|
 				SQL.select("machine",id) do |id, name, type, templete, flavour, comment|
@@ -33,22 +33,11 @@ def machine (ws,data)
 
 		machine = data["machine"] #machineを入れる
 
-		cmdLog = Jail.create(machine)
+		cmdLog,cause = Jail.create(machine)
 
 		if(cmdLog == false)
-			SendMsg.status(MACHINE,"failed","jailへの登録に失敗")
+			SendMsg.status(MACHINE,"failed",cause)
 			return
-		end
-
-		nextid = SQL.select("maxid") + 1
-		SQL.insert(machine)
-		SQL.select("machine",nextid) do |id|	#作成したmachineのIDを取得
-			sqlid = id
-		end
-
-		if (sqlid != nextid ) then #sqlidがnextidではない（恐らくnextid-1)場合は、machineが正常に作成されていない
-			SendMsg.status(MACHINE,"failed","machineの作成に失敗")
-
 		else
 			SendMsg.status(MACHINE,"success","完了しました。")
 			
@@ -58,8 +47,28 @@ def machine (ws,data)
 		if (data["control"] == "search") then
 			Pkg.search(data["name"]).each_line do |pname|
 				pname = pname.chomp
-				puts pname
+				SendMsg.status(MACHINE,"search",pname)
 			end
+
+
+
+		elsif(data["control"] == "list") then
+			pkg = Pkg.list("all")
+			pkg.each do |pname|
+				SendMsg.status(MACHINE,"list",pname[0])
+			end
+
+
+
+		elsif(data["control"] == "install") then
+			cmdLog,cause = Pkg.install(data["name"])
+
+			if(cmdLog == false)
+				SendMsg.status(MACHINE,"failed",cause)
+				return
+			else
+				SendMsg.status(MACHINE,"success","完了しました。")
+			end	
 		end
 	end
 

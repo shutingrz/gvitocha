@@ -15,4 +15,3 @@ mount_nullfs ${dist}/basejail ${dist}/$1/basejail
 #jail -r $1
 #umount ${dist}/$1/dev
 #umount ${dist}/$1/basejail
-echo $1 ' unjailed.'

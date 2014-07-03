@@ -48,6 +48,7 @@ EventMachine::WebSocket.start(host: "0.0.0.0", port: 3000) do |ws|
 	$ws = ws
 	ws.onopen do
 
+
 	end
 	ws.onmessage do |message|
 		STDOUT.sync = true
