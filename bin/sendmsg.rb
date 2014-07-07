@@ -24,7 +24,7 @@ class SendMsg
 		elsif(msgType == "jail") then
 			msg = { "mode" => mode, "msg" => {"msgType" => msgType, "control" => "jail", "msg" => data} }
 		else 
-			msg = { "mode" => mode, "msg" => {"msgType" => msgType, "control" => "", "msg" => data} }
+			msg = { "mode" => mode, "msg" => {"msgType" => msgType, "control" => "jail", "msg" => data} }
 		end
 		
 		self.asend(STATUS,msg)

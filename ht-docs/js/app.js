@@ -190,16 +190,23 @@ function getMachineLog(machineLog){
     $("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/check.png")
     setTimeout(function(){
       $("#nowLoadingModal").modal("hide")
-      $("#nowLoadingModal .modal-dialog .modal-content .modal-header span").remove()
-      $("#nowLoadingModal .modal-dialog .modal-content .modal-body span").remove()
-    },1500);
+   //   $("#nowLoadingModal .modal-dialog .modal-content .modal-header span").remove()
+   //   $("#nowLoadingModal .modal-dialog .modal-content .modal-body span").remove()
+    },1500); 
   }
   else if(machineLog.msgType== "failed"){
     $("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/failed.png")
     $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='failed'>"+ machineLog.msg +"</span>")
   }
+  else if(machineLog.msgType == "report"){
+    $("#state"+Number($("#state").text())).css("color","gray")
+    $("#state"+Number($("#state").text())).css("font-weight","normal")
+    $("#state").text(　Number($("#state").text()) + 1)
+    $("#state"+Number($("#state").text())).css("font-weight","bolder")
+  }
   else if(machineLog.msgType== "log"){
     $("#nowLoadingLog").append("<span>" + machineLog.msg + "</span>")
+    go_bottom("nowLoadingLog")
     
   }
   else{
@@ -289,10 +296,10 @@ $(document).ready(function(){
   $("#newMachineForm").submit(function() {
     $("#newMachineModal").modal("hide")
     $("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/loading.gif").addClass("nowloadingIcon")
-    mkNowLoading.addHead("新しいマシンを作成中...")
+    mkNowLoading.addHead(3,"新しいマシンを作成中...")
     mkNowLoading.addBody("state1","・jailへ登録")
-    mkNowLoading.addBody("state2","・データベースへ登録")
-    mkNowLoading.addBody("state3","・画面の更新")
+    mkNowLoading.addBody("state2","・パッケージを追加")
+    mkNowLoading.addBody("state3","・データベースへ登録")
     mkNowLoading.show()
     createNewMachine()
   //  console.log($("#newMachineForm .name").val())
@@ -324,10 +331,12 @@ $(document).ready(function(){
                  name : $("#pkgSearchResult option:selected").text()
                 }
     
-    mkNowLoading.addHead("新しいパッケージを追加中...")
+    mkNowLoading.addHead(3,"新しいパッケージを追加中...")
     mkNowLoading.addBody("state1","・リポジトリからダウンロード")
     mkNowLoading.addBody("state2","・basejailへコピー")
     mkNowLoading.addBody("state3","・データベースへ登録")
+
+    $("#newPackageModal").modal("hide")
     mkNowLoading.show()
     send(MACHINE,data)
 
@@ -364,7 +373,8 @@ $(document).ready(function(){
   //モーダルが消えた場合のイベント
   $('#newPackageModal').on('hidden.bs.modal', function () { 
     $("#newPackageModal .modal-dialog .modal-content select option").remove()
-    console.log("removed.")
+    $("#packageSearchForm .searchText").val("")
+    
   });
 
   $('#nowLoadingModal').on('hidden.bs.modal', function () {
@@ -403,14 +413,15 @@ mkNowLoading.show = mkNowLoading_show
 function mkNowLoading_addBody(id,str){
   $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='" + id + "'>"+ str + "</span>") 
 }
-function mkNowLoading_addHead(str){
-  $("#nowLoadingModal .modal-dialog .modal-content .modal-header").append("<span>" + str + "</span>")
+function mkNowLoading_addHead(num,str){
+  $("#nowLoadingModal .modal-dialog .modal-content .modal-header").append("<span>" + str + "...(</span><span id='state'>1</span><span>/" + num + ")</span>")
 }
 
 function mkNowLoading_show(){
   mkNowLoading.addBody("hr","<hr>")
   $("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/loading.gif").addClass("nowloadingIcon")
-  $("#newPackageModal").modal("hide")
+  $("#state1").css("font-weight","bolder")
+
   $("#nowLoadingModal").modal("show")
 }
 

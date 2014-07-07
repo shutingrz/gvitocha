@@ -23,11 +23,15 @@ class Jail
 		if(cmdLog == false) then
 			return false,"jail"
 		end
+
+		SendMsg.status(MACHINE,"report","jail")
 	
 		SQL.select("pkglist",machine['templete']).each do |pname|
 			puts "#{pname} adding..."
 			Pkg.add(machine['name'], pname)		#templeteに入っている全てのpkgをインストール
 		end
+
+		SendMsg.status(MACHINE,"report","pkg")
 		
 		nextid = SQL.select("machine","maxid") + 1
 		sqlid = 0
@@ -39,7 +43,6 @@ class Jail
 		if (sqlid != nextid ) then #sqlidがnextidではない（恐らくnextid-1)場合は、machineが正常に作成されていない
 			return false,"database"
 		end	
-		puts "all successfully"
 		
 		return true
 	end

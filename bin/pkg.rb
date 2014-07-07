@@ -51,9 +51,8 @@ class Pkg
 				SendMsg.status(MACHINE,"log","ok<br>")
 			end
 		end
-#		SendMsg.status(MACHINE,"log","downloading #{pname}...")
-#		cmdLogdownload(pname)
-#		SendMsg.status(MACHINE,"log","ok<br>")
+
+		SendMsg.status(MACHINE,"report","pkgdownload")
 		
 		
 		cmdLog,e = Open3.capture3("ls #{$jails}/basejail/pkg/#{pname}.txz")
@@ -61,7 +60,8 @@ class Pkg
 		if(cmdLog != "#{$jails}/basejail/pkg/#{pname}.txz")
 			return false,"copy"
 		end
-		puts("...end")
+		
+		SendMsg.status(MACHINE,"report","pkgcopy")
 
 		nextid = SQL.select("pkg","maxid") + 1
 		SQL.insert("pkg",pname)
