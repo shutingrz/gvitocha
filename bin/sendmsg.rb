@@ -4,14 +4,8 @@ class SendMsg
 
 	def self.asend(type,data)
 		msg = JSON.generate({"msgType" => type, "data" =>data})
-	#	$msg = msg
 		puts msg
-		EventMachine::defer do
-			#$ws.send(msg)
-			$channel.push(msg)
-		end
-	#	$ws.send(msg)
-	#	$channel.push(msg)
+		$ws.send(msg)
 	end
 	def self.machine(mode,data)		#各モードに合わせてmsgの書式を変えていく
 		if (mode == "list") then

@@ -47,44 +47,44 @@ Process.daemon(nochdir=true) if ARGV[0] == "-D"
 $channel = @channel
 
 EM::run do
-EventMachine::WebSocket.start(host: "0.0.0.0", port: 3000) do |ws|
-#start network then connect to client
-	$ws = ws
-	ws.onopen do
-		sid = @channel.subscribe{|mes| ws.send mes}
-
-	end
-	ws.onmessage do |message|
-		EventMachine::defer do
-		STDOUT.sync = true
-		puts "raw:" + message
-        msg = JSON.parse(message)
-        message = msg[1]
-        if (msg["msgType"] == CONSOLE) then
-        	console(msg["data"])
-
-		elsif (msg["msgType"] == STATUS) then
-        	p "STATUS"
-
-        elsif (msg["msgType"] == MACHINE) then
-        	machine(ws,msg["data"])
-
-        elsif (msg["msgType"] == NETWORK) then
-        	p "NETWORK"	
-
-        elsif (msg["msgType"] == ETC) then
-        	p "ETC"
-
-        end		
-    end
-	end
+	EventMachine::WebSocket.start(host: "0.0.0.0", port: 3000) do |ws|
+	#start network then connect to client
+		$ws = ws
+		ws.onopen do
+			sid = @channel.subscribe{|mes| ws.send mes}
 	
-	ws.onclose	do |event|
-		puts "disconnected."
-	end
+		end
+		ws.onmessage do |message|
+			EventMachine::defer do
+				STDOUT.sync = true
+				puts "raw:" + message
+        		msg = JSON.parse(message)
+        		message = msg[1]
+        		if (msg["msgType"] == CONSOLE) then
+        			console(msg["data"])
+	
+				elsif (msg["msgType"] == STATUS) then
+        			p "STATUS"
+
+        		elsif (msg["msgType"] == MACHINE) then
+        			machine(ws,msg["data"])
+
+        		elsif (msg["msgType"] == NETWORK) then
+        			p "NETWORK"	
+
+        		elsif (msg["msgType"] == ETC) then
+        			p "ETC"
+
+        		end		
+   			end
+		end
+	
+		ws.onclose	do |event|
+			puts "disconnected."
+		end
 	
 
-end
+	end
 
 
 end
