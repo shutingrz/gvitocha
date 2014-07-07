@@ -8,7 +8,6 @@ class Jail
 	end
 
 	def self.create(machine)
-		puts machine['machineType']
 		if machine['machineType'] == SERVER.to_s then
 			s,e = Open3.capture3("./vitocha/mkserver #{machine['name']}")
 		else
@@ -20,11 +19,13 @@ class Jail
 			return false
 		end
 	
+		puts "majail. next pkg"
 		SQL.select("pkglist",machine['templete']).each do |pname|
 			puts "#{pname} adding..."
 			Pkg.add(machine['name'], pname)		#templeteに入っている全てのpkgをインストール
 		end
 
+		puts "pkg install, next db"
 		nextid = SQL.select("machine","maxid") + 1
 		sqlid = 0
 		SQL.insert("machine",machine)
@@ -36,6 +37,7 @@ class Jail
 			#	SendMsg.status(MACHINE,"failed","machineの作成に失敗")
 			return false,"database"
 		end	
+		puts "all successfully"
 		
 		return true
 	end

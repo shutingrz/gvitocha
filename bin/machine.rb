@@ -6,7 +6,6 @@ def machine (ws,data)
 	sqlid = 0
 	id = 1
 
-
 	if (data["mode"] == "select") then
 
 		if (data["id"] == "all") then
@@ -25,6 +24,7 @@ def machine (ws,data)
 				SendMsg.machine("list",machineList)
 			end
 			id = 1
+
 		else
 
 		end
@@ -32,7 +32,7 @@ def machine (ws,data)
 	elsif (data["mode"] == "new") then
 
 		machine = data["machine"] #machineを入れる
-
+		puts "machine creating."
 		cmdLog,cause = Jail.create(machine)
 
 		if(cmdLog == false)
@@ -45,9 +45,11 @@ def machine (ws,data)
 
 	elsif (data["mode"] == "pkg" ) then
 		if (data["control"] == "search") then
-			Pkg.search(data["name"]).each_line do |pname|
-				pname = pname.chomp
-				SendMsg.status(MACHINE,"search",pname)
+			EventMachine::defer do
+				Pkg.search(data["name"]).each_line do |pname|
+					pname = pname.chomp
+					SendMsg.status(MACHINE,"search",pname)
+				end
 			end
 
 
@@ -57,6 +59,7 @@ def machine (ws,data)
 			pkg.each do |pname|
 				SendMsg.status(MACHINE,"list",pname[0])
 			end
+
 
 
 
@@ -72,7 +75,6 @@ def machine (ws,data)
 		end
 	end
 
-		
 end
 
 

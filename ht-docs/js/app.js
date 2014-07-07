@@ -75,11 +75,7 @@ function status(msg,type){
                         position: {from: "top", align: "right"}});
   }
   else if(msg.mode == MACHINE){
-    if (msg.control == "pkg"){
-      getPackageResult(msg.msg)
-    }else{
     getMachineLog(msg.msg)  
-    } 
   }
 } 
 
@@ -188,7 +184,9 @@ function createNewMachine(){
 function getMachineLog(machineLog){
   console.log(machineLog.msgType)
   if (machineLog.msgType == "success"){   //successメッセージが届いたら、
-    send(MACHINE,{"mode":"select", "id":"all"})
+    if(machineLog.control == "jail"){
+      getJailResult()
+    }
     $("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/check.png")
     setTimeout(function(){
       $("#nowLoadingModal").modal("hide")
@@ -200,12 +198,26 @@ function getMachineLog(machineLog){
     $("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/failed.png")
     $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='failed'>"+ machineLog.msg +"</span>")
   }
+  else if(machineLog.msgType== "log"){
+    $("#nowLoadingLog").append("<span>" + machineLog.msg + "</span>")
+    
+  }
+  else{
+    if(machineLog.control == "pkg"){
+      getPackageResult(machineLog)
+    }
+  }
   /*
   else if(machineLog.msgType == "report"){
     $("#state"+Number($("#state").text())).css("color","black")
     $("#state").text(　Number($("#state").text()) + 1)
   }
   */
+}
+
+function getJailResult(){
+  send(MACHINE,{"mode":"select", "id":"all"})
+
 }
 
 function getPackageResult(log){
@@ -216,18 +228,6 @@ function getPackageResult(log){
   else if(log.msgType == "list"){
     $("#newPackageModal .modal-dialog .modal-content .modal-body .installedPkgLoading").css("display","none"); 
     $("#pkgList").append($("<option>").html(log.msg).val(0)); 
-  }
-  else if (log.msgType == "success"){   //successメッセージが届いたら、
-    send(MACHINE,{"mode":"select", "id":"all"})
-    $("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/check.png")
-    setTimeout(function(){
-      $("#nowLoadingModal").modal("hide")
-
-    },1500);
-  }
-  else if(log.msgType== "failed"){
-    $("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/failed.png")
-    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='failed'>"+ machineLog.msg +"</span>")
   }
 
 }
@@ -279,11 +279,11 @@ $(document).ready(function(){
   $("#newMachineForm").submit(function() {
     $("#newMachineModal").modal("hide")
     $("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/loading.gif").addClass("nowloadingIcon")
-    $("#nowLoadingModal .modal-dialog .modal-content .modal-header").append("<span>新しいマシンを作成中...</span>")
-    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='state1'>・jailへ登録</span>")
-    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='state2'>・データベースへ登録</span>")
-    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='state3'>・画面の更新</span>")
-    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='he'><hr></span>")  
+    mkNowLoading.addHead("新しいマシンを作成中...")
+    mkNowLoading.addBody("state1","・jailへ登録")
+    mkNowLoading.addBody("state2","・データベースへ登録")
+    mkNowLoading.addBody("state3","・画面の更新")
+    mkNowLoading.show()
     createNewMachine()
   //  console.log($("#newMachineForm .name").val())
     $("#nowLoadingModal").modal("show")
@@ -313,15 +313,15 @@ $(document).ready(function(){
                  control : "install",
                  name : $("#pkgSearchResult option:selected").text()
                 }
-    $("#newPackageModal").modal("hide")
-    $("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/loading.gif").addClass("nowloadingIcon")
-    $("#nowLoadingModal .modal-dialog .modal-content .modal-header").append("<span>新しいパッケージを追加中...</span>")
-    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='state1'>・リポジトリからダウンロード</span>")
-    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='state2'>・basejailへコピー</span>")
-    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='state3'>・データベースへ登録</span>")
-    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='he'><hr></span>")  
+    
+    mkNowLoading.addHead("新しいパッケージを追加中...")
+    mkNowLoading.addBody("state1","・リポジトリからダウンロード")
+    mkNowLoading.addBody("state2","・basejailへコピー")
+    mkNowLoading.addBody("state3","・データベースへ登録")
+    mkNowLoading.show()
     send(MACHINE,data)
-    $("#nowLoadingModal").modal("show")
+
+
   });
 
 
@@ -383,3 +383,25 @@ function go_bottom(targetId){
   if(!obj) return;
   obj.scrollTop = obj.scrollHeight;
 }
+
+//nowLoadingを形成する
+function mkNowLoading(){}
+mkNowLoading.addBody = mkNowLoading_addBody
+mkNowLoading.addHead = mkNowLoading_addHead
+mkNowLoading.show = mkNowLoading_show
+
+function mkNowLoading_addBody(id,str){
+  $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='" + id + "'>"+ str + "</span>") 
+}
+function mkNowLoading_addHead(str){
+  $("#nowLoadingModal .modal-dialog .modal-content .modal-header").append("<span>" + str + "</span>")
+}
+
+function mkNowLoading_show(){
+  mkNowLoading.addBody("hr","<hr>")
+  $("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/loading.gif").addClass("nowloadingIcon")
+  $("#newPackageModal").modal("hide")
+  $("#nowLoadingModal").modal("show")
+}
+
+

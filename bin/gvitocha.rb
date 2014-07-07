@@ -38,19 +38,24 @@ INSERT = 203;
 
 $jails = "/usr/jails"
 $ws
-
+$msg = ""
+$channel
 sql = SQL.new		#初期化
 
 Process.daemon(nochdir=true) if ARGV[0] == "-D"
+@channel = EM::Channel.new
+$channel = @channel
 
+EM::run do
 EventMachine::WebSocket.start(host: "0.0.0.0", port: 3000) do |ws|
 #start network then connect to client
 	$ws = ws
 	ws.onopen do
-
+		sid = @channel.subscribe{|mes| ws.send mes}
 
 	end
 	ws.onmessage do |message|
+		EventMachine::defer do
 		STDOUT.sync = true
 		puts "raw:" + message
         msg = JSON.parse(message)
@@ -71,12 +76,16 @@ EventMachine::WebSocket.start(host: "0.0.0.0", port: 3000) do |ws|
         	p "ETC"
 
         end		
+    end
 	end
 	
 	ws.onclose	do |event|
 		puts "disconnected."
 	end
 	
+
+end
+
 
 end
 

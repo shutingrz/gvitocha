@@ -4,8 +4,14 @@ class SendMsg
 
 	def self.asend(type,data)
 		msg = JSON.generate({"msgType" => type, "data" =>data})
+	#	$msg = msg
 		puts msg
-		$ws.send(msg)
+		EventMachine::defer do
+			#$ws.send(msg)
+			$channel.push(msg)
+		end
+	#	$ws.send(msg)
+	#	$channel.push(msg)
 	end
 	def self.machine(mode,data)		#各モードに合わせてmsgの書式を変えていく
 		if (mode == "list") then
@@ -20,9 +26,11 @@ class SendMsg
 
 	def self.status(mode,msgType,data)
 		if (msgType == "search" || msgType == "install" || msgType == "add" || msgType == "list") then		#pkg操作の場合
-			msg = { "mode" => mode, "control" => "pkg", "msg" => {"msgType" => msgType, "msg" => data} }
-		else
-			msg = { "mode" => mode, "msg" => {"msgType" => msgType, "msg" => data} }
+			msg = { "mode" => mode, "msg" => {"msgType" => msgType, "control" => "pkg", "msg" => data} }
+		elsif(msgType == "jail") then
+			msg = { "mode" => mode, "msg" => {"msgType" => msgType, "control" => "jail", "msg" => data} }
+		else 
+			msg = { "mode" => mode, "msg" => {"msgType" => msgType, "control" => "", "msg" => data} }
 		end
 		
 		self.asend(STATUS,msg)

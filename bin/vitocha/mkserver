@@ -1,6 +1,6 @@
 #!/bin/sh
 dist="/usr/jails"
-#ezjail-admin create -f server -r $1 $1 0.0.0.0
+ezjail-admin create -f server -r $1 $1 0.0.0.0
 /usr/sbin/jail -c vnet host.hostname=$1 name=$1 path=${dist}/$1 persist
 mount -t devfs devfs ${dist}/$1/dev
 mount_nullfs ${dist}/basejail ${dist}/$1/basejail

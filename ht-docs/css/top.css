@@ -43,13 +43,15 @@ div.top div.status{
 	width : 49%;
 	height : 290px;
 }
-#statxt{
+#statxt, #nowLoadingLog{
 	overflow-y : scroll;
 	overflow-x : hidden;
-	width : 100%;
+	width : 95%;
 	height : 240px;
 	border : 2px solid;
-	background-color : lightgray;
+	background-color : white;
+	margin-left : auto;
+	margin-right : auto;
 }
 
 div.network{
@@ -86,9 +88,6 @@ div.machine{
 	width : 100%;
 }
 
-#nowLoadingModal .modal-dialog .modal-content .modal-body{
-	text-align : center;
-}
 
 
 
@@ -108,13 +107,19 @@ span.br{
 img.nowloadingIcon{
 	width: 150px;
 	height: 150px;
+	display: block;
+ 	margin-left: auto;
+ 	margin-right: auto;
+ 	margin-bottom: 3%;
 }
 img.minimumNowloadingIcon{
 	width : 20px;
 	height : 20px;
 }
 
-#pkgSearchResult, #pkgList{
-	width : 100%;
+#pkgSearchResult, #pkgList {
+	width : 95%;
+
 }
+
 
