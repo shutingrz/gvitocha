@@ -32,12 +32,18 @@ class SQL
 			@@db.execute("insert into flavour (id, name) values (0, 'default');")
 			@@db.execute("insert into pkg(id, name) values (1, 'quagga-0.99.22.4_1');")
 
-			@@db.execute("insert into machine (id, name, type, templete, flavour, comment) values ( 0, 'masterRouter', 1, 1, 0, 'master router');")
+			@@db.execute("insert into machine (id, name, type, templete, flavour, comment) values ( -1, 'dummy', 0, 0, 0, 'dummy');")
 		
-			machine = {"name" => "masterRouter", "machineType" => 1, "templete" => 1, "flavour" => 0 }
+			machine = {"name" => "masterRouter", "machineType" => "1", "templete" => "1", "flavour" => "0","comment" => "masterRouter" }
+	
+			s,e = Open3.capture3("mkdir #{$jails}/basejail/pkg")
+			s,e = Open3.capture3("mkdir #{$jails}/flavours/default")
+			s,e = Open3.capture3("ln -s /basejail/pkg #{$jails}/flavours/default/pkg")
+			s,e = Open3.capture3("cp /usr/local/sbin/pkg-static #{$jails}/basejail/usr/sbin/pkg-static")
 			
-			s,e = Open3.capture3("./vitocha/mkrouter masterRouter")
-			s,e = Open3.capture3("pkg-static -j masterRouter add /pkg/quagga-0.99.22.4_1.txz")
+			Jail.create(machine)
+			Pkg.download("quagga-0.99.22.4_1")
+			Pkg.add("masterRouter","quagga-0.99.22.4_1")
 
 			tomocha=Operator.new
 			router=Router.new("masterRouter")		#tomochaを呼び、machineを作る
@@ -76,6 +82,8 @@ class SQL
 				machine = @@db.execute("select id, name, type, templete, flavour, comment from machine where id=" + id.to_s + ";")[0]
 				yield machine[0],machine[1],machine[2],machine[3],machine[4],machine[5]	#machineのデータ返却
 			end
+		elsif (mode == "flavour") then
+			return @@db.execute("select name from flavour where id = #{id}")[0][0]
 		end
 	end
 

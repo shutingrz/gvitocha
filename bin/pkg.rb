@@ -12,31 +12,50 @@ class Pkg
 	end
 
 	def self.download(pname)
-		SendMsg.status(MACHINE,"log","downloading #{pname}...")
-		cmdLog,e = cmdLog,e = Open3.capture3("ls /var/cache/pkg/All")
+		cmdLog,e = Open3.capture3("ls /var/cache/pkg/All")
 		s,e = Open3.capture3("echo y|pkg-static fetch #{pname}")		#リポジトリからパッケージを取得
 		cmdLog2,e = Open3.capture3("ls /var/cache/pkg/All")
 
+
 		if(cmdLog == cmdLog2)		#ダウンロード前後にlsの結果を取って、要素が同じならばダウンロードに失敗しているとわかる（ファイルが増えていない）
-			puts ("error")
-			return false,"download"
+			s.each_line do |line|
+				if(line.include?("The following packages will be fetched") == true)	
+					puts "already download"
+					return			#既にダウンロードされていたらエラーではないので何も返さずreturn
+				end
+			end
+			puts ("pkgdownloaderror")
+			return false,"pkgdownload"
 		end
-		SendMsg.status(MACHINE,"log","ok<br>")
+		cmdLog,e = Open3.capture3("ls #{$jails}/basejail/pkg")
+		s,e = Open3.capture3("cp -pn /var/cache/pkg/All/* #{$jails}/basejail/pkg/")	#basejailにコピー
+		cmdLog2,e = Open3.capture3("ls #{$jails}/basejail/pkg")
+
+		if(cmdLog == cmdLog2)		#ダウンロード前後にlsの結果を取って、要素が同じならばダウンロードに失敗しているとわかる（ファイルが増えていない）
+			puts ("pkgcopyerror")
+			return false,"pkgcopy"
+		end
+
 	end
 
 	def self.install(pname)	#host側でやらせる
 	
 		dePkg = recursiveList(pname)		#depends Pkg
+		dePkg << pname
 		dePkg.each do |depkg|
+			SendMsg.status(MACHINE,"log","downloading #{depkg}...")
 			cmdLog,cause = download(depkg)
 			if (cmdLog == false)
 				return cmdLog,cause
+			else
+				SendMsg.status(MACHINE,"log","ok<br>")
 			end
 		end
-		download(pname)
-		$msg = ""
+#		SendMsg.status(MACHINE,"log","downloading #{pname}...")
+#		cmdLogdownload(pname)
+#		SendMsg.status(MACHINE,"log","ok<br>")
 		
-		s,e = Open3.capture3("cp -pn /var/cache/pkg/All/* #{$jails}/basejail/pkg/")	#basejailにコピー
+		
 		cmdLog,e = Open3.capture3("ls #{$jails}/basejail/pkg/#{pname}.txz")
 		cmdLog = cmdLog.chomp	#改行削除
 		if(cmdLog != "#{$jails}/basejail/pkg/#{pname}.txz")

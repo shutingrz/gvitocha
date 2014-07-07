@@ -23,7 +23,7 @@ function init(){
 
 //WebSocket
 function wsConnection(){
-  ws = new WebSocket("ws://192.168.56.101:3000");
+  ws = new WebSocket("ws://192.168.56.103:3000");
     
   //接続時
   ws.onopen = function(event){
@@ -222,8 +222,18 @@ function getJailResult(){
 
 function getPackageResult(log){
   if (log.msgType == "search"){
+    var flag = false
     $("#newPackageModal .modal-dialog .modal-content .modal-body .packageSearchForm .searchPkgLoading").css("display","none");  
-    $("#pkgSearchResult").append($("<option>").html(log.msg).val(0));
+    $("#pkgList option").each( function() { //インストール済のパッケージを全て回して重複しないかを確認
+      if (log.msg == $(this).text()){
+        $("#pkgSearchResult").append($("<option disabled>").html(log.msg + " (インストール済)").val(0))
+        flag = true     //フラグ立てるのはあんまり良くない・・・できたら直す todo
+        return;
+      }
+    })
+    if ( flag == false){  //インストール済のパッケージになかったら
+      $("#pkgSearchResult").append($("<option>").html(log.msg).val(0))
+    }
   }
   else if(log.msgType == "list"){
     $("#newPackageModal .modal-dialog .modal-content .modal-body .installedPkgLoading").css("display","none"); 

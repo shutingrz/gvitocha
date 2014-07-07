@@ -9,23 +9,26 @@ class Jail
 
 	def self.create(machine)
 		if machine['machineType'] == SERVER.to_s then
-			s,e = Open3.capture3("./vitocha/mkserver #{machine['name']}")
+			#reserved
 		else
-			s,e = Open3.capture3("./vitocha/mkrouter #{machine['name']}")
+			#reserved
+		end
+		
+		cmdLog = mkEzjail(machine['flavour'],machine['name'])
+		if(cmdLog == false) then
+			return false,"ezjail"
 		end
 
-		cmdLog = Open3.capture3("ezjail-admin list|grep #{machine['name']}")	#ezjail-admin listに載っていたら正常
-		if(cmdLog == "")
-			return false
+		start(machine['name'])
+		if(cmdLog == false) then
+			return false,"jail"
 		end
 	
-		puts "majail. next pkg"
 		SQL.select("pkglist",machine['templete']).each do |pname|
 			puts "#{pname} adding..."
 			Pkg.add(machine['name'], pname)		#templeteに入っている全てのpkgをインストール
 		end
-
-		puts "pkg install, next db"
+		
 		nextid = SQL.select("machine","maxid") + 1
 		sqlid = 0
 		SQL.insert("machine",machine)
@@ -34,7 +37,6 @@ class Jail
 		end
 
 		if (sqlid != nextid ) then #sqlidがnextidではない（恐らくnextid-1)場合は、machineが正常に作成されていない
-			#	SendMsg.status(MACHINE,"failed","machineの作成に失敗")
 			return false,"database"
 		end	
 		puts "all successfully"
@@ -46,10 +48,23 @@ class Jail
 		s,e = Open3.capture3("/usr/sbin/jail -c vnet host.hostname=#{machine} name=#{machine} path=#{$jails}/#{machine} persist")
 		s,e = Open3.capture3("mount -t devfs devfs #{$jails}/#{machine}/dev")
 		s,e = Open3.capture3("mount_nullfs #{$jails}/basejail #{$jails}/#{machine}/basejail")
+		cmdLog = Open3.capture3("jls|grep #{machine}")	#jlsに載っていたら正常
+		if(cmdLog == "")
+			return false
+		end
 	end
 
 	def self.status(machine)
 
+	end
+
+	def self.mkEzjail(flavour,machine)
+		fname = SQL.select("flavour",flavour)
+		s,e = Open3.capture3("ezjail-admin create -f #{fname} -r #{machine} #{machine} 0.0.0.0")
+		cmdLog = Open3.capture3("ezjail-admin list|grep #{machine}")	#ezjail-admin listに載っていたら正常
+		if(cmdLog == "")
+			return false
+		end
 	end
 
 end

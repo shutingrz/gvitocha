@@ -9,7 +9,7 @@ def machine (ws,data)
 	if (data["mode"] == "select") then
 
 		if (data["id"] == "all") then
-			#マシン情報を送信,dummyは送らない(id != 0)
+			#マシン情報を送信,masterRouterは送らない(id != 0)
 			maxid = SQL.select("machine","maxid")
 		
 			while id <= maxid do #|id, name, type, templete, comment|
