@@ -7,6 +7,46 @@ class Jail
 
 	end
 
+	def self.main(data)
+		machineList = { }
+		sqlid = 0
+		id = 1
+
+		if(data["control"] == "select") then
+
+			if (data["id"] == "all") then
+				#マシン情報を送信,masterRouterは送らない(id != 0)
+				maxid = SQL.select("machine","maxid")
+		
+				while id <= maxid do #|id, name, type, templete, comment|
+					SQL.select("machine",id) do |id, name, type, templete, flavour, comment|
+						machineList["key#{id}"] = {"id" => id.to_s, "name" => name, "type" => type.to_s, "templete" => templete.to_s, "flavour" => flavour.to_s, "comment" => comment}
+					end
+					id += 1
+				end
+				if (machineList == {})
+					SendMsg.machine("jail","list","none")
+				else	
+					SendMsg.machine("jail","list",machineList)
+				end
+				id = 1
+			end	
+
+		elsif (data["control"] == "new") then
+			machine = data["machine"] #machineを入れる
+			puts "machine creating."
+			cmdLog,cause = Jail.create(machine)
+
+			if(cmdLog == false)
+				SendMsg.status(MACHINE,"failed",cause)
+				return
+			else
+				SendMsg.status(MACHINE,"success","完了しました。")	
+			end
+		end
+
+	end
+
 	def self.create(machine)
 		if machine['machineType'] == SERVER.to_s then
 			#reserved

@@ -1,6 +1,34 @@
 # -*- coding: utf-8 -*-
 
 class Pkg
+
+
+
+	def self.main(data)
+		if (data["control"] == "search") then
+			search(data["name"]).each_line do |pname|
+				pname = pname.chomp
+				SendMsg.machine("pkg","search",pname)
+			end
+
+		elsif(data["control"] == "list") then
+			pkg = list("all")
+			pkg.each do |pname|
+				SendMsg.machine("pkg","list",pname[0])
+			end
+
+		elsif(data["control"] == "install") then
+			cmdLog,cause = install(data["name"])
+
+			if(cmdLog == false)
+				SendMsg.status(MACHINE,"failed",cause)
+				return
+			else
+				SendMsg.status(MACHINE,"success","完了しました。")
+			end	
+		end
+
+	end
 	def self.add(jname,pname)
 		puts "pkg-static -j #{jname} add /pkg/#{pname}.txz"
 		s,e = Open3.capture3("pkg-static -j #{jname} add /pkg/#{pname}.txz")
@@ -126,12 +154,14 @@ class Pkg
 	end
 
 	def self.recPkg(db,pname)		#依存関係を全て探索する再帰的な関数
-		s,e = Open3.capture3("cd #{pname};make build-depends-list")
+		s,e = Open3.capture3("cd #{pname};make run-depends-list")
 		s.each_line do |line|
 			flag = false		#重複してたよフラグ
 			line = line.chomp
 			db.each do |column|
-				if (line.include?(column) == true) then
+			#	if (line.include?(column) == true) then
+				if (line.gsub("/usr/ports/","") == column) then
+
 					flag = true		#重複してたよ
 					break
 				end

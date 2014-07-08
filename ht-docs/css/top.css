@@ -43,13 +43,22 @@ div.top div.status{
 	width : 49%;
 	height : 290px;
 }
-#statxt, #nowLoadingLog{
+#statxt{
 	overflow-y : scroll;
 	overflow-x : hidden;
 	width : 95%;
 	height : 240px;
 	border : 2px solid;
 	background-color : white;
+	margin-left : auto;
+	margin-right : auto;
+}
+
+#nowLoadingLog{
+	overflow-y : scroll;
+	overflow-x : hidden;
+	width : 95%;
+	height : 180px;
 	margin-left : auto;
 	margin-right : auto;
 }
@@ -117,7 +126,7 @@ img.minimumNowloadingIcon{
 	height : 20px;
 }
 
-#pkgSearchResult, #pkgList {
+#pkgSearchResult, .pkgList {
 	width : 95%;
 
 }

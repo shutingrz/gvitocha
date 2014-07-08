@@ -6,12 +6,16 @@ path = ARGV[0]
 db = Array.new
 
 def recPkg(db,pkg)
-	s,e = Open3.capture3("cd #{pkg};make build-depends-list")
+	s,e = Open3.capture3("cd #{pkg};make run-depends-list")
 	s.each_line do |line|
 		flag = false		#重複してたよフラグ
 		line = line.chomp
+		if (line.include?("libXinerama") == true) then
+			puts "hakken : #{line} pkg:#{pkg}"
+		end
 		db.each do |column|
-			if (line.include?(column) == true) then
+	#		if (line.include?(column) == true) then
+			if (line.gsub("/usr/ports/","") == column) then
 				flag = true		#重複してたよ
 				break
 			end

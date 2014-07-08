@@ -99,9 +99,12 @@
         </div>
         <br><br>
 
-        <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#newMachineModal">新しいマシンを作成</button>
+        <button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newMachineModal">新しいマシンを作成</button>
 
-        <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#newPackageModal">パッケージの追加</button>
+        <button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newPackageModal" >パッケージの追加</button>
+        
+        <button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newTempleteModal">テンプレートの作成</button>
+
 
         <!-- 新しいマシン設定のモーダル -->
         <div class="modal fade" id="newMachineModal" tabindex="-1" role="dialog" aria-labelledby="newMachineModal" aria-hidden="true">
@@ -171,6 +174,39 @@
             </div><!-- /.modal-content -->
           </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
+
+        <!-- テンプレート作成モーダル -->
+        <div class="modal fade" id="newTempleteModal" tabindex="-1" role="dialog" aria-labelledby="newTempleteModal" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="newMachineModalTitle">テンプレートの作成</h4>
+              </div>
+              <div class="modal-body">
+                テンプレートの名前を入力し、<br>
+                リストから追加したいパッケージをチェックし、作成ボタンを押してください。<br>
+                <hr>
+
+                <form method="post" id="templeteCreateForm" class="templeteCreateForm" action="javascript:void(0);">
+                    Templete name<br>
+                    <input type="text" class="name" required></input>
+                <br><br>
+                パッケージ一覧<img class="installedPkgLoading" />
+                <div id="pkgCheckBox" class="checkbox">
+
+                </div>
+              </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
+                  <button type="submit" class="btn btn-primary" id="templeteCreateSubmitButton">作成</button>
+                </form>
+                </div>
+            </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+
 
         <!-- NowLoadingのモーダル -->
         <div class="modal fade" id="nowLoadingModal" tabindex="-1" role="dialog" aria-labelledby="nowLoadingModal" aria-hidden="true" data-backdrop="static">

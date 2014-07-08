@@ -28,7 +28,7 @@ function wsConnection(){
   //接続時
   ws.onopen = function(event){
     status({"mode":STATUS, "msg" : "connected."})
-    send(MACHINE,{"mode":"select", "id":"all"})
+    getJailResult()
   }
 
   // メッセージ受信時の処理
@@ -85,19 +85,23 @@ function machine(msg){
   var row,culumn
 
   if (msg.mode == "pkg"){
-
+    getPackageResult(msg)
   }
-  else if(msg.mode == "list"){
-    $("#machineList option").remove();
+  else if(msg.mode == "jail"){
+    if(msg.control == "list"){
+      $("#machineList option").remove();
       db.run("delete from machine;")
-      if (msg.machine == "none"){}  //何もデータがない場合はsqlを保存しない
+      if (msg.machine == "none"){
+         //何もデータがない場合はsqlを保存しない
+      } 
       else{
-        for(var i in msg.machine){//サーバから送られたMachineデータを全てローカルsqlに保存
-          sql("insert",msg.machine[i])
+        for(var i in msg.msg){//サーバから送られたMachineデータを全てローカルsqlに保存
+          sql("insert",msg.msg[i])
+        }
       }
+      showMachine("all")//全マシン表示
     }
   }
-    showMachine("all")//全マシン表示
 }
 
 
@@ -169,7 +173,8 @@ function close(no,msg){
 
 //新規マシン情報送信
 function createNewMachine(){
-  var data = { mode : "new",
+  var data = { mode : "jail",
+               control: "new",
                 machine : {
                             name : $("#newMachineForm [name=name]").val(),
                             machineType : $("#newMachineForm [name=machineType]").val(),
@@ -209,26 +214,15 @@ function getMachineLog(machineLog){
     go_bottom("nowLoadingLog")
     
   }
-  else{
-    if(machineLog.control == "pkg"){
-      getPackageResult(machineLog)
-    }
-  }
-  /*
-  else if(machineLog.msgType == "report"){
-    $("#state"+Number($("#state").text())).css("color","black")
-    $("#state").text(　Number($("#state").text()) + 1)
-  }
-  */
 }
 
 function getJailResult(){
-  send(MACHINE,{"mode":"select", "id":"all"})
+  send(MACHINE,{"mode":"jail", "control":"select", "id":"all"})
 
 }
 
 function getPackageResult(log){
-  if (log.msgType == "search"){
+  if (log.control == "search"){
     var flag = false
     $("#newPackageModal .modal-dialog .modal-content .modal-body .packageSearchForm .searchPkgLoading").css("display","none");  
     $("#pkgList option").each( function() { //インストール済のパッケージを全て回して重複しないかを確認
@@ -242,9 +236,11 @@ function getPackageResult(log){
       $("#pkgSearchResult").append($("<option>").html(log.msg).val(0))
     }
   }
-  else if(log.msgType == "list"){
-    $("#newPackageModal .modal-dialog .modal-content .modal-body .installedPkgLoading").css("display","none"); 
+  else if(log.control == "list"){
+    $(".installedPkgLoading").css("display","none"); 
     $("#pkgList").append($("<option>").html(log.msg).val(0)); 
+    $("#pkgCheckBox").append('<label><input type="checkbox" name="pkgCheckBox" value="' + log.msg + '" />' + log.msg + '</label><br>');
+
   }
 
 }
@@ -302,7 +298,6 @@ $(document).ready(function(){
     mkNowLoading.addBody("state3","・データベースへ登録")
     mkNowLoading.show()
     createNewMachine()
-  //  console.log($("#newMachineForm .name").val())
     $("#nowLoadingModal").modal("show")
   });
 
@@ -343,6 +338,24 @@ $(document).ready(function(){
 
   });
 
+  //テンプレート作成ボタン
+  $("#newTempleteModal .modal-dialog .modal-content .modal-body .templeteCreateForm").submit(function(){
+    var pkglist = ""
+    $('[name="pkgCheckBox"]:checked').each(function(){
+   //   console.log($(this).val())  
+      pkglist += $(this).val() + ";"
+    })
+    var data = { mode : "templete",
+                 control : "create",
+                 name :  $("#newTempleteModal .modal-dialog .modal-content .modal-body .name").val(),
+                 pkglist : pkglist
+                }
+
+    console.log(data)
+
+  });
+
+
 
 
 
@@ -361,8 +374,9 @@ $(document).ready(function(){
   });
 
   //モーダルが開いた時のイベント
-  $('#newPackageModal').on('shown.bs.modal', function() {
-    $("#newPackageModal .modal-dialog .modal-content .modal-body .installedPkgLoading").attr("src","./img/loading.gif").addClass("minimumNowloadingIcon")
+  $('#newPackageModal, #newTempleteModal').on('shown.bs.modal', function() {
+    $(".installedPkgLoading").attr("src","./img/loading.gif").addClass("minimumNowloadingIcon")
+    $(".installedPkgLoading").attr("src","./img/loading.gif").addClass("minimumNowloadingIcon")
     var data = { mode : "pkg",
                  control : "list",
                 }
@@ -371,11 +385,14 @@ $(document).ready(function(){
 
 
   //モーダルが消えた場合のイベント
-  $('#newPackageModal').on('hidden.bs.modal', function () { 
-    $("#newPackageModal .modal-dialog .modal-content select option").remove()
+  $('#newPackageModal, #newTempleteModal').on('hidden.bs.modal', function () {      //newTempleteとnewPackageは構造が似ているので同じ関数に
+    $(".modal-content select option").remove()
+    $("#pkgCheckBox").empty()
     $("#packageSearchForm .searchText").val("")
+    $("#templeteCreateForm .name").val("")
     
   });
+
 
   $('#nowLoadingModal').on('hidden.bs.modal', function () {
    $("#nowLoadingModal .modal-dialog .modal-content span").remove()

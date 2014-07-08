@@ -7,10 +7,8 @@ class SendMsg
 		puts msg
 		$ws.send(msg)
 	end
-	def self.machine(mode,data)		#各モードに合わせてmsgの書式を変えていく
-		if (mode == "list") then
-			msg = {"mode" => mode, "machine" => data}
-		end
+	def self.machine(mode,control,data)		#各モードに合わせてmsgの書式を変えていく
+		msg = {"mode" => mode, "control" => control, "msg" => data}
 		self.asend(MACHINE,msg)
 	end
 
@@ -19,14 +17,7 @@ class SendMsg
 	end
 
 	def self.status(mode,msgType,data)
-		if (msgType == "search" || msgType == "install" || msgType == "add" || msgType == "list") then		#pkg操作の場合
-			msg = { "mode" => mode, "msg" => {"msgType" => msgType, "control" => "pkg", "msg" => data} }
-		elsif(msgType == "jail") then
-			msg = { "mode" => mode, "msg" => {"msgType" => msgType, "control" => "jail", "msg" => data} }
-		else 
-			msg = { "mode" => mode, "msg" => {"msgType" => msgType, "control" => "jail", "msg" => data} }
-		end
-		
+		msg = { "mode" => mode, "msg" => {"msgType" => msgType, "msg" => data} }	
 		self.asend(STATUS,msg)
 	end
 
