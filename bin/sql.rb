@@ -72,8 +72,12 @@ class SQL
 				return @@db.execute("select id, name from pkg where id=" + id.to_s + ";")[0]
 			end
 
-		elsif (mode =="pkglist") then 
-			return @@db.execute("select pkg from templete where id=#{id};")[0][0].split(/,/)
+		elsif (mode =="templete") then 
+			if (id == "maxid") then
+				return @@db.execute("select max(id) from templete")[0][0]		#maxid
+			else
+				return @@db.execute("select id, name, pkg from templete where id=#{id};")[0]
+			end
 
 		elsif (mode == "machine") then
 			if (id == "maxid")
@@ -94,6 +98,8 @@ class SQL
 			sql = "insert into machine (id, name, type, templete, flavour, comment) values ('" + (maxid+1).to_s + "','" + data['name'] + "','" + data['machineType'] + "','" + data['templete'] + "','" + data['flavour'] + "','" + data['comment'] + "');"
 		elsif(table == "pkg") then
 			sql = "insert into pkg (id,name) values ('" + (maxid+1).to_s + "','" + data + "');"
+		elsif(table == "templete") then
+			sql = "insert into templete(id,name,pkg) values('" + (maxid+1).to_s + "','" + data["name"] + "','" + data["pkglist"] + "');"
 		end
 
 		return @@db.execute(sql);

@@ -13,6 +13,7 @@ require './sql.rb'
 require './jail.rb'
 require './pkg.rb'
 require './sendmsg.rb'
+require './templete.rb'
 
 
 #STDIN .set_encoding( Encoding.locale_charmap, "UTF-8" )

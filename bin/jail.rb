@@ -66,11 +66,13 @@ class Jail
 
 		SendMsg.status(MACHINE,"report","jail")
 	
-		SQL.select("pkglist",machine['templete']).each do |pname|
+		templete = (SQL.select("templete",machine['templete']))[2]
+		templete = templete.split(";")
+		puts templete
+		templete.each do |pname|
 			puts "#{pname} adding..."
 			Pkg.add(machine['name'], pname)		#templeteに入っている全てのpkgをインストール
 		end
-
 		SendMsg.status(MACHINE,"report","pkg")
 		
 		nextid = SQL.select("machine","maxid") + 1
@@ -88,13 +90,29 @@ class Jail
 	end
 
 	def self.start(machine)
+
 		s,e = Open3.capture3("/usr/sbin/jail -c vnet host.hostname=#{machine} name=#{machine} path=#{$jails}/#{machine} persist")
+		puts s
 		s,e = Open3.capture3("mount -t devfs devfs #{$jails}/#{machine}/dev")
+		puts s
 		s,e = Open3.capture3("mount_nullfs #{$jails}/basejail #{$jails}/#{machine}/basejail")
+		puts s
 		cmdLog = Open3.capture3("jls|grep #{machine}")	#jlsに載っていたら正常
 		if(cmdLog == "")
 			return false
 		end
+		return true
+	end
+
+	def self.stop(machine)
+		s,e = Open3.capture3("ezjail-admin stop #{machine} ")
+		s,e = Open3.capture3("umount #{$jails}/#{machine}/dev")
+		s,e = Open3.capture3("umount #{$jails}/#{machine}/basejail")
+		cmdLog = Open3.capture3("jls|grep #{machine}")	#jlsに載っていたら正常
+		if(cmdLog != "")
+			return false
+		end
+		return true
 	end
 
 	def self.status(machine)

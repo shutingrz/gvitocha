@@ -1,243 +1,247 @@
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>vitocha</title>
+	<head>
+		<meta charset="UTF-8">
+		<title>vitocha</title>
 
-    <script src="./js/lib/jquery-2.1.1.min.js"></script>
-    <script src="./js/lib/sql.js"></script>
-    <script src="./js/lib/bootstrap.min.js"></script>
-    <script src="./js/lib/bootstrap-growl.js"></script>
-    <script src="./js/lib/jquery-validity.js"></script>
-    <script src="./js/lib/bootstrap-switch.js"></script>
-    <script src="./js/app.js"></script>
+		<script src="./js/lib/jquery-2.1.1.min.js"></script>
+		<script src="./js/lib/sql.js"></script>
+		<script src="./js/lib/bootstrap.min.js"></script>
+		<script src="./js/lib/bootstrap-growl.js"></script>
+		<script src="./js/lib/jquery-validity.js"></script>
+		<script src="./js/lib/bootstrap-switch.js"></script>
+		<script src="./js/app.js"></script>
+		<script src="./js/jail.js"></script>
+		<script src="./js/sql.js"></script>
+		<script src="./js/templete.js"></script>
 
-    
-    <link rel="stylesheet" type="text/css" href="./css/top.css" />
-    <link rel="stylesheet" type="text/css" href="./css/lib/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="./css/lib/jquery-validity.css" />
-    <link rel="stylesheet" type="text/css" href="./css/lib/bootstrap-switch.css" />
+	
+		<link rel="stylesheet" type="text/css" href="./css/top.css" />
+		<link rel="stylesheet" type="text/css" href="./css/lib/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="./css/lib/jquery-validity.css" />
+		<link rel="stylesheet" type="text/css" href="./css/lib/bootstrap-switch.css" />
 
   </head>
   <body onLoad="init()">
 
-    <div class="top">
+	<div class="top">
+		<div class="header">
+			<div class="left">
+		  		<div>
+					GUI Vitocha
+		  		</div>  
+			</div>
+		<div class="right">
+			<div>
+				<input type="button" class="connect" value="接続">
+				<input type="button" class="disconnect" value="切断">
+			</div>
+		</div>
+	</div>
+	<hr>
+	<div class="console">
+		Console<br>
+		<div id="contxt" class="console" ></div>
+		<br>
+		<input size="85" id="console" type="text">
+	</div>
 
-      <div class="header">
-        <div class="left">
-          <div>
-            GUI Vitocha
-          </div>  
-        </div>
-        <div class="right">
-          <div>
-            <input type="button" class="connect" value="接続">
-            <input type="button" class="disconnect" value="切断">
-          </div>
-        </div>
-      </div>
-  
-      <hr>
+	<div class="status">
+		Status<br>
+		<div id="statxt" class="status"></div>
+		<br>
+	</div>
 
-      <div class="console">
-        Console<br>
-        <div id="contxt" class="console" ></div>
-        <br>
-        <input size="85" id="console" type="text">
-      </div>
+	<div class="machine">
+		Machine<br>
 
+		<div class="machineList">
+			<select id="machineList" class="list" size="16"></select>
 
+			<br>
+			<div class="util">
+			<button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newMachineModal">新しいマシンを作成</button>
+			<button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newPackageModal" >パッケージの追加</button>
+			<button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newTempleteModal">テンプレートの作成</button>
+			</div>
+		</div>
+		<div id="machineProperty" class="property" >
+			PowerSwitch
+			<div class="make-switch make-switch-large">
+				<input id="powerSwitch" class="powerSwitch" type="checkbox" >
+			</div>
+			<hr>
+			<div class="name">
+				Name<br>
+				<input type="text" class="name">
+			</div>
+			<div class="machineType">
+				<hr>MachineType<br>
+				<select class="machineType">
+					<option value="0">Server</option>
+					<option value="1">Router</option>
+					<option value="2">Switch</option>
+				</select>
+			</div>
+		  	<div class="templete">
+				<hr>Templete<br>
+				<select class="templete"></select>
+		  	</div>
+		  	<div class="flavour">
+				<hr>flavour<br>
+				<select class="flavour">
+					<option value="0">default</option>
+				</select>
+		  	</div>
+		  	<div class="ip">
+		  	</div>
+		  	<div class="package">
+				<hr>Package<br>
+				<select class="package" size="4"></select>
+		  	</div>
+		  	<div class="comment">
+				<hr>コメント<br>
+				<input class="comment" type="text">
+			</div>
+		  	<div class="submitType">
+				<hr>
+				<input type="button" class="modify" value="modify">
+				<input type="button" class="delete" value="delete">
+		  	</div>
+		</div>
+	</div>
 
-      <div class="status">
-        Status<br>
-        <div id="statxt" class="status"></div>
-        <br>
-      </div>
+		<!-- 新しいマシン設定のモーダル -->
+		<div class="modal fade" id="newMachineModal" tabindex="-1" role="dialog" aria-labelledby="newMachineModal" aria-hidden="true">
+		  <div class="modal-dialog">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title" id="newMachineModalTitle">新しいマシンを作成</h4>
+			  </div>
+			  <form method="post" id="newMachineForm" action="javascript:void(0);">
+				<div class="modal-body">  
+					Name<br>
+					<input type="text" class="name" name="name" required>
+					<hr>MachineType<br>
+					<select class="machineType" name="machineType">
+					  <option value="0">Server</option>
+					  <option value="1">Router</option>
+					  <option value="2">Switch</option>
+					</select>
+					<hr>Templete<br>
+					<select class="templete" name="templete">
+					  
+					</select>
+					<hr>Package<br>
+					<select class="package" size="4"></select>
+					<hr>Flavour<br>
+					  <select class="flavour" name="flavour">
+					  <option value="0">default</option>
+					</select>
+					<hr>コメント<br>
+					<input class="comment" type="text" name="comment">
 
-      <div class="machine">
-        Machine<br>
-        <select id="machineList" class="list" size="13"></select>
-        <div id="machineProperty" class="property" >
-          <div class="name">
-            Name<br>
-            <input type="text" class="name">
-          </div>
-          <div class="machineType">
-            <hr>MachineType<br>
-            <select class="machineType">
-              <option value="0">Server</option>
-              <option value="1">Router</option>
-              <option value="2">Switch</option>
-            </select>
-          </div>
-          <div class="templete">
-            <hr>Templete<br>
-            <select class="templete">
-              <option value="0">default</option>
-            </select>
-          </div>
-          <div class="flavour">
-            <hr>flavour<br>
-            <select class="flavour">
-              <option value="0">default</option>
-            </select>
-          </div>
-          <div class="ip"></div>
-          <div class="package">
-            <hr>Package<br>
-            <select class="package" size="4"></select>
-          </div>
-          <div class="comment">
-            <hr>コメント<br>
-            <input class="comment" type="text">
-          </div>
-          <div class="submitType">
-            <hr>
-            <input type="button" class="modify" value="modify">
-            <input type="button" class="delete" value="delete">
-          </div>
+				</div>
+				<div class="modal-footer">
+				  <button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
+				  <button type="submit" class="btn btn-primary" id="newMachineSubmitButton">作成</button>
+				</div>
+			  </form>
+			</div><!-- /.modal-content -->
+		  </div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
 
-        </div>
-        <br><br>
+		<!-- パッケージ追加モーダル -->
+		<div class="modal fade" id="newPackageModal" tabindex="-1" role="dialog" aria-labelledby="newPackageModal" aria-hidden="true">
+		  <div class="modal-dialog">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title" id="newMachineModalTitle">パッケージの追加</h4>
+			  </div>
+			  <div class="modal-body"> 
+				現在インストール済のパッケージ<img class="installedPkgLoading" />
+				<select id="pkgList" class="pkgList" size="7"></select>
+				<hr>
+				検索ボックスから必要なパッケージを検索し、選択して追加ボタンを押してください。
+				<form method="post" id="packageSearchForm" class="packageSearchForm" action="javascript:void(0);">
+					<input type="text" class="searchText" required></input><button type="submit" class="searchBtn" required>検索</button> <img class="searchPkgLoading" />  
+				</form>
+				<form method="post" id="packageInstallForm" class="packageInstallForm" action="javascript:void(0);">
+				<select id="pkgSearchResult" class="searchResult" size="7" required></select>
+			  </div>
+				<div class="modal-footer">
+				  <button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
+				  <button type="submit" class="btn btn-primary" id="packageInstallSubmitButton">追加</button>
+				</form>
+				</div>
+			</div><!-- /.modal-content -->
+		  </div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
 
-        <button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newMachineModal">新しいマシンを作成</button>
+		<!-- テンプレート作成モーダル -->
+		<div class="modal fade" id="newTempleteModal" tabindex="-1" role="dialog" aria-labelledby="newTempleteModal" aria-hidden="true">
+		  <div class="modal-dialog">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title" id="newMachineModalTitle">テンプレートの作成</h4>
+			  </div>
+			  <div class="modal-body">
+				テンプレートの名前を入力し、<br>
+				リストから追加したいパッケージをチェックし、作成ボタンを押してください。<br>
+				<hr>
 
-        <button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newPackageModal" >パッケージの追加</button>
-        
-        <button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newTempleteModal">テンプレートの作成</button>
+				<form method="post" id="templeteCreateForm" class="templeteCreateForm" action="javascript:void(0);">
+					Templete name<br>
+					<input type="text" class="name" required></input>
+				<br><br>
+				パッケージ一覧<img class="installedPkgLoading" />
+				<div id="pkgCheckBox" class="checkbox">
 
-
-        <!-- 新しいマシン設定のモーダル -->
-        <div class="modal fade" id="newMachineModal" tabindex="-1" role="dialog" aria-labelledby="newMachineModal" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title" id="newMachineModalTitle">新しいマシンを作成</h4>
-              </div>
-              <form method="post" id="newMachineForm" action="javascript:void(0);">
-                <div class="modal-body">  
-                    Name<br>
-                    <input type="text" class="name" name="name" required>
-                    <hr>MachineType<br>
-                    <select class="machineType" name="machineType">
-                      <option value="0">Server</option>
-                      <option value="1">Router</option>
-                      <option value="2">Switch</option>
-                    </select>
-                    <hr>Templete<br>
-                    <select class="templete" name="templete">
-                      <option value="0">default</option>
-                    </select>
-                    <hr>Package<br>
-                    <select class="package" size="4"></select>
-                    <hr>Flavour<br>
-                      <select class="flavour" name="flavour">
-                      <option value="0">default</option>
-                    </select>
-                    <hr>コメント<br>
-                    <input class="comment" type="text" name="comment">
-
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
-                  <button type="submit" class="btn btn-primary" id="newMachineSubmitButton">作成</button>
-                </div>
-              </form>
-            </div><!-- /.modal-content -->
-          </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
-
-        <!-- パッケージ追加モーダル -->
-        <div class="modal fade" id="newPackageModal" tabindex="-1" role="dialog" aria-labelledby="newPackageModal" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title" id="newMachineModalTitle">パッケージの追加</h4>
-              </div>
-              <div class="modal-body"> 
-                現在インストール済のパッケージ<img class="installedPkgLoading" />
-                <select id="pkgList" class="pkgList" size="7"></select>
-                <hr>
-                検索ボックスから必要なパッケージを検索し、選択して追加ボタンを押してください。
-                <form method="post" id="packageSearchForm" class="packageSearchForm" action="javascript:void(0);">
-                    <input type="text" class="searchText" required></input><button type="submit" class="searchBtn" required>検索</button> <img class="searchPkgLoading" />  
-                </form>
-                <form method="post" id="packageInstallForm" class="packageInstallForm" action="javascript:void(0);">
-                <select id="pkgSearchResult" class="searchResult" size="7" required></select>
-              </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
-                  <button type="submit" class="btn btn-primary" id="packageInstallSubmitButton">追加</button>
-                </form>
-                </div>
-            </div><!-- /.modal-content -->
-          </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
-
-        <!-- テンプレート作成モーダル -->
-        <div class="modal fade" id="newTempleteModal" tabindex="-1" role="dialog" aria-labelledby="newTempleteModal" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title" id="newMachineModalTitle">テンプレートの作成</h4>
-              </div>
-              <div class="modal-body">
-                テンプレートの名前を入力し、<br>
-                リストから追加したいパッケージをチェックし、作成ボタンを押してください。<br>
-                <hr>
-
-                <form method="post" id="templeteCreateForm" class="templeteCreateForm" action="javascript:void(0);">
-                    Templete name<br>
-                    <input type="text" class="name" required></input>
-                <br><br>
-                パッケージ一覧<img class="installedPkgLoading" />
-                <div id="pkgCheckBox" class="checkbox">
-
-                </div>
-              </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
-                  <button type="submit" class="btn btn-primary" id="templeteCreateSubmitButton">作成</button>
-                </form>
-                </div>
-            </div><!-- /.modal-content -->
-          </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
-
-
-
-        <!-- NowLoadingのモーダル -->
-        <div class="modal fade" id="nowLoadingModal" tabindex="-1" role="dialog" aria-labelledby="nowLoadingModal" aria-hidden="true" data-backdrop="static">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header"></div>
-              <div class="modal-body" >  
-                  <img />
-        
-              </div>
-              <div class="modal-log" id="nowLoadingLog" ></div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" id="nowLoadingModalCancel">キャンセル</button>
-              </div>
-            </div><!-- /.modal-content -->
-          </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
+				</div>
+			  </div>
+				<div class="modal-footer">
+				  <button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
+				  <button type="submit" class="btn btn-primary" id="templeteCreateSubmitButton">作成</button>
+				</form>
+				</div>
+			</div><!-- /.modal-content -->
+		  </div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
 
 
-      </div>
+
+		<!-- NowLoadingのモーダル -->
+		<div class="modal fade" id="nowLoadingModal" tabindex="-1" role="dialog" aria-labelledby="nowLoadingModal" aria-hidden="true" data-backdrop="static">
+		  <div class="modal-dialog">
+			<div class="modal-content">
+			  <div class="modal-header"></div>
+			  <div class="modal-body" >  
+				  <img />
+		
+			  </div>
+			  <div class="modal-log" id="nowLoadingLog" ></div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal" id="nowLoadingModalCancel">キャンセル</button>
+			  </div>
+			</div><!-- /.modal-content -->
+		  </div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
 
 
-      <div class="network">Network</div>
+	  </div>
 
-      <div class="disk">Disk</div>
-    
 
-    
-    <br>
-    <div class="test">
-    Test
+	  <div class="network">Network</div>
+
+	  <div class="disk">Disk</div>
+	
+
+	
+	<br>
+	<div class="test">
+	Test
 
   
   </body>
@@ -246,9 +250,9 @@
 
 
 <!-- プログレスバーメモ
-                  <div class="progress">
-                    <div class="progress-bar progress-bar-striped active"  role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
-                    <span class="sr-only">45% Complete</span>
-                    </div>
-                  </div>
+				  <div class="progress">
+					<div class="progress-bar progress-bar-striped active"  role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+					<span class="sr-only">45% Complete</span>
+					</div>
+				  </div>
 -->

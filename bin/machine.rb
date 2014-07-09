@@ -12,9 +12,7 @@ def machine (ws,data)
 
 
 	elsif (data["mode"] == "templete") then
-		if (data["control"] == "create") then
-			
-		end
+		Templete.main(data)
 	end 
 
 end
