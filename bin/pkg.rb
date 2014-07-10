@@ -42,6 +42,7 @@ class Pkg
 	def self.download(pname)
 		cmdLog,e = Open3.capture3("ls /var/cache/pkg/All")
 		s,e = Open3.capture3("echo y|pkg-static fetch #{pname}")		#リポジトリからパッケージを取得
+		puts s
 		cmdLog2,e = Open3.capture3("ls /var/cache/pkg/All")
 
 
@@ -55,9 +56,12 @@ class Pkg
 			puts ("pkgdownloaderror")
 			return false,"pkgdownload"
 		end
-		cmdLog,e = Open3.capture3("ls #{$jails}/basejail/pkg")
-		s,e = Open3.capture3("cp -pn /var/cache/pkg/All/* #{$jails}/basejail/pkg/")	#basejailにコピー
-		cmdLog2,e = Open3.capture3("ls #{$jails}/basejail/pkg")
+	#	cmdLog,e = Open3.capture3("ls #{$jails}/basejail/pkg")
+		cmdLog,e = Open3.capture3("ls #{$jails}/sharedfs/pkg")
+	#	s,e = Open3.capture3("cp -pn /var/cache/pkg/All/* #{$jails}/basejail/pkg/")	#basejailにコピー(ezjail)
+		s,e = Open3.capture3("cp -pn /var/cache/pkg/All/* #{$jails}/sharedfs/pkg/")	#sharedfsにコピー(qjail)
+	#	cmdLog2,e = Open3.capture3("ls #{$jails}/basejail/pkg")
+		cmdLog2,e = Open3.capture3("ls #{$jails}/sharedfs/pkg")
 
 		if(cmdLog == cmdLog2)		#ダウンロード前後にlsの結果を取って、要素が同じならばダウンロードに失敗しているとわかる（ファイルが増えていない）
 			puts ("pkgcopyerror")
@@ -69,23 +73,23 @@ class Pkg
 	def self.install(pname)	#host側でやらせる
 	
 		dePkg = recursiveList(pname)		#depends Pkg
-		dePkg << pname
-		dePkg.each do |depkg|
-			SendMsg.status(MACHINE,"log","downloading #{depkg}...")
-			cmdLog,cause = download(depkg)
+		dePkg += pname
+	#	dePkg.each do |depkg|
+			SendMsg.status(MACHINE,"log","downloading #{dePkg}...")
+			cmdLog,cause = download(dePkg)
 			if (cmdLog == false)
 				return cmdLog,cause
 			else
 				SendMsg.status(MACHINE,"log","ok<br>")
 			end
-		end
+	#	end
 
 		SendMsg.status(MACHINE,"report","pkgdownload")
 		
 		
-		cmdLog,e = Open3.capture3("ls #{$jails}/basejail/pkg/#{pname}.txz")
+		cmdLog,e = Open3.capture3("ls #{$jails}/sharedfs/pkg/#{pname}.txz")
 		cmdLog = cmdLog.chomp	#改行削除
-		if(cmdLog != "#{$jails}/basejail/pkg/#{pname}.txz")
+		if(cmdLog != "#{$jails}/sharedfs/pkg/#{pname}.txz")
 			return false,"copy"
 		end
 		
@@ -148,8 +152,16 @@ class Pkg
 		db = Array.new
 		recPkg(db,path)
 		db.sort!
-		puts db
-		return db
+
+		allpkg = ""
+
+		#空白つなぎの文字列に変換
+		db.each do |pname|
+			allpkg += pname + " "
+		end
+
+		puts allpkg
+		return allpkg
 
 	end
 

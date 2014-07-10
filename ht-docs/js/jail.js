@@ -3,7 +3,9 @@ function jail(msg){
   if(msg.control == "list"){
       $("#machineList option").remove();
       sql("machine","delete","all")
-      if (msg.machine == "none"){
+
+      if (msg.msg == "none"){
+        return
          //何もデータがない場合はsqlを保存しない
       } 
       else{

@@ -31,9 +31,8 @@ function wsConnection(){
     
   //接続時
   ws.onopen = function(event){
-    status({"mode":STATUS, "msg" : "connected."});
-    jail_getList();
-    templete_getList();
+    status({"mode":STATUS, "msg" : {"msg" : "connected."}});
+    reloadDB();
   }
 
   // メッセージ受信時の処理
@@ -74,13 +73,13 @@ function vconsole(msg){
 //通知へのメッセージ
 function status(msg,type){
   if (msg.mode == STATUS){//今までのデータに追加
-    $("#statxt").append("<p>" + msg.msg + "</p>");
+    $("#statxt").append("<p>" + msg.msg.msg + "</p>");
     go_bottom("statxt");
-    $.growl(msg.msg, {  type: type,
+    $.growl(msg.msg.msg, {  type: type,
                         position: {from: "top", align: "right"}});
   }
   else if(msg.mode == MACHINE){
-    getMachineLog(msg.msg)  
+    getMachineLog(msg.msg);
   }
 } 
 
@@ -96,16 +95,16 @@ function machine(msg){
     jail(msg);
   }
   else if(msg.mode == "templete"){
-    templete(msg);
+    templete_main(msg);
   }
 }
 
 //送信処理
 function send(msgType,msg){
-  sendMsg.msgType = msgType
-  sendMsg.data = msg
+  sendMsg.msgType = msgType;
+  sendMsg.data = msg;
   var jsonSendMsg = JSON.stringify(sendMsg);
-  ws.send(jsonSendMsg)
+  ws.send(jsonSendMsg);
 }
 
 //切断処理
@@ -116,11 +115,12 @@ function close(no,msg){
 function getMachineLog(machineLog){
   console.log(machineLog.msgType)
   if (machineLog.msgType == "success"){   //successメッセージが届いたら、
-    jail_getList();
-    $("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/check.png")
+    reloadDB();
+    $("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/check.png");
     setTimeout(function(){
       $("#nowLoadingModal").modal("hide");
     },1500); 
+    return true;
   }
   else if(machineLog.msgType== "failed"){
     $("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/failed.png");
@@ -137,6 +137,11 @@ function getMachineLog(machineLog){
     go_bottom("nowLoadingLog");
     
   }
+}
+
+function reloadDB(){
+  templete_getList();
+  jail_getList();
 }
 
 
@@ -243,7 +248,7 @@ $(document).ready(function(){
     
     mkNowLoading.addHead(3,"新しいパッケージを追加中...");
     mkNowLoading.addBody("state1","・リポジトリからダウンロード");
-    mkNowLoading.addBody("state2","・basejailへコピー");
+    mkNowLoading.addBody("state2","・sharedfsへコピー");
     mkNowLoading.addBody("state3","・データベースへ登録");
 
     $("#newPackageModal").modal("hide");

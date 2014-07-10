@@ -23,6 +23,7 @@ class SQL
 		begin
 			@@db.execute("select * from machine;")
 		rescue SQLite3::SQLException	#machineテーブルがない場合、初期状態とみなし、各テーブルをcreateし、insertし、masterRouterを作成
+			SendMsg.status(STATUS,"report","初期起動です。初期設定を行います。")
 			@@db.execute("create table machine (id integer, name text, type integer, templete id, flavour id, comment text, jid integer);")
 			@@db.execute("create table templete(id integer, name text, pkg text);")
 			@@db.execute("create table flavour (id integer, name text);")
@@ -36,14 +37,21 @@ class SQL
 		
 			machine = {"name" => "masterRouter", "machineType" => "1", "templete" => "1", "flavour" => "0","comment" => "masterRouter" }
 	
-			s,e = Open3.capture3("mkdir #{$jails}/basejail/pkg")
-			s,e = Open3.capture3("mkdir #{$jails}/flavours/default")
-			s,e = Open3.capture3("ln -s /basejail/pkg #{$jails}/flavours/default/pkg")
-			s,e = Open3.capture3("cp /usr/local/sbin/pkg-static #{$jails}/basejail/usr/sbin/pkg-static")
-			
-			Jail.create(machine)
+	#		s,e = Open3.capture3("mkdir #{$jails}/basejail/pkg")
+	#		s,e = Open3.capture3("mkdir #{$jails}/flavours/default")
+	#		s,e = Open3.capture3("ln -s /basejail/pkg #{$jails}/flavours/default/pkg")
+	#		s,e = Open3.capture3("cp /usr/local/sbin/pkg-static #{$jails}/basejail/usr/sbin/pkg-static")
+
+	#		s,e = Open3.capture3("qjail create -f default -4 0.0.0.0 masterRouter")
+
+			puts "quagga download..."
 			Pkg.download("quagga-0.99.22.4_1")
-			Pkg.add("masterRouter","quagga-0.99.22.4_1")
+
+			Jail.create(machine)
+			Jail.start("masterRouter")
+			s,e = Open3.capture3("ln -s /sharedfs/pkg #{$jails}/masterRouter/pkg")
+
+			
 
 			tomocha=Operator.new
 			router=Router.new("masterRouter")		#tomochaを呼び、machineを作る

@@ -53,6 +53,8 @@ EM::run do
 		ws.onopen do
 			sid = @channel.subscribe{|mes| ws.send mes}
 			sql = SQL.new		#初期化
+
+			
 	
 		end
 		ws.onmessage do |message|

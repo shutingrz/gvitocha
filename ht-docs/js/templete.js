@@ -1,12 +1,12 @@
 
 //templeteへのメッセージ
-function templete(msg){
+function templete_main(msg){
   if(msg.control == "list"){
     db.run("delete from templete;")
     for(var i in msg.msg){//サーバから送られたMachineデータを全てローカルsqlに保存
-          sql("templete","insert",msg.msg[i])
+          sql("templete","insert",msg.msg[i]);
     }
-    templete_show("all")//全マシン表示
+    templete_show("all");//全マシン表示
   }
 }
 
@@ -35,8 +35,9 @@ function templete_list(id){
   }
   else{
     tmp = ((db.exec("select name from templete where id == '" + id + "'"))[0]).values[0][1];
-    return tmp
+    return tmp;
   }
+  return true;
 }
 
 function templete_getList(){

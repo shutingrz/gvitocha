@@ -8,29 +8,9 @@ class Jail
 	end
 
 	def self.main(data)
-		machineList = { }
-		sqlid = 0
-		id = 1
 
 		if(data["control"] == "select") then
-
-			if (data["id"] == "all") then
-				#マシン情報を送信,masterRouterは送らない(id != 0)
-				maxid = SQL.select("machine","maxid")
-		
-				while id <= maxid do #|id, name, type, templete, comment|
-					SQL.select("machine",id) do |id, name, type, templete, flavour, comment|
-						machineList["key#{id}"] = {"id" => id.to_s, "name" => name, "type" => type.to_s, "templete" => templete.to_s, "flavour" => flavour.to_s, "comment" => comment}
-					end
-					id += 1
-				end
-				if (machineList == {})
-					SendMsg.machine("jail","list","none")
-				else	
-					SendMsg.machine("jail","list",machineList)
-				end
-				id = 1
-			end	
+			list(data)
 
 		elsif (data["control"] == "new") then
 			machine = data["machine"] #machineを入れる
@@ -54,9 +34,9 @@ class Jail
 			#reserved
 		end
 		
-		cmdLog = mkEzjail(machine['flavour'],machine['name'])
+		cmdLog = mkQjail(machine['flavour'],machine['name'])
 		if(cmdLog == false) then
-			return false,"ezjail"
+			return false,"qjail"
 		end
 
 		start(machine['name'])
@@ -70,8 +50,9 @@ class Jail
 		templete = templete.split(";")
 		puts templete
 		templete.each do |pname|
-			puts "#{pname} adding..."
+			SendMsg.status(MACHINE,"log","#{pname} adding...")
 			Pkg.add(machine['name'], pname)		#templeteに入っている全てのpkgをインストール
+			SendMsg.status(MACHINE,"log","ok<br>")			
 		end
 		SendMsg.status(MACHINE,"report","pkg")
 		
@@ -89,7 +70,115 @@ class Jail
 		return true
 	end
 
+
 	def self.start(machine)
+		s,e = Open3.capture3("qjail start #{machine}")
+	end
+
+	def self.stop(machine)
+		s,e = Open3.capture3("qjail stop #{machine}")
+	end
+
+	def self.status(machine)
+
+	end
+
+	def self.list(data)
+		machineList = { }
+		sqlid = 0
+		id = 1
+
+		if (data["id"] == "all") then
+			#マシン情報を送信,masterRouterは送らない(id != 0)
+			maxid = SQL.select("machine","maxid")
+		
+			while id <= maxid do #|id, name, type, templete, comment|
+				SQL.select("machine",id) do |id, name, type, templete, flavour, comment|
+					machineList["key#{id}"] = {"id" => id.to_s, "name" => name, "type" => type.to_s, "templete" => templete.to_s, "flavour" => flavour.to_s, "comment" => comment}
+				end
+				id += 1
+			end
+			if (machineList == {})
+				SendMsg.machine("jail","list","none")
+			else	
+				SendMsg.machine("jail","list",machineList)
+			end
+			id = 1
+
+
+		end	
+
+	end
+
+	def self.mkEzjail(flavour,machine)
+		fname = SQL.select("flavour",flavour)
+		s,e = Open3.capture3("ezjail-admin create -f #{fname} -r #{machine} #{machine} 0.0.0.0")
+		cmdLog = Open3.capture3("ezjail-admin list|grep #{machine}")	#ezjail-admin listに載っていたら正常
+		if(cmdLog == "")
+			return false
+		end
+	end
+
+	def self.mkQjail(flavour,machine)
+		fname = SQL.select("flavour",flavour)
+		puts fname
+		cmdLog,e = Open3.capture3("qjail list")
+		s,e = Open3.capture3("qjail create -f #{fname} -4 0.0.0.0 #{machine}")
+		puts s
+		cmdLog2,e = Open3.capture3("qjail list")
+		if(cmdLog == cmdLog2)		#ダウンロード前後にlsの結果を取って、要素が同じならばダウンロードに失敗しているとわかる（ファイルが増えていない）
+			puts ("qjailerror")
+			return false
+		end
+		cmdLog,e = Open3.capture3("ln -s /sharedfs/pkg #{$jails}/#{machine}/pkg")
+	end
+
+	def self.bootcheck()
+		upjail = Array.new
+		dbjail = Array.new
+		str = Array.new
+		snum = 0
+		s,e = Open3.capture3("jls |grep #{$jails}")	#Path($jails)が含まれているものを抜き出せば最初の行を取り除ける
+
+		s.each_line do |line|
+			str = line.split(" ")
+			str.each do |sstr|
+				if (snum%4 == 2) then
+					upjail << sstr
+				end
+			snum += 1
+			end
+		end
+
+		upjail.delete_at(0)	#masterRouterを除く
+
+		dbjail = SQL.sql("select name from machine order by id asc ;")
+		dbjail.delete_at(0)
+		dbjail.delete_at(0)	#dummyとmasterRouterを除く
+
+		dbjail.each do |odbjail|
+			odbjail = odbjail[0]
+			flag = false
+			upjail.each do |oupjail|
+				if (odbjail == oupjail) then
+					flag = true
+				end
+			end
+			if (flag == true) then
+				puts "#{odbjail} is on."
+			else
+				puts "#{odbjail} is off."
+			end
+		end
+	end
+
+end
+
+
+
+=begin
+
+	def self.start_obsolute(machine)
 
 		s,e = Open3.capture3("/usr/sbin/jail -c vnet host.hostname=#{machine} name=#{machine} path=#{$jails}/#{machine} persist")
 		puts s
@@ -104,7 +193,7 @@ class Jail
 		return true
 	end
 
-	def self.stop(machine)
+	def self.stop_obsolute(machine)
 		s,e = Open3.capture3("ezjail-admin stop #{machine} ")
 		s,e = Open3.capture3("umount #{$jails}/#{machine}/dev")
 		s,e = Open3.capture3("umount #{$jails}/#{machine}/basejail")
@@ -115,17 +204,4 @@ class Jail
 		return true
 	end
 
-	def self.status(machine)
-
-	end
-
-	def self.mkEzjail(flavour,machine)
-		fname = SQL.select("flavour",flavour)
-		s,e = Open3.capture3("ezjail-admin create -f #{fname} -r #{machine} #{machine} 0.0.0.0")
-		cmdLog = Open3.capture3("ezjail-admin list|grep #{machine}")	#ezjail-admin listに載っていたら正常
-		if(cmdLog == "")
-			return false
-		end
-	end
-
-end
+=end
