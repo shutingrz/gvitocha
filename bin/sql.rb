@@ -73,6 +73,7 @@ class SQL
 	end
 
 	def self.select(mode,id=nil)
+		begin
 		if (mode == "pkg") then
 			if (id == "maxid")
 				return @@db.execute("select max(id) from pkg")[0][0]		#maxid
@@ -97,6 +98,9 @@ class SQL
 		elsif (mode == "flavour") then
 			return @@db.execute("select name from flavour where id = #{id}")[0][0]
 		end
+		rescue
+			return false
+		end
 	end
 
 	def self.insert(table,data)
@@ -110,8 +114,17 @@ class SQL
 			sql = "insert into templete(id,name,pkg) values('" + (maxid+1).to_s + "','" + data["name"] + "','" + data["pkglist"] + "');"
 		end
 
-		return @@db.execute(sql);
+		return @@db.execute(sql)
 
+	end
+
+	def self.delete(table,data)
+		
+		if(table == "machine") then
+			sql = "delete from machine where id="+ data.to_s + ";"
+		end
+
+		return @@db.execute(sql)
 	end
 
 end

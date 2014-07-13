@@ -66,10 +66,13 @@
 		</div>
 		<div id="machineProperty" class="property" >
 			PowerSwitch
-			<div class="make-switch make-switch-large">
-				<input id="powerSwitch" class="powerSwitch" type="checkbox" >
-			</div>
+			<div class="make-switch powerSwitch">
+				<label class="plabel" >
+					<input id="powerSwitch" class="pswitch" type="checkbox">
+				</label>
+			<div>
 			<hr>
+			id:<span class="id"></span>
 			<div class="name">
 				Name<br>
 				<input type="text" class="name">
@@ -104,8 +107,8 @@
 			</div>
 		  	<div class="submitType">
 				<hr>
-				<input type="button" class="modify" value="modify">
-				<input type="button" class="delete" value="delete">
+				<input type="button" id="machineModify" class="modify" value="modify">
+				<input type="button" id="machineDelete" class="delete" value="delete">
 		  	</div>
 		</div>
 	</div>
@@ -157,7 +160,7 @@
 			<div class="modal-content">
 			  <div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-				<h4 class="modal-title" id="newMachineModalTitle">パッケージの追加</h4>
+				<h4 class="modal-title" id="newPackageModalTitle">パッケージの追加</h4>
 			  </div>
 			  <div class="modal-body"> 
 				現在インストール済のパッケージ<img class="installedPkgLoading" />
@@ -185,7 +188,7 @@
 			<div class="modal-content">
 			  <div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-				<h4 class="modal-title" id="newMachineModalTitle">テンプレートの作成</h4>
+				<h4 class="modal-title" id="newTempleteModalTitle">テンプレートの作成</h4>
 			  </div>
 			  <div class="modal-body">
 				テンプレートの名前を入力し、<br>
@@ -225,6 +228,28 @@
 			  <div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal" id="nowLoadingModalCancel">キャンセル</button>
 			  </div>
+			</div><!-- /.modal-content -->
+		  </div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+
+		<!-- Confirmモーダル -->
+		<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModal" aria-hidden="true">
+		  <div class="modal-dialog">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title" id="confirmModalTitle">Confirm</h4>
+			  </div>
+			  <div class="modal-body">
+
+			  </div>
+				<div class="modal-footer">
+				<form method="post" id="confirmForm" class="confirmForm" action="javascript:void(0);">
+					<input type="hidden" class="cmd">
+					<button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
+					<button type="submit" class="btn btn-primary" id="confirmSubmitButton">OK</button>
+				</form>
+				</div>
 			</div><!-- /.modal-content -->
 		  </div><!-- /.modal-dialog -->
 		</div><!-- /.modal -->

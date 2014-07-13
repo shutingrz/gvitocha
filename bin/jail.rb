@@ -11,20 +11,26 @@ class Jail
 
 		if(data["control"] == "select") then
 			list(data)
+			return
 
 		elsif (data["control"] == "new") then
 			machine = data["machine"] #machineを入れる
 			puts "machine creating."
-			cmdLog,cause = Jail.create(machine)
+			cmdLog,cause = create(machine)
 
-			if(cmdLog == false)
-				SendMsg.status(MACHINE,"failed",cause)
-				return
-			else
-				SendMsg.status(MACHINE,"success","完了しました。")	
-			end
+		elsif (data["control"] == "delete") then
+			cmdLog,cause = delete(data["id"])
+
+
+		elsif (data["control"] == "boot") then
+			cmdLog,cause = boot(data)
 		end
 
+		if(cmdLog == false) then
+			SendMsg.status(MACHINE,"failed",cause)
+		else
+			SendMsg.status(MACHINE,"success","完了しました。")
+		end
 	end
 
 	def self.create(machine)
@@ -70,13 +76,62 @@ class Jail
 		return true
 	end
 
+	def self.delete(mid)
+		jname = ""
+		SQL.select("machine",mid) do |id,name,type,templete,flavour,comment|
+			jname = name
+		end
+	
+		cmdLog,cause = stop(jname)
+		if(cmdLog == false) then
+			return cmdLog,cause
+		end
+		s,e = Open3.capture3("qjail delete #{jname}")
+		cmdLog,e = Open3.capture3("qjail list|grep #{jname}")
+		if(cmdLog != "") then
+			return false,"削除に失敗"
+		end
+
+		s = SQL.delete("machine",mid)
+		puts s
+		return true
+	end
+
+	def self.boot(data)
+		if(data["state"] == "start") then
+			cmdLog,cause = start(data["name"])
+		else
+			cmdLog,cause = stop(data["name"])
+		end
+		
+		return cmdLog,cause
+
+	end
 
 	def self.start(machine)
 		s,e = Open3.capture3("qjail start #{machine}")
+		
+		upjail = upjail()
+		flag = false
+		upjail.each do |jail|
+			if(jail == machine) then	#upjailに存在したらtrue
+				flag = true
+			end
+		end
+		return flag,"起動に失敗"
 	end
 
 	def self.stop(machine)
 		s,e = Open3.capture3("qjail stop #{machine}")
+
+		upjail = upjail()
+		flag = true
+		upjail.each do |jail|
+			if(jail == machine) then	#upjailに存在したらfalse
+				flag = false
+			end
+		end
+		return flag,"停止に失敗"
 	end
 
 	def self.status(machine)
@@ -107,6 +162,8 @@ class Jail
 
 
 		end	
+		
+		bootcheck()
 
 	end
 
@@ -134,28 +191,17 @@ class Jail
 	end
 
 	def self.bootcheck()
-		upjail = Array.new
 		dbjail = Array.new
+		state = { }
 		str = Array.new
-		snum = 0
-		s,e = Open3.capture3("jls |grep #{$jails}")	#Path($jails)が含まれているものを抜き出せば最初の行を取り除ける
-
-		s.each_line do |line|
-			str = line.split(" ")
-			str.each do |sstr|
-				if (snum%4 == 2) then
-					upjail << sstr
-				end
-			snum += 1
-			end
-		end
-
-		upjail.delete_at(0)	#masterRouterを除く
-
+		
+		
+		upjail = upjail()
 		dbjail = SQL.sql("select name from machine order by id asc ;")
 		dbjail.delete_at(0)
 		dbjail.delete_at(0)	#dummyとmasterRouterを除く
 
+		key = 0
 		dbjail.each do |odbjail|
 			odbjail = odbjail[0]
 			flag = false
@@ -165,11 +211,33 @@ class Jail
 				end
 			end
 			if (flag == true) then
-				puts "#{odbjail} is on."
+				state["key#{key.to_s}"] = {"name" => "#{odbjail}", "state" => "1"}
 			else
-				puts "#{odbjail} is off."
+				state["key#{key.to_s}"] = {"name" => "#{odbjail}", "state" => "0"}
+			end
+			key += 1
+		end
+
+		SendMsg.machine("jail","boot",state)
+	end
+
+	def self.upjail()
+		snum = 0
+		upjail = Array.new
+		s,e = Open3.capture3("jls |grep #{$jails}")	#Path($jails)が含まれているものを抜き出せば最初の行を取り除ける
+
+		s.each_line do |line|
+			str = line.split(" ")
+			str.each do |sstr|
+				if (snum%4 == 2) then
+					upjail << sstr
+				end
+				snum += 1
 			end
 		end
+
+		upjail.delete_at(0)	#masterRouterを除く
+		return upjail
 	end
 
 end

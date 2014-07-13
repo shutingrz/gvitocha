@@ -50,4 +50,8 @@ dbjail.each do |odbjail|
 	end
 end
 
-puts state
+state.each do |stt|
+
+	SendMsg.machine("jail","boot",state)
+
+end

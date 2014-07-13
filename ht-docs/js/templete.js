@@ -2,7 +2,7 @@
 //templeteへのメッセージ
 function templete_main(msg){
   if(msg.control == "list"){
-    db.run("delete from templete;")
+    sql("templete","delete","all");
     for(var i in msg.msg){//サーバから送られたMachineデータを全てローカルsqlに保存
           sql("templete","insert",msg.msg[i]);
     }

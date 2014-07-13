@@ -12,7 +12,6 @@ class Templete
 			tmpList = {}
 			templete = select(data["id"])
 			templete.each do |tmp|
-				puts "id:#{tmp[0]}, name:#{tmp[1]}, pkg:#{tmp[2]}"
 				tmpList["key#{tmp[0]}"] = {"id" => tmp[0].to_s, "name" => tmp[1], "pkg" => tmp[2] }
 			end
 			SendMsg.machine("templete","list",tmpList)

@@ -15,6 +15,11 @@ function jail(msg){
       }
       jail_show("all")//全マシン表示
   }
+  else if(msg.control == "boot"){
+  	for(var i in msg.msg){//サーバから送られたMachineのbootstateデータを全てローカルsqlに保存
+          sql("machine","boot",msg.msg[i]);
+    }
+  }
 
 }
 
@@ -26,13 +31,40 @@ function jail_show(id){
     $("#machineList").empty();
     jails = jail_list("all")
     jails.forEach(function(jail,index){
-      $("#machineList").append($("<option>").html(jail).val(index+1)); 
+      $("#machineList").append($("<option>").html(jail[1]).val(jail[0])); 
     })
   }
   else{
     res = db.exec("select id, name from machine where id='" + id + "';")
     $("#machineList").append($("<option>").html(res[0].values[0][1]).val(res[0].values[0][0])); 
   }
+}
+
+function jail_start(jname){
+	  var data = { mode : "jail",
+               control: "boot",
+                state : "start",
+                name : jname
+              };
+
+//	console.log("jail_start:"+ name);
+	send(MACHINE,data);
+
+}
+
+function jail_sstart(jname){}
+
+function jail_sstop(jname){}
+
+function jail_stop(jname){
+	var data = { mode : "jail",
+               control: "boot",
+                state : "stop",
+                name : jname 
+              };
+//	console.log("jail_stop:"+ name);
+	send(MACHINE,data);
+
 }
 
 function jail_list(id){
@@ -42,7 +74,7 @@ function jail_list(id){
   if(id == "all"){//db内の全てのmachineを表示する
     tmp = (db.exec("select id, name from machine"))[0];    //idとnameを取得
     (tmp.values).forEach(function(value,index){ 
-      jails.push(value[1]);
+      jails.push(value);
     })
     return jails;
   }
@@ -72,8 +104,16 @@ function jail_createJail(){
                             flavour : $("#newMachineForm [name=flavour]").val(),
                             comment : $("#newMachineForm [name=comment]").val()
                           }
-              }
+              };
   send(MACHINE,data)
+}
+
+function jail_delete(jid){
+	var data = {	mode : "jail",
+								control: "delete",
+								id : jid
+							};
+	send(MACHINE,data);
 }
 
 

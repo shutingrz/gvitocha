@@ -5,32 +5,34 @@ var STATUS = 2;
 var MACHINE = 3;
 var NETWORK = 4;
 var ETC = 10;
+var RETRYTIME=5;
 
 var ws;
 var db;
+var retryCount=0;
+var myDisconnect = false;
 var sendMsg = {
   msgType : "",
   data : ""
 }
 
 function init(){
-
-  wsConnection()
-
-  db = new SQL.Database();
-  db.run("create table machine (id, name, type, templete, flavour, comment);");
-  db.run("create table templete(id, name, pkg);");
-
-  $("#powerSwitch").bootstrapSwitch();
+  wsConnection();
+   $("#powerSwitch").bootstrapSwitch('size', 'normal');
+       db = new SQL.Database();
+    db.run("create table machine (id, name, type, templete, flavour, comment, boot);");
+    db.run("create table templete(id, name, pkg);");
 
 }
 
 //WebSocket
 function wsConnection(){
   ws = new WebSocket("ws://192.168.56.103:3000");
+
     
-  //接続時
+        //接続時
   ws.onopen = function(event){
+
     status({"mode":STATUS, "msg" : {"msg" : "connected."}});
     reloadDB();
   }
@@ -39,17 +41,45 @@ function wsConnection(){
   ws.onmessage = function(event){
     //console,status,network,machine,disk,etc
     msg = $.parseJSON(event.data);
+  //  console.log("onmessage:" + msg.msgType)
       if(msg.msgType == CONSOLE) {
         vconsole(msg.data);
       }
       else if (msg.msgType == STATUS) {
         status(msg.data,'info');
       }
-      else if (msg.msgType == MACHINE) {
-        machine(msg.data);
+      else if (msg.msgType == MACHINE) {  //machine関数はpowerSwitch周りで不具合があるので封印 todo
+        if(msg.data.mode == "templete"){
+          templete_main(msg.data);
+        }
+        else if(msg.data.mode == "pkg"){
+          getPackageResult(msg.data);
+        }
+        else if(msg.data.mode == "jail"){
+          jail(msg.data);
+        }
+        else{
+          machine(msg.data);
+        }
       }
   }
-
+/*
+  if(ws.readyState != WebSocket.OPEN){
+  //  if(retryCount < RETRYTIME){
+  //    if(ws.readyState != WebSocket.OPEN){
+      if(retryCount < RETRYTIME){
+        status_status("サーバーとの接続に失敗しました。5秒後に再接続します。");
+        retryCount += 1;
+        setTimeout(function(){
+        wsConnection();
+        },1000);
+      }else{
+        status_status("再度接続するには接続ボタンを押してください。");
+        return;
+      }
+//  },700);
+    }else{
+*/
       
   //エラー時のメッセージ
   ws.onerror = function (event) {
@@ -58,9 +88,13 @@ function wsConnection(){
 
   //切断時のメッセージ
   ws.onclose = function (event) {
-    status("disconnected");
+    if(myDisconnect == true){
+      myDisconnect = false;
+    }else{
+      retryCount = 0;
+      wsConnection();
+    }
   }
-
 }
 
 //コンソールへのメッセージ
@@ -83,10 +117,17 @@ function status(msg,type){
   }
 } 
 
+function status_status(msg){
+  message = {"mode":STATUS, "msg" : {"msg" : msg}};
+  status(message);
+}
+
 //machineへのメッセージ
 function machine(msg){
   //  status(msg.key0.name)
   var row,culumn;
+
+//  console.log("machine:" + msg.mode);
 
   if (msg.mode == "pkg"){
     getPackageResult(msg);
@@ -104,25 +145,38 @@ function send(msgType,msg){
   sendMsg.msgType = msgType;
   sendMsg.data = msg;
   var jsonSendMsg = JSON.stringify(sendMsg);
+  
   ws.send(jsonSendMsg);
+
 }
 
 //切断処理
 function close(no,msg){
+  myDisconnect = true;
   ws.close(no,msg);
 }
 
 function getMachineLog(machineLog){
   console.log(machineLog.msgType)
   if (machineLog.msgType == "success"){   //successメッセージが届いたら、
+    status({"mode":STATUS, "msg" : {"msg" : machineLog.msg}});
     reloadDB();
+    if(($("#powerSwitch").bootstrapSwitch('disabled')) == true){
+      $("#powerSwitch").bootstrapSwitch('toggleDisabled');
+      $('#machineList').removeAttr('disabled');
+    }
+
     $("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/check.png");
     setTimeout(function(){
       $("#nowLoadingModal").modal("hide");
     },1500); 
-    return true;
   }
   else if(machineLog.msgType== "failed"){
+    if(($("#powerSwitch").bootstrapSwitch('disabled')) == true){
+      $("#powerSwitch").bootstrapSwitch('toggleDisabled');
+      $('#machineList').removeAttr('disabled');
+    }
+    status({"mode":STATUS, "msg" : {"msg" : machineLog.msg}});
     $("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/failed.png");
     $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='failed'>"+ machineLog.msg +"</span>");
   }
@@ -199,13 +253,41 @@ $(document).ready(function(){
 
   //接続ボタン
   $(".top .header .right .connect").click(function(){
-
+    retryCount = 0;
     wsConnection();
   });
 
   //切断ボタン
   $(".top .header .right .disconnect").click(function(){
+    retryCount = RETRYTIME;
     close(4001,"切断ボタン");
+  });
+
+
+  //machinePropertyのPowerSwitchボタン
+  $(".plabel").click(function(){
+    if(($("#powerSwitch").bootstrapSwitch('disabled')) == true){
+
+    }else{
+      $("#powerSwitch").bootstrapSwitch('toggleDisabled');
+      $('#machineList').attr('disabled', 'disabled');
+      if(($("#powerSwitch").bootstrapSwitch('state')) == true){  //falseだったものがクリックされたらtrueになるため
+        jail_start($("#machineProperty .name .name").val());
+      }
+      else{
+        jail_stop($("#machineProperty .name .name").val());
+      }
+    }
+  });
+
+  //machinePropertyのdeleteボタン
+  $("#machineDelete").click(function(){
+    confirm_addHead("マシンの削除");
+    confirm_addBody("以下のマシンを削除します。よろしいですか？");
+    confirm_addBody("・" + $("#machineProperty .name .name").val());
+    confirm_addCmd('jail_delete($("#machineProperty .id").text());');
+    confirm_show();
+  //  jail_delete($("#machineProperty .id").text());
   });
 
   //新しいマシンを作成ボタン
@@ -279,24 +361,37 @@ $(document).ready(function(){
 
   });
 
+  //ConfirmOKボタン
+  $("#confirmForm").submit(function(){
+    $("#confirmModal").modal("hide");
+  //  console.log($("#confirmForm .cmd").val());
+    eval($("#confirmForm .cmd").val());
+  });
+
 
   //フォーカスイベント
   //MachineListでmachineを選択した時
   $("#machineList").change(function(){    //プロパティにフォーカスした項目のname,machineType,commentを表示する
-    var id = ($("#machineList option:selected").val());
+    var id = $("#machineList option:selected").val();
     machine = ((db.exec("select * from machine where id == '" +id+ "'"))[0]).values[0];
+
+    if (machine[6] == "1"){
+      $('#powerSwitch').bootstrapSwitch('state', true, true);
+    }else{
+      $('#powerSwitch').bootstrapSwitch('state', false,false);
+    }    
+
+    $("#machineProperty .id").text(id);
     $("#machineProperty .name .name").val(machine[1]);
     $("#machineProperty .machineType .machineType").val(machine[2]);
 
     $("#machineProperty .templete .templete").empty();
-    templete = templete_list("all");
-    templete.forEach(function(value,index){
+    ftemplete = templete_list("all");
+    ftemplete.forEach(function(value,index){
       $("#machineProperty .templete .templete").append($("<option>").html(value).val(index));  
-    })
+    });
     $("#machineProperty .templete .templete").val(machine[3]);  
-
-
-    $("#machineProperty .machineType .templete").val(templete);
+    $("#machineProperty .machineType .templete").val(ftemplete);
     $("#machineProperty .flavour .flavour").val(machine[4]);
     $("#machineProperty .comment .comment").val(machine[5]);     
   });
@@ -311,10 +406,10 @@ $(document).ready(function(){
     machine = machine.split(";");
     machine.forEach(function(machine, index){
       $("#newMachineForm .package").append($("<option disabled>").html(machine).val(0)); 
-    })
+    });
     
 
-  })
+  });
 
   //モーダルが開いた時のイベント
   $('#newPackageModal, #newTempleteModal').on('shown.bs.modal', function() {
@@ -354,6 +449,11 @@ $(document).ready(function(){
    $("#newMachineModal .modal-dialog .modal-content .modal-body .package option").remove();
   });
 
+  $('#confirmModal').on('hidden.bs.modal', function () {
+   $("#confirmModal .modal-dialog .modal-content span").remove();
+   $("#confirmForm .cmd").empty();
+  });
+
 
 
 });
@@ -366,6 +466,11 @@ function go_bottom(targetId){
   var obj = document.getElementById(targetId);
   if(!obj) return;
   obj.scrollTop = obj.scrollHeight;
+}
+
+//eval
+function cmdEval(str){
+  eval(str);
 }
 
 //nowLoadingを形成する
@@ -389,4 +494,20 @@ function mkNowLoading_show(){
   $("#nowLoadingModal").modal("show");
 }
 
+//Confirmを形成する
+function confirm_addHead(str){
+  $("#confirmModal .modal-dialog .modal-content .modal-header").append("<span>" + str + "</span>");
+}
+
+function confirm_addBody(str){
+  $("#confirmModal .modal-dialog .modal-content .modal-body").append("<span class='br'>" + str + "</span>");
+}
+
+function confirm_addCmd(str){
+  $("#confirmForm .cmd").val(str);
+}
+
+function confirm_show(){
+  $("#confirmModal").modal("show");
+}
 
