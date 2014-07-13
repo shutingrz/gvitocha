@@ -206,7 +206,7 @@ class Jail
 			odbjail = odbjail[0]
 			flag = false
 			upjail.each do |oupjail|
-				if (odbjail == oupjail) then
+				if (odbjail == oupjail.chomp) then
 					flag = true
 				end
 			end
@@ -230,6 +230,7 @@ class Jail
 			str = line.split(" ")
 			str.each do |sstr|
 				if (snum%4 == 2) then
+					puts "'#{sstr}'"
 					upjail << sstr
 				end
 				snum += 1
