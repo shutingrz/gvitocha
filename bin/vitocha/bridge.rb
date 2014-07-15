@@ -75,10 +75,11 @@ class Bridge < Equipment
      sh.transact{
        ifnames=jexec(jname,"ifconfig -l").to_s.split(" ").select{|item| item =~ /epair.*/}
        ifnames.each{|epair| ifconfig("#{epair} -vnet #{jname}")}
-       umt_nullfs(jname)
-       jail("-r",jname)
-       umt_devfs(jname)
+  #     umt_nullfs(jname)
+  #     jail("-r",jname)
+  #     umt_devfs(jname)
      }
+
   end
 
   def connect(epair)

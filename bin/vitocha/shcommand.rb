@@ -75,3 +75,4 @@ end
 def umt_nullfs(path)
   umount("#{$jails}/#{path}/basejail")
 end
+

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+require 'open3'
 
 class Jail
 
@@ -115,6 +116,8 @@ class Jail
 		flag = false
 		upjail.each do |jail|
 			if(jail == machine) then	#upjailに存在したらtrue
+				s,e = Open3.capture3("jail -m name=#{machine} devfs_ruleset=5")
+				s,e = Open3.capture3("jail -m name=#{machine} allow.raw_sockets=1")
 				flag = true
 			end
 		end
@@ -163,7 +166,15 @@ class Jail
 
 		end	
 		
-		bootcheck()
+		state = { }
+		key = 0
+		bootcheck().each do |data|
+			state["key#{key.to_s}"] = {"name" => data[0], "state" => data[1]}
+	#		puts data[0]
+			key += 1
+		end
+
+		SendMsg.machine("jail","boot",state)
 
 	end
 
@@ -191,15 +202,13 @@ class Jail
 	end
 
 	def self.bootcheck()
-		dbjail = Array.new
-		state = { }
+		state = Array.new
 		str = Array.new
 		
 		
 		upjail = upjail()
-		dbjail = SQL.sql("select name from machine order by id asc ;")
-		dbjail.delete_at(0)
-		dbjail.delete_at(0)	#dummyとmasterRouterを除く
+		dbjail = dbjail()
+		dbjail.delete_at(0)	#masterRouterを除く
 
 		key = 0
 		dbjail.each do |odbjail|
@@ -211,14 +220,14 @@ class Jail
 				end
 			end
 			if (flag == true) then
-				state["key#{key.to_s}"] = {"name" => "#{odbjail}", "state" => "1"}
+				state << [odbjail,"1"]
 			else
-				state["key#{key.to_s}"] = {"name" => "#{odbjail}", "state" => "0"}
+				state << [odbjail,"0"]
 			end
 			key += 1
 		end
 
-		SendMsg.machine("jail","boot",state)
+		return state
 	end
 
 	def self.upjail()
@@ -230,7 +239,6 @@ class Jail
 			str = line.split(" ")
 			str.each do |sstr|
 				if (snum%4 == 2) then
-					puts "'#{sstr}'"
 					upjail << sstr
 				end
 				snum += 1
@@ -239,6 +247,14 @@ class Jail
 
 		upjail.delete_at(0)	#masterRouterを除く
 		return upjail
+	end
+
+	def self.dbjail()
+		dbjail = Array.new
+		dbjail = SQL.sql("select name from machine order by id asc ;")
+		dbjail.delete_at(0)
+
+		return dbjail
 	end
 
 end

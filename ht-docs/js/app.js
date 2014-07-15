@@ -16,12 +16,13 @@ var sendMsg = {
   data : ""
 }
 
+db = new SQL.Database();
+db.run("create table machine (id, name, type, templete, flavour, comment, boot);");
+db.run("create table templete(id, name, pkg);");
+
 function init(){
   wsConnection();
    $("#powerSwitch").bootstrapSwitch('size', 'normal');
-       db = new SQL.Database();
-    db.run("create table machine (id, name, type, templete, flavour, comment, boot);");
-    db.run("create table templete(id, name, pkg);");
 
 }
 
@@ -432,6 +433,7 @@ $(document).ready(function(){
     $("#pkgCheckBox").empty();
     $("#packageSearchForm .searchText").val("");
     $("#templeteCreateForm .name").val("");
+    reloadDB();
     
   });
 

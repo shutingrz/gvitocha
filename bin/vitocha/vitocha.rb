@@ -211,6 +211,18 @@ class Operator
     return @diag
   end
 
+  def save(path)
+    File::open(path,"w") do |f|
+      f.puts @daicho
+    end
+  end
+
+  def load(path)
+    @daicho = {}
+    @daicho = eval(File.open(path).read)
+  end
+
+
   attr_accessor :epairnum
   attr_accessor :daicho
 end

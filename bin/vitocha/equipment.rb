@@ -32,6 +32,7 @@ class Equipment
   def initialize(jailname)
     @name=jailname
     @epairs=[]
+=begin
     sh=Shell.new
     sh.transact{
       if jls("host.hostname").to_a.index("#{jailname}\n")==nil
@@ -39,9 +40,10 @@ class Equipment
         mt_devfs(jailname)
         mt_nullfs(jailname)
         jexec(jailname,"ifconfig lo0 127.0.0.1/24 up")
-        jexec(jailname,"ipfw add allow ip from any to any")
+        jexec(jailname,"ipfw add allow ip from any to any")   #ここ後で使うかも
       end
     }
+=end
   end
 
   def destroy
@@ -62,6 +64,7 @@ class Equipment
         ifconfig("#{bridge} -vnet #{jname}")
         ifconfig("#{bridge} destroy")
       }
+=begin
       puts "do umount_nullfs #{jname}"
       umt_nullfs(jname)
       puts "done umount_nullfs #{jname}"
@@ -69,6 +72,7 @@ class Equipment
       puts "do umount_devfs #{jname}"
       umt_devfs(jname)
       puts "done umount_devfs #{jname}"
+=end
      }
   end
 
