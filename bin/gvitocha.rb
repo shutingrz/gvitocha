@@ -45,7 +45,6 @@ $channel
 Process.daemon(nochdir=true) if ARGV[0] == "-D"
 @channel = EM::Channel.new
 $channel = @channel
-sql = SQL.new		#初期化
 
 Open3.capture3("qjail start masterRouter")
 
@@ -55,6 +54,8 @@ EM::run do
 		$ws = ws
 		ws.onopen do
 			sid = @channel.subscribe{|mes| ws.send mes}
+			sql = SQL.new		#初期化
+
 
 
 	

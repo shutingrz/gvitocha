@@ -1,11 +1,13 @@
 #!/usr/local/bin/ruby
 
 require './vitocha/vitocha.rb'
+require './jail.rb'
 
 tomocha=Operator.new
 
 $jails = "/usr/jails"
 daichoPath = $jails + "/daicho.dat"
+dBootPath = $jails + "/daicho.boot"
 
 #create switch
 switchNAME = "switch"
@@ -19,7 +21,11 @@ epairaMASK = "255.255.255.0"
 
 ifconfig(epaira + " inet " + epairaIP + " netmask " + epairaMASK)
 ifconfig(epaira + " up")
+tomocha.register(epaira,"_host_",epairaIP,epairaMASK)
+
 switch.connect(epairb)
+tomocha.register(epairb,switchNAME,"switch","")
+#tomocha.connect(switch,epairb)
 switch.up(epairb)
 
 
@@ -35,6 +41,8 @@ server.assignip(epaira,epairaIP,epairaMASK)
 tomocha.register(epaira,serverNAME,epairaIP,epairaMASK)
 server.up(epaira)
 switch.connect(epairb)
+tomocha.register(epairb,switchNAME,"switch","")
+#tomocha.connect(switch,epairb)
 switch.up(epairb)
 
 #create server02
@@ -49,9 +57,12 @@ server.assignip(epaira,epairaIP,epairaMASK)
 tomocha.register(epaira,serverNAME,epairaIP,epairaMASK)
 server.up(epaira)
 switch.connect(epairb)
+tomocha.register(epairb,switchNAME,"switch","")
+#tomocha.connect(switch,epairb)
 switch.up(epairb)
 
 tomocha.save(daichoPath)
+Jail.save(dBootPath)
 
 =begin
 #いつもの３点セットを作成

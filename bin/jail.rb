@@ -208,6 +208,8 @@ class Jail
 		
 		upjail = upjail()
 		dbjail = dbjail()
+
+		upjail.delete_at(0)
 		dbjail.delete_at(0)	#masterRouterを除く
 
 		key = 0
@@ -245,7 +247,7 @@ class Jail
 			end
 		end
 
-		upjail.delete_at(0)	#masterRouterを除く
+	#	upjail.delete_at(0)	#masterRouterを除く
 		return upjail
 	end
 
@@ -255,6 +257,22 @@ class Jail
 		dbjail.delete_at(0)
 
 		return dbjail
+	end
+
+	def self.save(path)
+		upjail = upjail()
+		File::open(path,"w") do |f|
+			upjail.each do |ujail|
+    			f.puts ujail
+    		end
+    	end
+    end
+
+    def self.load(path)
+		ujail = File.open(path).read
+		ujail.each_line do |jail|
+			start(jail)
+		end
 	end
 
 end

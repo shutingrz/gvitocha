@@ -46,6 +46,7 @@
 # operator.down(obj,epair) : ifconfig down
 # operator.gendiag : generate a code for nwdiag
 
+require 'open3'
 require 'shell'
 require File.expand_path(File.dirname(__FILE__) + '/shcommand')
 require File.expand_path(File.dirname(__FILE__) + '/equipment')
@@ -112,7 +113,7 @@ class Operator
   end
 
   def connect(obj,epair)
-    eval("$#{obj}.connect('#{epair}')")
+    eval("#{obj}.connect('#{epair}')")
     @daicho[epair.to_sym]=[obj,"",""]
     puts "#{epair} is connected to #{obj}"
   end

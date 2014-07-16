@@ -40,6 +40,7 @@ class Bridge < Equipment
 
   def initialize(jailname)
     super
+=begin
     sh=Shell.new
     sh.transact{
 #      if jls("host.hostname").to_a.index("#{jailname}\n")==nil
@@ -50,6 +51,28 @@ class Bridge < Equipment
         jexec(jailname,"ifconfig vbridge0 up")
 #      end
     }
+=end
+  end
+
+  def create(jailname)
+    sh=Shell.new
+    sh.transact{
+        bridgename=ifconfig("bridge create").to_s
+        ifconfig("#{bridgename} vnet #{jailname}")
+        # Naming "vbridge0" for the bridge interface
+        jexec(jailname,"ifconfig #{bridgename} name vbridge0")
+        jexec(jailname,"ifconfig vbridge0 up")
+#      end
+    }
+  end
+
+  def find
+    s,e = Open3.capture3("jexec switch ifconfig vbridge0")
+    if (e.include?("does not exist")) then
+      return false
+    else
+      return true
+    end
   end
 
   def on

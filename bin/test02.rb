@@ -3,12 +3,29 @@
 require './vitocha/vitocha.rb'
 require './jail.rb'
 require './sql.rb'
+require 'open3'
 
 $jails = "/usr/jails"
+dBootPath = $jails + "/daicho.boot"
+daichoPath = $jails + "/daicho.dat"
 #tomocha=Operator.new
-sql = SQL.new		#初期化
+#sql = SQL.new		#初期化
 
-puts Jail.dbjail()
+tomocha = Operator.new
+res = ""
+
+s,e = Open3.capture3("jexec switch ifconfig vbridge10")
+
+
+if (e.include?("does not exist")) then
+	puts "does not exist"
+else
+	puts "exist"
+end
+
+
+
+#puts Jail.save(dBootPath)
 
 
 =begin
