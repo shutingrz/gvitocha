@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>D3.jsのひな形</title>
+<script src="./js/lib/d3.js"></script>
+<script src="./js/diagram.js"></script>
+<style>
+
+
+
+.link {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+
+.node circle {
+  fill: #ccc;
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+text {
+  font: 10px sans-serif;
+  pointer-events: none;
+}
+
+
+</style>
+</head>
+<body onload="diagram();">
+<div class="diagram" id="diagram"></div>
+</body>
+</html>
+

@@ -53,12 +53,10 @@ EM::run do
 	#start network then connect to client
 		$ws = ws
 		ws.onopen do
-			sid = @channel.subscribe{|mes| ws.send mes}
-			sql = SQL.new		#初期化
-
-
-
-	
+			EventMachine::defer do
+				sid = @channel.subscribe{|mes| ws.send mes}
+				sql = SQL.new		#初期化
+			end	
 		end
 		ws.onmessage do |message|
 			EventMachine::defer do

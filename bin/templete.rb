@@ -28,6 +28,7 @@ class Templete
 	def self.select(id)
 		templete = Array.new
 		if(id == "all") then
+			maxid = 0
 			maxid = SQL.select("templete","maxid")
 			num = 0
 			while (num <= maxid) do 

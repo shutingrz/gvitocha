@@ -23,7 +23,7 @@ db.run("create table templete(id, name, pkg);");
 function init(){
   wsConnection();
    $("#powerSwitch").bootstrapSwitch('size', 'normal');
-
+   diagram();
 }
 
 //WebSocket
@@ -195,8 +195,8 @@ function getMachineLog(machineLog){
 }
 
 function reloadDB(){
-  templete_getList();
   jail_getList();
+  templete_getList();
 }
 
 

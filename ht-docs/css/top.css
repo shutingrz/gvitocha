@@ -19,10 +19,11 @@ div.top div.header div.right{
 	text-align : right;
 }
 
+
 div.top div.console{
 	clear :both;
 	width : 50%;
-	height : 60%;
+	height : 20%;
 	float : left;
 	border-right : 1px solid;
 }
@@ -41,7 +42,7 @@ div.top div.console{
 div.top div.status{
 	float : right;
 	width : 49%;
-	height : 60%;
+	height : 20%;
 	margin-right : auto;
 }
 #statxt{
@@ -64,14 +65,13 @@ div.top div.status{
 
 div.network{
 	clear : both;
-	height : 200px;
-	border : 1px solid;
+	height : 50%;
 }
 
 div.machine{
 	clear : both;
 	border : 1px solid;
-	height : 70%;
+	height : 30%;
 }
 
 .machine .machineList{
@@ -123,16 +123,6 @@ div.machine{
 
 
 
-
-div.disk{
-	clear : both;
-	border : 1px solid;
-	height : 200px;
-}
-
-div.test{
-
-}
 span.br{
 	display:block;
 }
@@ -156,4 +146,32 @@ img.minimumNowloadingIcon{
 
 }
 
+#diagram{
+	width : 95%;
+	height : 95%;
+}
+
+svg .connected {
+   fill: limegreen;
+   stroke: green;
+   stroke-width: 5;
+}
+
+
+.link {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+
+.node circle {
+  fill: #ccc;
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+text {
+  font: 10px sans-serif;
+  pointer-events: none;
+}
 

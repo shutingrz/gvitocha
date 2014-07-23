@@ -52,7 +52,7 @@ class SQL
 			s,e = Open3.capture3("ln -s /sharedfs/pkg #{$jails}/masterRouter/pkg")
 
 			
-
+=begin
 			tomocha=Operator.new
 			router=Router.new("masterRouter")		#tomochaを呼び、machineを作る
 
@@ -61,6 +61,7 @@ class SQL
 			router.connect(epairb) # connect to realhost
 			router.up(epairb)
 			router.start("quagga")
+=end
 		end		
   	end
 

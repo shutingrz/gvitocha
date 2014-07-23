@@ -12,20 +12,42 @@ dBootPath = $jails + "/daicho.boot"
 #create switch
 switchNAME = "switch"
 switch=Bridge.new(switchNAME)
+switch.create(switchNAME)
 switch.on
 
-#hostjail connect switch
+
+
+#hostjail connect masterRouter
 epaira, epairb = tomocha.createpair
-epairaIP = "192.168.20.1"
+epairaIP = "10.254.254.1"
 epairaMASK = "255.255.255.0"
 
 ifconfig(epaira + " inet " + epairaIP + " netmask " + epairaMASK)
 ifconfig(epaira + " up")
 tomocha.register(epaira,"_host_",epairaIP,epairaMASK)
 
+#masterRouter to hostjail
+serverNAME = "masterRouter"
+epairbIP = "10.254.254.2"
+epairbMASK = "255.255.255.0"
+
+router = Router.new(serverNAME)
+router.connect(epairb)
+router.assignip(epairb,epairbIP,epairbMASK)
+tomocha.register(epairb,serverNAME,epairbIP,epairbMASK)
+router.up(epairb)
+
+#masterRouter to jails
+epairaIP = "192.168.20.1"
+epairaMASK = "255.255.255.0"
+
+epaira, epairb = tomocha.createpair
+router.connect(epaira)
+router.assignip(epaira,epairaIP,epairaMASK)
+tomocha.register(epaira,serverNAME,epairaIP,epairaMASK)
+router.up(epaira)
 switch.connect(epairb)
 tomocha.register(epairb,switchNAME,"switch","")
-#tomocha.connect(switch,epairb)
 switch.up(epairb)
 
 
