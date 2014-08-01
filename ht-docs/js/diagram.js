@@ -1,43 +1,46 @@
 
 var jailset_nodes_mod = [
-      {id:1,name:"masterRouter",type:1,templete:0,flavour:0,comment:""},
+      {id:0,name:"masterRouter",type:1,templete:0,flavour:0,comment:""},
       {id:1,name:"switch",type:2,templete:0,flavour:0,comment:""},
-      {id:1,name:"server01",type:0,templete:0,flavour:0,comment:""},
-      {id:1,name:"server02",type:0,templete:0,flavour:0,comment:""}
+      {id:2,name:"server01",type:0,templete:0,flavour:0,comment:""},
+      {id:3,name:"server02",type:0,templete:0,flavour:0,comment:""}
 ];
-
+/*
 var jailset_links_mod = [
-//    {source : 0, target : 1, sname : "masterRouter", tname : "switch"/*, ipaddr : "switch", ipmask : "", ip6addr : "", ip6mask : "", as : ""*/}, 
-//    {source : 2, target : 1, sname : "server01", tname : "switch"/*, ipaddr : "switch", ipmask : "", ip6addr : "", ip6mask : "", as : ""*/}, 
-//    {source : 3, target : 1, sname : "server02", tname : "switch"/*, ipaddr : "switch", ipmask : "", ip6addr : "", ip6mask : "", as : ""*/}
+    {source : 0, target : 1}, 
+    {source : 2, target : 3}, 
+    {source : 3, target : 1}
+//    {source : "masterRouter", target : "switch", ipaddr : "switch", ipmask : "", ip6addr : "", ip6mask : "", as : ""}, 
+//    {source : "server01", target : "switch", ipaddr : "switch", ipmask : "", ip6addr : "", ip6mask : "", as : ""}, 
+//    {source : "server02", target : "switch", ipaddr : "switch", ipmask : "", ip6addr : "", ip6mask : "", as : ""}
+
+  ];  
+*/
+var jailset_links_name = [
     {source : "masterRouter", target : "switch"/*, ipaddr : "switch", ipmask : "", ip6addr : "", ip6mask : "", as : ""*/}, 
-    {source : "server01", target : "switch"/*, ipaddr : "switch", ipmask : "", ip6addr : "", ip6mask : "", as : ""*/}, 
+    {source : "server01", target : "server02"/*, ipaddr : "switch", ipmask : "", ip6addr : "", ip6mask : "", as : ""*/}, 
     {source : "server02", target : "switch"/*, ipaddr : "switch", ipmask : "", ip6addr : "", ip6mask : "", as : ""*/}
 
   ];  
 
-function diagram (){
+var jailset_links_mod = [];
+
+//function diagram (){
 
 
 var width = 960;
 var height = 500;
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select(".diagram").append("svg")
   .attr("width", width)
-  .attr("height", height)
+  .attr("height", height);
 
-var node;
-var link;
+var link = svg.selectAll(".link");
+var node = svg.selectAll(".node");
 
-var force = d3.layout.force()
-//  .nodes(jailset_nodes_mod)
-//  .links(edges)
-  .nodes(jailset_nodes_mod)
-  .links(jailset_links_mod)
-  .charge(-200)
-  .linkDistance(50)
-  .size([width, height])
-  .on("tick", tick);
+var force;
+
+
 
 function tick() {
     link = svg.selectAll(".link");
@@ -65,14 +68,48 @@ function mouseout() {
 }
 
 function clickcircle(d){
-  delNodeB(d.name);
+  delNode(d.name);
+  update();
+}
+
+
+function addNode(){
+    var nodeE = {id: "e"};
+    nodes.push(nodeE);
+    var nA = nodes.filter(function(n) { return n.id === 'a'; })[0];
+    var linkAE = {source: nA , target: nodeE};
+    links.push(linkAE);
+    update();
 }
 
 
 
+
+
 function update() {
+//  jailset_links_mod = [];
+
+  createLinkDiag();
+  console.log(jailset_links_mod)
+  
+  svg.remove();
+  svg = d3.select(".diagram").append("svg")
+  .attr("width", width)
+  .attr("height", height);
+
+
   link = svg.selectAll(".link").remove();
   node = svg.selectAll(".node").remove();
+
+  force = d3.layout.force()
+//  .nodes(jailset_nodes_mod)
+//  .links(edges)
+  .nodes(jailset_nodes_mod)
+  .links(jailset_links_mod)
+  .charge(-200)
+  .linkDistance(50)
+  .size([width, height])
+  .on("tick", tick);
 
   link = svg.selectAll(".link")
   //.data(jailset_links_mod)
@@ -111,29 +148,49 @@ function update() {
     .attr("dy", ".35em")
     .text(function(d) { return d.name; });
 
-//    node.remove(); //要らなくなった要素を削除
 
    force.start(); //forceグラグの描画を開始
 }
 
-function delNodeB(name) {
+
+
+function delNode(name) {
+  console.log(jailset_nodes_mod.filter(function(n) { return n.name !== name; }));
+  console.log(jailset_links_name.filter(function(l) { return (l.source !== name && l.target !== name); }));
     jailset_nodes_mod = jailset_nodes_mod.filter(function(n) { return n.name !== name; });
-    jailset_links_mod = jailset_links_mod.filter(function(l) { return (l.sname !== name && l.tname !== name); });
-    update();
+    jailset_links_name = jailset_links_name.filter(function(l) { return (l.source !== name && l.target !== name); });
 }
 
-function addNodeE(){
-    var nodeE = {id: "e"};
-    nodes.push(nodeE);
-    var nA = nodes.filter(function(n) { return n.id === 'a'; })[0];
-    var linkAE = {source: nA , target: nodeE};
-    links.push(linkAE);
-    update();
+function selectNode(name){
+
+  jailset_nodes_mod.forEach(function(values,index){
+ //   console.log(values.name);
+    if(name == values.name){
+      console.log(index);
+    }
+  });
 }
 
-update();
+function createLinkDiag(){
+  var source,target;
+//  jailset_links_mod = [];
+  jailset_links_name.forEach(function(lvalues,lindex){
+    jailset_nodes_mod.forEach(function(nvalues,nindex){
+      if(lvalues.source == nvalues.name){
+        source = nindex;
+      }
+      if(lvalues.target == nvalues.name){
+        target = nindex;
+      }
+    });
+    console.log("source:" + source + ",target:",+target);
+    jailset_links_mod.push({source : source, target : target});
+  });
 }
 
+function init(){
+  update();
+}
 
 //var nodes = {};
 /*
