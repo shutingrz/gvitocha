@@ -20,7 +20,7 @@ class Jail
 			cmdLog,cause = create(machine)
 
 		elsif (data["control"] == "delete") then
-			cmdLog,cause = delete(data["id"])
+			cmdLog,cause = delete(data["name"])
 
 
 		elsif (data["control"] == "boot") then
@@ -77,11 +77,11 @@ class Jail
 		return true
 	end
 
-	def self.delete(mid)
+	def self.delete(name)
 		jname = ""
-		SQL.select("machine",mid) do |id,name,type,templete,flavour,comment|
+		#SQL.select("machine",name) do |id,name,type,templete,flavour,comment|
 			jname = name
-		end
+		#end
 	
 		cmdLog,cause = stop(jname)
 		if(cmdLog == false) then
@@ -93,7 +93,7 @@ class Jail
 			return false,"削除に失敗"
 		end
 
-		s = SQL.delete("machine",mid)
+		s = SQL.delete("machine",jname)
 		puts s
 		return true
 	end
@@ -144,18 +144,16 @@ class Jail
 	def self.list(data)
 		machineList = { }
 		sqlid = 0
-		id = 1
+		id = 0 #マシン情報を送信,masterRouterも送る(id == 0)
 
 		if (data["id"] == "all") then
-			#マシン情報を送信,masterRouterは送らない(id != 0)
-			maxid = SQL.select("machine","maxid")
-		
-			while id <= maxid do #|id, name, type, templete, comment|
-				SQL.select("machine",id) do |id, name, type, templete, flavour, comment|
-					machineList["key#{id}"] = {"id" => id.to_s, "name" => name, "type" => type.to_s, "templete" => templete.to_s, "flavour" => flavour.to_s, "comment" => comment}
-				end
-				id += 1
+
+			machine = SQL.select("machine","all")
+			machine.delete_at(0)
+			machine.each do |value|
+				machineList["key#{value[0]}"] = {"id" => value[0].to_s, "name" => value[1], "type" => value[2].to_s, "templete" => value[3].to_s, "flavour" => value[4].to_s, "comment" => value[5]}
 			end
+
 			if (machineList == {})
 				SendMsg.machine("jail","list","none")
 			else	
@@ -209,8 +207,8 @@ class Jail
 		upjail = upjail()
 		dbjail = dbjail()
 
-		upjail.delete_at(0)
-		dbjail.delete_at(0)	#masterRouterを除く
+	#	upjail.delete_at(0)
+	#	dbjail.delete_at(0)	#masterRouterを除く <=2014.08.27 除かないようにした(クライアントでもmasterRouterの操作ができるようにするため)
 
 		key = 0
 		dbjail.each do |odbjail|

@@ -2,7 +2,8 @@
 function jail(msg){
   if(msg.control == "list"){
       $("#machineList option").remove();
-      sql("machine","delete","all")
+  //    sql("machine","delete","all")
+      db_machine("delete","all");
 
       if (msg.msg == "none"){
         return
@@ -10,14 +11,16 @@ function jail(msg){
       } 
       else{
         for(var i in msg.msg){//サーバから送られたMachineデータを全てローカルsqlに保存
-          sql("machine","insert",msg.msg[i])
+      //    sql("machine","insert",msg.msg[i]);
+          db("machine","insert",msg.msg[i]);
         }
       }
       jail_show("all")//全マシン表示
   }
   else if(msg.control == "boot"){
   	for(var i in msg.msg){//サーバから送られたMachineのbootstateデータを全てローカルsqlに保存
-          sql("machine","boot",msg.msg[i]);
+        //  sql("machine","boot",msg.msg[i]);
+          db("machine","boot",msg.msg[i]);
     }
   }
 
@@ -25,18 +28,19 @@ function jail(msg){
 
 
 //db内の指定されたidのmachineを表示する
-function jail_show(id){
+function jail_show(name){
 
-  if(id == "all"){//db内の全てのmachineを表示する
+  if(name == "all"){//db内の全てのmachineを表示する
     $("#machineList").empty();
     jails = jail_list("all")
     jails.forEach(function(jail,index){
-      $("#machineList").append($("<option>").html(jail[1]).val(jail[0])); 
+      $("#machineList").append($("<option>").html(jail.name).val(jail.name)); 
     })
   }
   else{
-    res = db.exec("select id, name from machine where id='" + id + "';")
-    $("#machineList").append($("<option>").html(res[0].values[0][1]).val(res[0].values[0][0])); 
+  //  res = db.exec("select id, name from machine where id='" + id + "';")
+    res = db_machine("select",name);
+    $("#machineList").append($("<option>").html(res.name).val(res.name)); 
   }
 }
 
@@ -72,26 +76,14 @@ function jail_list(id){
   var jails = [];
 
   if(id == "all"){//db内の全てのmachineを表示する
-    tmp = (db.exec("select id, name from machine"))[0];    //idとnameを取得
-    (tmp.values).forEach(function(value,index){ 
+    tmp = db_machine("select","all");
+    tmp.forEach(function(value,index){ 
       jails.push(value);
     })
+    jails.splice(0,1);    //_host_を除く
     return jails;
   }
 }
-
-/*  取得したデータの全てを表示
-  res = db.exec("select * from machine")
-  console.log(res)
-  culumn = res[0].columns.length                 //列数取得
-  row = db.exec("select count(*) from machine")   //行数取得
-  row = row[0].values[0][0]
-  for (var i=0 ; i<row ; i++){
-    for(var j=0 ; j<culumn; j++){
-      status(res[0].columns[j] + ":" + res[0].values[i][j])
-    }
-  }
-*/
 
 //新規マシン情報送信
 function jail_createJail(){
@@ -108,10 +100,10 @@ function jail_createJail(){
   send(MACHINE,data)
 }
 
-function jail_delete(jid){
+function jail_delete(name){
 	var data = {	mode : "jail",
 								control: "delete",
-								id : jid
+								name : name
 							};
 	send(MACHINE,data);
 }

@@ -90,7 +90,9 @@ class SQL
 			end
 
 		elsif (mode == "machine") then
-			if (id == "maxid")
+			if (id == "all")
+				return @@db.execute("select id, name, type, templete, flavour, comment from machine")
+			elsif (id == "maxid")
 				return @@db.execute("select max(id) from machine")[0][0]		#maxid
 			else
 				machine = @@db.execute("select id, name, type, templete, flavour, comment from machine where id=" + id.to_s + ";")[0]
@@ -122,8 +124,10 @@ class SQL
 	def self.delete(table,data)
 		
 		if(table == "machine") then
-			sql = "delete from machine where id="+ data.to_s + ";"
+			sql = "delete from machine where name='"+ data + "';"
 		end
+
+	#	puts sql
 
 		return @@db.execute(sql)
 	end

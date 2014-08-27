@@ -8,22 +8,24 @@ var ETC = 10;
 var RETRYTIME=5;
 
 var ws;
-var db;
+//var sdb;
 var retryCount=0;
 var myDisconnect = false;
 var sendMsg = {
   msgType : "",
   data : ""
 }
-
-db = new SQL.Database();
-db.run("create table machine (id, name, type, templete, flavour, comment, boot);");
-db.run("create table templete(id, name, pkg);");
+var machineDB = [{name:"_host_", type:"1", templete:"0", flavour:"0",comment:"host Machine",boot:"1"}];
+var templeteDB = [];
+var flavorDB = [];
 
 function init(){
+//  sdb = new SQL.Database();
+//  sdb.run("create table machine (id, name, type, templete, flavour, comment, boot);");
+//  sdb.run("create table templete(id, name, pkg);");
   wsConnection();
    $("#powerSwitch").bootstrapSwitch('size', 'normal');
-   diagram();
+ //  diagram();
 }
 
 //WebSocket
@@ -62,6 +64,9 @@ function wsConnection(){
         else{
           machine(msg.data);
         }
+      }
+      else if(msg.msgType == NETWORK){
+        diag(msg.data);
       }
   }
 /*
@@ -286,7 +291,7 @@ $(document).ready(function(){
     confirm_addHead("マシンの削除");
     confirm_addBody("以下のマシンを削除します。よろしいですか？");
     confirm_addBody("・" + $("#machineProperty .name .name").val());
-    confirm_addCmd('jail_delete($("#machineProperty .id").text());');
+    confirm_addCmd('jail_delete($("#machineProperty .name .name").val());');
     confirm_show();
   //  jail_delete($("#machineProperty .id").text());
   });
@@ -373,40 +378,42 @@ $(document).ready(function(){
   //フォーカスイベント
   //MachineListでmachineを選択した時
   $("#machineList").change(function(){    //プロパティにフォーカスした項目のname,machineType,commentを表示する
-    var id = $("#machineList option:selected").val();
-    machine = ((db.exec("select * from machine where id == '" +id+ "'"))[0]).values[0];
+  //  var id = $("#machineList option:selected").val();
+    var name = $("#machineList option:selected").text();
+  //  machine = ((sdb.exec("select * from machine where id == '" +id+ "'"))[0]).values[0];
+    machine = db_machine("select",name);
 
-    if (machine[6] == "1"){
+    if (machine.boot == "1"){
       $('#powerSwitch').bootstrapSwitch('state', true, true);
     }else{
       $('#powerSwitch').bootstrapSwitch('state', false,false);
     }    
 
-    $("#machineProperty .id").text(id);
-    $("#machineProperty .name .name").val(machine[1]);
-    $("#machineProperty .machineType .machineType").val(machine[2]);
+  //  $("#machineProperty .id").text(id);
+    $("#machineProperty .name .name").val(machine.name);
+    $("#machineProperty .machineType .machineType").val(machine.type);
 
     $("#machineProperty .templete .templete").empty();
     ftemplete = templete_list("all");
     ftemplete.forEach(function(value,index){
       $("#machineProperty .templete .templete").append($("<option>").html(value).val(index));  
     });
-    $("#machineProperty .templete .templete").val(machine[3]);  
+    $("#machineProperty .templete .templete").val(machine.templete);  
     $("#machineProperty .machineType .templete").val(ftemplete);
-    $("#machineProperty .flavour .flavour").val(machine[4]);
-    $("#machineProperty .comment .comment").val(machine[5]);     
+    $("#machineProperty .flavour .flavour").val(machine.flavour);
+    $("#machineProperty .comment .comment").val(machine.comment);     
   });
 
 
   //newMachineFormでtempleteを選択した時
   $("#newMachineForm .templete").change(function(){
-    var machine;
-    var id = ($("#newMachineForm .templete option:selected").val());
+    var pkg;
+    var name = ($("#newMachineForm .templete option:selected").text());
     $("#newMachineForm .package").empty();
-    machine = (db.exec("select pkg from templete where id == '" +id+ "'"))[0].values[0][0];
-    machine = machine.split(";");
-    machine.forEach(function(machine, index){
-      $("#newMachineForm .package").append($("<option disabled>").html(machine).val(0)); 
+    pkg = (db_templete("select",name)).pkg;
+    pkg = pkg.split(";");
+    pkg.forEach(function(pkg, index){
+      $("#newMachineForm .package").append($("<option disabled>").html(pkg).val(0)); 
     });
     
 

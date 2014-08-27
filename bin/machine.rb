@@ -1,7 +1,7 @@
 #!/usr/local/bin/ruby
 # -*- coding: utf-8 -*-
 
-def machine (ws,data)
+def machine (data)
 
 	if (data["mode"] == "jail") then
 		Jail.main(data)

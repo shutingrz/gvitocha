@@ -2,18 +2,18 @@
 //templeteへのメッセージ
 function templete_main(msg){
   if(msg.control == "list"){
-    sql("templete","delete","all");
+    db("templete","delete","all");
     for(var i in msg.msg){//サーバから送られたMachineデータを全てローカルsqlに保存
-          sql("templete","insert",msg.msg[i]);
+          db("templete","insert",msg.msg[i]);
     }
     templete_show("all");//全マシン表示
   }
 }
 
-function templete_show(id){
+function templete_show(name){
   var row,culumn
 
-  if(id == "all"){//db内の全てのtempleteを表示する
+  if(name == "all"){//db内の全てのtempleteを表示する
     $("#newMachineForm .templete").empty();
     templete = templete_list("all")
     templete.forEach(function(value,index){
@@ -22,19 +22,18 @@ function templete_show(id){
   }
 }
 
-function templete_list(id){
+function templete_list(name){
   var tmp;
   var templete = [];
-  if(id == "all"){//db内の全てのmachineを表示する
-    tmp = (db.exec("select name from templete"))[0];    //idとnameを取得
-
-    (tmp.values).forEach(function(value,index){ 
-      templete.push(value[0])
-    })
-    return templete;
+  if(name == "all"){//db内の全てのtempleteを表示する
+    tmp = db_templete("select","all");
+    tmp.forEach(function(value,index){
+      templete.push(value.name);
+    });
+    return templete;  
   }
   else{
-    tmp = ((db.exec("select name from templete where id == '" + id + "'"))[0]).values[0][1];
+    tmp = db_templete("select",name)
     return tmp;
   }
   return true;

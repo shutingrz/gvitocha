@@ -1,5 +1,13 @@
 # -*- coding: utf-8 -*-
 
+#FreeBSD10だとtrue,9だとfalse
+flg = false
+if flg then
+	PKGDIR = "/var/cache/pkg/All"
+else
+	PKGDIR = "/var/cache/pkg"
+end
+
 class Pkg
 
 
@@ -40,10 +48,10 @@ class Pkg
 	end
 
 	def self.download(pname)
-		cmdLog,e = Open3.capture3("ls /var/cache/pkg/All")
+		cmdLog,e = Open3.capture3("ls #{PKGDIR}")
 		s,e = Open3.capture3("echo y|pkg-static fetch #{pname}")		#リポジトリからパッケージを取得
 		puts s
-		cmdLog2,e = Open3.capture3("ls /var/cache/pkg/All")
+		cmdLog2,e = Open3.capture3("ls #{PKGDIR}")
 
 
 		if(cmdLog == cmdLog2)		#ダウンロード前後にlsの結果を取って、要素が同じならばダウンロードに失敗しているとわかる（ファイルが増えていない）
@@ -59,7 +67,7 @@ class Pkg
 	#	cmdLog,e = Open3.capture3("ls #{$jails}/basejail/pkg")
 		cmdLog,e = Open3.capture3("ls #{$jails}/sharedfs/pkg")
 	#	s,e = Open3.capture3("cp -pn /var/cache/pkg/All/* #{$jails}/basejail/pkg/")	#basejailにコピー(ezjail)
-		s,e = Open3.capture3("cp -pn /var/cache/pkg/All/* #{$jails}/sharedfs/pkg/")	#sharedfsにコピー(qjail)
+		s,e = Open3.capture3("cp -pn #{PKGDIR}/* #{$jails}/sharedfs/pkg/")	#sharedfsにコピー(qjail)
 	#	cmdLog2,e = Open3.capture3("ls #{$jails}/basejail/pkg")
 		cmdLog2,e = Open3.capture3("ls #{$jails}/sharedfs/pkg")
 

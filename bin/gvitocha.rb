@@ -14,6 +14,7 @@ require './jail.rb'
 require './pkg.rb'
 require './sendmsg.rb'
 require './templete.rb'
+require './network.rb'
 
 
 #STDIN .set_encoding( Encoding.locale_charmap, "UTF-8" )
@@ -41,6 +42,9 @@ $jails = "/usr/jails"
 $ws
 $msg = ""
 $channel
+
+$daichoPath = $jails + "/daicho.dat"
+$daicho = eval(File.open($daichoPath).read)
 
 Process.daemon(nochdir=true) if ARGV[0] == "-D"
 @channel = EM::Channel.new
@@ -71,10 +75,10 @@ EM::run do
         			p "STATUS"
 
         		elsif (msg["msgType"] == MACHINE) then
-        			machine(ws,msg["data"])
+        			machine(msg["data"])
 
         		elsif (msg["msgType"] == NETWORK) then
-        			p "NETWORK"	
+        			Network.main(msg["data"])
 
         		elsif (msg["msgType"] == ETC) then
         			p "ETC"

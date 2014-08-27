@@ -21,6 +21,11 @@ class SendMsg
 		self.asend(STATUS,msg)
 	end
 
+	def self.diag(mode,data)
+		msg = { "mode" => mode, "msg" => data }
+		asend(NETWORK,msg)
+	end
+
 
 
 

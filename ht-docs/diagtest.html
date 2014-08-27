@@ -5,6 +5,8 @@
 <title>D3.jsのひな形</title>
 <script src="./js/lib/d3.js"></script>
 <script src="./js/diagram.js"></script>
+<script src="./js/lib/jquery-2.1.1.min.js"></script>
+<script src="./js/lib/sql.js"></script>
 <style>
 
 
@@ -30,7 +32,15 @@ text {
 </style>
 </head>
 <body onload="init();">
+
 <div class="diagram" id="diagram"></div>
+
+<div id="detail">
+Name<br><div id="jName"></div>
+<br>
+IPAddresses<br>
+<div id="jIP"></div>
+</div>
 </body>
 </html>
 

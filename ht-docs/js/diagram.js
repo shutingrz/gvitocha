@@ -1,27 +1,51 @@
 
-var jailset_nodes_mod = [
-      {id:0,name:"masterRouter",type:1,templete:0,flavour:0,comment:""},
-      {id:1,name:"switch",type:2,templete:0,flavour:0,comment:""},
-      {id:2,name:"server01",type:0,templete:0,flavour:0,comment:""},
-      {id:3,name:"server02",type:0,templete:0,flavour:0,comment:""}
+var netDiag = [];
+
+var machineDB = [
+      {name:"_host_",type:1,templete:0,flavour:0,comment:""},
+      {name:"masterRouter",type:1,templete:0,flavour:0,comment:""},
+      {name:"switch01",type:2,templete:0,flavour:0,comment:""},
+      {name:"server01",type:0,templete:0,flavour:0,comment:""},
+      {name:"server02",type:0,templete:0,flavour:0,comment:""},
+      {name:"switch02",type:2,templete:0,flavour:0,comment:""},
+      {name:"mswitch",type:2,templete:0,flavour:0,comment:""},
+      {name:"server03",type:0,templete:0,flavour:0,comment:""},
+      {name:"server04",type:0,templete:0,flavour:0,comment:""},
+      {name:"switch011",type:2,templete:0,flavour:0,comment:""},
+      {name:"switch012",type:2,templete:0,flavour:0,comment:""},
+      {name:"server05",type:0,templete:0,flavour:0,comment:""},
+      {name:"server06",type:0,templete:0,flavour:0,comment:""},
+      {name:"server07",type:0,templete:0,flavour:0,comment:""},
+      {name:"server08",type:0,templete:0,flavour:0,comment:""},
+      {name:"server09",type:0,templete:0,flavour:0,comment:""},
+      {name:"server10",type:0,templete:0,flavour:0,comment:""}
+
+
 ];
-/*
-var jailset_links_mod = [
-    {source : 0, target : 1}, 
-    {source : 2, target : 3}, 
-    {source : 3, target : 1}
-//    {source : "masterRouter", target : "switch", ipaddr : "switch", ipmask : "", ip6addr : "", ip6mask : "", as : ""}, 
-//    {source : "server01", target : "switch", ipaddr : "switch", ipmask : "", ip6addr : "", ip6mask : "", as : ""}, 
-//    {source : "server02", target : "switch", ipaddr : "switch", ipmask : "", ip6addr : "", ip6mask : "", as : ""}
 
-  ];  
-*/
 var jailset_links_name = [
-    {source : "masterRouter", target : "switch"/*, ipaddr : "switch", ipmask : "", ip6addr : "", ip6mask : "", as : ""*/}, 
-    {source : "server01", target : "server02"/*, ipaddr : "switch", ipmask : "", ip6addr : "", ip6mask : "", as : ""*/}, 
-    {source : "server02", target : "switch"/*, ipaddr : "switch", ipmask : "", ip6addr : "", ip6mask : "", as : ""*/}
+    {source : "_host_", target: "masterRouter"},
+    {source : "masterRouter", target: "mswitch"},
+    {source : "mswitch", target: "switch01"},
+    {source : "mswitch", target: "switch02"},
+    {source : "server01", target : "switch011"/*, ipaddr : "switch", ipmask : "", ip6addr : "", ip6mask : "", as : ""*/}, 
+    {source : "server02", target : "switch011"/*, ipaddr : "switch", ipmask : "", ip6addr : "", ip6mask : "", as : ""*/},
+    {source : "server03", target : "switch02"},
+    {source : "server04", target : "switch02"},
+    {source : "switch01", target : "switch011"},
+    {source : "switch01", target : "switch012"},
+    {source : "server05", target : "switch012"},
+    {source : "server06", target : "switch012"} 
+];  
 
-  ];  
+var jailset_network = [
+    {name: "_host_", ipaddr : "10.254.254.1", ipmask : "255.255.255.0", ip6addr : "", ip6mask : "", as : ""},
+    {name:"masterRouter", ipaddr : "10.254.254.2", ipmask : "255.255.255.0", ip6addr : "", ip6mask : "", as : ""},
+    {name:"masterRouter", ipaddr : "192.168.20.1", ipmask : "255.255.255.0", ip6addr : "", ip6mask : "", as : ""}, 
+    {name:"server01", ipaddr : "192.168.20.11", ipmask : "255.255.255.0", ip6addr : "", ip6mask : "", as : ""}, 
+    {name:"server02", ipaddr : "192.168.20.12", ipmask : "255.255.255.0", ip6addr : "", ip6mask : "", as : ""}, 
+
+  ]; 
 
 var jailset_links_mod = [];
 
@@ -30,6 +54,14 @@ var jailset_links_mod = [];
 
 var width = 960;
 var height = 500;
+
+var HOSTNAME = "_host_"
+var MRTNAME = "masterRouter"
+var HOSTWIDTH = width/2;
+var HOSTHEIGHT = height/6;
+var MRTWIDTH = width/2;
+var MRTHEIGHT = ((height/6)+30);
+var REPULSE = -500;
 
 var svg = d3.select(".diagram").append("svg")
   .attr("width", width)
@@ -41,19 +73,63 @@ var node = svg.selectAll(".node");
 var force;
 
 
+/*
+tick:linkの座標を特定
+host(HOSTNAME)とmasterRouter(MRTNAME)は固定
 
+*/
 function tick() {
     link = svg.selectAll(".link");
     link
-      .attr("x1", function(d) { return d.source.x; })
-      .attr("y1", function(d) { return d.source.y; })
-      .attr("x2", function(d) { return d.target.x; })
-      .attr("y2", function(d) { return d.target.y; });
+      .attr("x1", function(d) { 
+                    if(d.source.name == HOSTNAME){
+                      return HOSTWIDTH;
+                    }else if(d.source.name == MRTNAME){
+                      return MRTWIDTH;
+                    }else{
+                      return d.source.x; 
+                    }
+                  })
+      .attr("y1", function(d) { 
+                    if(d.source.name == HOSTNAME){
+                      return HOSTHEIGHT;
+                    }else if(d.source.name == MRTNAME){
+                      return MRTHEIGHT;
+                    }else{
+                      return d.source.y; 
+                    }
+                  })
+      .attr("x2", function(d) { 
+                    if(d.target.name == HOSTNAME){
+                      return HOSTWIDTH;
+                    }else if(d.target.name == MRTNAME){
+                      return MRTWIDTH;
+                    }else{
+                      return d.target.x; 
+                    }
+                  })
+      .attr("y2", function(d) { 
+                    if(d.target.name == HOSTNAME){
+                      return HOSTHEIGHT;
+                    }else if(d.target.name == MRTNAME){
+                      return MRTHEIGHT;
+                    }else{
+                      return d.target.y; 
+                    }
+                  });
 
     node = svg.selectAll(".node");
     node
-      .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
-};
+      .attr("transform", function(d) {
+                          if(d.name == HOSTNAME){
+                            return "translate(" + HOSTWIDTH + "," + HOSTHEIGHT + ")";
+                          }else if(d.name == MRTNAME){
+                            return "translate(" + MRTWIDTH + "," + MRTHEIGHT + ")";
+                          }else{
+                            return "translate(" + d.x + "," + d.y + ")";
+                          }
+                        });
+}
 
 function mouseover() {
   d3.select(this).select("circle").transition()
@@ -68,8 +144,9 @@ function mouseout() {
 }
 
 function clickcircle(d){
-  delNode(d.name);
-  update();
+//  delNode(d.name);  /* こいつはノードを消す */
+//  update();
+displayInfo(d.name);
 }
 
 
@@ -83,11 +160,8 @@ function addNode(){
 }
 
 
-
-
-
 function update() {
-//  jailset_links_mod = [];
+  jailset_links_mod = [];
 
   createLinkDiag();
   console.log(jailset_links_mod)
@@ -102,13 +176,16 @@ function update() {
   node = svg.selectAll(".node").remove();
 
   force = d3.layout.force()
-//  .nodes(jailset_nodes_mod)
+//  .nodes(machineDB)
 //  .links(edges)
-  .nodes(jailset_nodes_mod)
+  .nodes(machineDB)
   .links(jailset_links_mod)
   .charge(-200)
   .linkDistance(50)
   .size([width, height])
+  .charge(function(d) {
+    return REPULSE;
+  })
   .on("tick", tick);
 
   link = svg.selectAll(".link")
@@ -119,10 +196,10 @@ function update() {
   .attr("class", "link");
 
  node = svg.selectAll(".node")
-  //.data(jailset_nodes_mod)
-  .data(jailset_nodes_mod, function(d) { return d.name;})  //nodesデータを要素にバインド
+  //.data(machineDB)
+  .data(machineDB, function(d) { return d.name;})  //nodesデータを要素にバインド
   .enter().append("g")
-  .attr("class", "node")
+  .attr("class", function(d) { return "node "+d.name;})   //[node]と要素の名前をクラスにする
   .on("mouseover", mouseover)
   .on("mouseout", mouseout)
   .call(force.drag);
@@ -155,15 +232,15 @@ function update() {
 
 
 function delNode(name) {
-  console.log(jailset_nodes_mod.filter(function(n) { return n.name !== name; }));
+  console.log(machineDB.filter(function(n) { return n.name !== name; }));
   console.log(jailset_links_name.filter(function(l) { return (l.source !== name && l.target !== name); }));
-    jailset_nodes_mod = jailset_nodes_mod.filter(function(n) { return n.name !== name; });
+    machineDB = machineDB.filter(function(n) { return n.name !== name; });
     jailset_links_name = jailset_links_name.filter(function(l) { return (l.source !== name && l.target !== name); });
 }
 
 function selectNode(name){
 
-  jailset_nodes_mod.forEach(function(values,index){
+  machineDB.forEach(function(values,index){
  //   console.log(values.name);
     if(name == values.name){
       console.log(index);
@@ -171,11 +248,24 @@ function selectNode(name){
   });
 }
 
+function selectDiag(name){
+  var diagInfo = []
+
+  netDiag.forEach(function(values,index){
+    if(name == values[0]){
+    //  console.log(index);
+      diagInfo.push(index);
+    }
+  });
+  return diagInfo;
+
+}
+
 function createLinkDiag(){
   var source,target;
 //  jailset_links_mod = [];
   jailset_links_name.forEach(function(lvalues,lindex){
-    jailset_nodes_mod.forEach(function(nvalues,nindex){
+    machineDB.forEach(function(nvalues,nindex){
       if(lvalues.source == nvalues.name){
         source = nindex;
       }
@@ -183,13 +273,30 @@ function createLinkDiag(){
         target = nindex;
       }
     });
-    console.log("source:" + source + ",target:",+target);
     jailset_links_mod.push({source : source, target : target});
   });
 }
 
+function pushNetDiag(){
+  jailset_network.forEach(function(value,index){
+    netDiag.push([value.name, value.ipaddr , value.ipmask, value.ip6addr, value.ip6mask, value.as]);
+  });
+}
+
 function init(){
+  pushNetDiag();
   update();
+}
+
+function displayInfo(name){
+  $("#jName").text("");
+  $("#jIP").empty();
+
+  $("#jName").text(name);
+
+  selectDiag(name).forEach(function(value,index){
+    $("#jIP").append("IPAddr: " + jailset_network[value].ipaddr + ", IPMask: " + jailset_network[value].ipmask + "<br>");
+  });
 }
 
 //var nodes = {};
