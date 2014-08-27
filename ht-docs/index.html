@@ -16,7 +16,7 @@
 		<script src="./js/db.js"></script>
 		<script src="./js/templete.js"></script>
 		<script src="./js/diag.js"></script>
-	<!--	<script src="./js/diagram.js"></script> -->
+		<script src="./js/diagram.js"></script>
 
 	
 		<link rel="stylesheet" type="text/css" href="./css/top.css" />
@@ -262,13 +262,24 @@
 	  </div>
 	  </div>
 
-		<div class="network">Network
-			<div class="diagram" id="diagram">
+		<div class="network" id="network">
+		<div class="header">Network</div>
+			<div class="diagram" id="diagram"></div>
+			<div class="info" id="netInfo">
+				Name<br><div id="jName"></div>
+				<br>
+				IPAddresses<br>
+				<div id="jIP"></div>
 			</div>
-	
-
-
-	  </div>
+			<div id="sendNet">
+				-----<br>
+				<form action="javascript:diag_sendLink()">
+					source:<input id="linksource" type="text" value=""><br>
+					target:<input id="linktarget" type="text" value=""><br>
+					<input type="submit" value="送信">
+				</form>
+			</div>
+		</div>
 
 	 
 

@@ -113,7 +113,7 @@ class Operator
   end
 
   def connect(obj,epair)
-    eval("#{obj}.connect('#{epair}')")
+    eval("$#{obj}.connect('#{epair}')")
     @daicho[epair.to_sym]=[obj,"",""]
     puts "#{epair} is connected to #{obj}"
   end

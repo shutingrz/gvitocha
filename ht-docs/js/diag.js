@@ -1,30 +1,92 @@
-/* Data
-
-{:epair8a=>["_host_", "10.254.254.1", "255.255.255.0", "", "", ""], 
-:epair8b=>["masterRouter", "10.254.254.2", "255.255.255.0", "", "", ""],
- :epair9a=>["masterRouter", "192.168.20.1", "255.255.255.0", "", "", ""],
-  :epair9b=>["tswitch", "switch", "", "", "", ""],
-   :epair10a=>["server01", "192.168.20.11", "255.255.255.0", "", "", ""],
-    :epair10b=>["tswitch", "switch", "", "", "", ""],
-     :epair11a=>["server02", "192.168.20.12", "255.255.255.0", "", "", ""],
-      :epair11b=>["tswitch", "switch", "", "", "", ""]
-      }
-
-*/
-
-netDiag = {epair8a:["_host_", "10.254.254.1", "255.255.255.0", "", "", ""], epair8b:["masterRouter", "10.254.254.2", "255.255.255.0", "", "", ""], epair9a:["masterRouter", "192.168.20.1", "255.255.255.0", "", "", ""], epair9b:["tswitch", "switch", "", "", "", ""], epair10a:["server01", "192.168.20.11", "255.255.255.0", "", "", ""], epair10b:["tswitch", "switch", "", "", "", ""], epair11a:["server02", "192.168.20.12", "255.255.255.0", "", "", ""], epair11b:["tswitch", "switch", "", "", "", ""]};
 
 function diag(data){
-/*
-	netDiag.forEach(function(value,index){
-	
-		console.log(value);
-	});
-*/
-	console.log(data);
+  if(data.mode == "link"){
+    diag_link(data.msg);
+  }else if(data.mode == "l3"){
+    diag_l3(data.msg);
+  }
 }
 
-function diag_insert(){
-
+//サーバからグラフ情報を取得
+function diag_getDiag(){
+  send(NETWORK,{"mode":"list"})
 
 }
+
+//サーバから取得したepairの接続状態(L2)を代入
+function diag_link(data){
+  linkDB = data;
+/*  linkDB.forEach(function(values,index){
+    console.log(values);
+  });*/
+}
+
+//サーバから取得したL3(ipアドレスなど)を代入し、diagをリロード
+//サーバはlink=>l3の順でデータを送るため、あとのl3でリロードを行う
+function diag_l3(data){
+  l3DB = data;
+/*  l3DB.forEach(function(values,index){
+    console.log(values);
+  });*/
+  reloadDiag();
+
+}
+
+//人間に見やすいsource/targetから、d3.js形式のsource/targetに変換
+//linkDB内のsource/targetのnameが、machineDBの要素の何番目に位置するか計算して、その要素の番号を代入
+function diag_createLink(){
+  var source,target;
+  linkDB.forEach(function(lvalues,lindex){
+    machineDB.forEach(function(nvalues,nindex){
+      if(lvalues.source == nvalues.name){
+        source = nindex;
+      }
+      if(lvalues.target == nvalues.name){
+        target = nindex;
+      }
+    });
+    d3linkDB.push({source : source, target : target});
+  });
+}
+
+//選択したノードの詳細を表示
+function diag_displayInfo(name){
+  $("#jName").text("");
+  $("#jIP").empty();
+
+  $("#jName").text(name);
+
+  diag_selectNode(name).forEach(function(value,index){
+    $("#jIP").append("IPAddr: " + l3DB[value].ipaddr + ", IPMask: " + l3DB[value].ipmask + "<br>");
+  });
+}
+
+function diag_selectNode(name){
+  var diagInfo = []
+
+  l3DB.forEach(function(values,index){
+    if(name == values.name){
+    //  console.log(index);
+      diagInfo.push(index);
+    }
+  });
+  return diagInfo;
+
+}
+
+function diag_sendLink(){
+  source = $("#linksource").val();
+  target = $("#linktarget").val();
+//  console.log(source + "," + target);
+  send(NETWORK,{mode: "link", msg: {source: source, target: target}});
+}
+
+
+
+
+
+
+
+
+
+

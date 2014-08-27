@@ -146,9 +146,19 @@ img.minimumNowloadingIcon{
 
 }
 
+#network{
+	clear: both;
+
+}
 #diagram{
-	width : 95%;
-	height : 95%;
+	float: left;
+	width : 950px;
+	height : 500px;
+}
+
+#netInfo{
+	floar: right;
+
 }
 
 svg .connected {

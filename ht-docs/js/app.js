@@ -18,11 +18,10 @@ var sendMsg = {
 var machineDB = [{name:"_host_", type:"1", templete:"0", flavour:"0",comment:"host Machine",boot:"1"}];
 var templeteDB = [];
 var flavorDB = [];
+var linkDB = [];
+var l3DB = [];
 
 function init(){
-//  sdb = new SQL.Database();
-//  sdb.run("create table machine (id, name, type, templete, flavour, comment, boot);");
-//  sdb.run("create table templete(id, name, pkg);");
   wsConnection();
    $("#powerSwitch").bootstrapSwitch('size', 'normal');
  //  diagram();
@@ -202,6 +201,12 @@ function getMachineLog(machineLog){
 function reloadDB(){
   jail_getList();
   templete_getList();
+  diag_getDiag();
+}
+
+function reloadDiag(){
+//  pushNetDiag();
+  update();
 }
 
 

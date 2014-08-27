@@ -39,11 +39,9 @@ function db_machine(control,msg){
     }
   }
   else if (control == "insert"){
-  //  sdb.run("insert into machine (id, name, type, templete, flavour, comment) values ('" + msg.id + "','" + msg.name + "','" + msg.type + "','" + msg.templete + "','" + msg.flavour + "','" + msg.comment + "');");
     machineDB.push({name: msg.name, type: msg.type, templete: msg.templete, flavour: msg.flavour, comment: msg.comment, boot: "0"});
   }
   else if (control == "boot"){
-  //  sdb.run("update machine set boot ='" + msg.state + "' where name='" + msg.name + "';");
     machineDB[db_selectDB("machine",msg.name)].boot = msg.state;
   }
 }
@@ -89,21 +87,6 @@ function db_selectDB(control,name){
     });
   }
 
-  return idx;
-}
-
-
-
-
-
-function db_selectMachine(name){
-  idx = 0;
-  machineDB.forEach(function(values,index){
- //   console.log(values.name);
-    if(name == values.name){
-      idx = index;    //ここでreturnしても恐らくスコープの関係で値返せないので外の変数に渡す
-    }
-  });
   return idx;
 }
 
