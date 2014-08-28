@@ -77,7 +77,7 @@ class Operator
 
   def destroypair(epair)
     sh=Shell.new
-    if epair=~/epair[0-9]+[ab]/ then epair!chop end
+    if epair=~/epair[0-9]+[ab]/ then epair.chop! end
     sh.transact{
       ifconfig("#{epair}a destroy")
     }

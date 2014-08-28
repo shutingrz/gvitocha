@@ -78,14 +78,14 @@ function diag_sendLink(){
   source = $("#linksource").val();
   target = $("#linktarget").val();
 //  console.log(source + "," + target);
-  send(NETWORK,{mode: "link", control: "add" msg: {source: source, target: target}});
+  send(NETWORK,{mode: "link", control: "add", msg: {source: source, target: target}});
 }
 
 function diag_deleteLink(){
-  source = $("#linksource").val();
-  target = $("#linktarget").val();
+  source = $("#dlinksource").val();
+  target = $("#dlinktarget").val();
 //  console.log(source + "," + target);
-  send(NETWORK,{mode: "link",  control: "delete" msg: {source: source, target: target}});
+  send(NETWORK,{mode: "link",  control: "delete", msg: {source: source, target: target}});
 }
 
 function diag_getNetworkLog(networkLog){

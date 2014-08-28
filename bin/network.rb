@@ -118,7 +118,6 @@ class Network
 
 		source = data["source"]
 		target = data["target"]
-		puts "source:#{source},target:#{target}"
 
 
 		case (SQL.select("machine","name",source))[2]
@@ -142,23 +141,62 @@ class Network
 			else
 				@@tomocha.setupserver(target)	#何も一致しなかった時はserverとして
 		end
-
-
 		epaira, epairb = @@tomocha.createpair
 
 		@@tomocha.connect(source,epaira)
 		@@tomocha.connect(target,epairb)
 
 		@@tomocha.save($daichoPath)
-		puts "createLink,saveしたあと"
-		puts @@tomocha.getDaicho()
 
 		SendMsg.status(NETWORK,"success","完了しました。")
 
 
 	end
 
+	def self.deleteLink(data)
+		#{"source"=>"server01", "target"=>"server03"}
 
+		source = data["source"]
+		target = data["target"]
+		puts "source:#{source},target:#{target}"	
+
+		num = 0
+		pairflg = false
+		epaira = ""
+		epairb = ""
+
+		#epairは数字1つあたり、a,bの2つがあるため、全ての各ループ時にnumを加算し、num mod 2にすることでa,bとして扱う。
+		#任意のepaira内のnameがsourceまたはtarget(どちらがsourceになるのかはクライアントによる。)に一致した場合は、pairになるかもしれないのでflgを立てる
+		#次に、epairb内で、かつpairflgが立っている状態で、epairaと同じように一致するか確認し、一致した場合はそのepairであるとわかるのでbreak。
+		#epairbが一致しなかった時、またはそもそもpairflgが立っていなかった場合は、epairaとpairflgをリセットする。
+		@@daicho.each do |key, value|
+			if(num%2 == 0) then
+				if(value[0] == source || value[0] == target) then
+					pairflg = true
+					epaira = key.to_s
+				end
+			elsif(num%2 == 1) then
+				if(pairflg == true) then
+					if(value[0] == source || value[0] == target) then
+						epairb = key.to_s
+					end
+				end
+
+				if( epairb != "") then
+					break
+				else
+					epaira = ""
+					pairflg = false
+				end			
+			end
+			num += 1
+		end
+
+		@@tomocha.destroypair(epaira)
+		@@tomocha.save($daichoPath)
+
+		SendMsg.status(NETWORK,"success","完了しました。")
+	end
 
 end
 
