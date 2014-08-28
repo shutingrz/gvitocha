@@ -46,8 +46,6 @@ $channel
 $daichoPath = $jails + "/daicho.dat"
 
 
-#daicho
-net = Network.new	#初期化
 
 
 Process.daemon(nochdir=true) if ARGV[0] == "-D"
@@ -61,11 +59,17 @@ EM::run do
 	#start network then connect to client
 		$ws = ws
 		ws.onopen do
-			EventMachine::defer do	#SQL
+=begin			EventMachine::defer do	#SQL
 				sid = @channel.subscribe{|mes| ws.send mes}
 				sql = SQL.new		#初期化
+				#daicho
+				net = Network.new	#初期化
 
 			end
+=end				sid = @channel.subscribe{|mes| ws.send mes}
+				sql = SQL.new		#初期化
+				#daicho
+				net = Network.new	#初期化
 		end
 		ws.onmessage do |message|
 			EventMachine::defer do
@@ -83,7 +87,7 @@ EM::run do
         			machine(msg["data"])
 
         		elsif (msg["msgType"] == NETWORK) then
-        			net.main(msg["data"])
+        			Network.main(msg["data"])
 
         		elsif (msg["msgType"] == ETC) then
         			p "ETC"

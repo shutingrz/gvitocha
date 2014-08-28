@@ -78,10 +78,22 @@ function diag_sendLink(){
   source = $("#linksource").val();
   target = $("#linktarget").val();
 //  console.log(source + "," + target);
-  send(NETWORK,{mode: "link", msg: {source: source, target: target}});
+  send(NETWORK,{mode: "link", control: "add" msg: {source: source, target: target}});
 }
 
+function diag_deleteLink(){
+  source = $("#linksource").val();
+  target = $("#linktarget").val();
+//  console.log(source + "," + target);
+  send(NETWORK,{mode: "link",  control: "delete" msg: {source: source, target: target}});
+}
 
+function diag_getNetworkLog(networkLog){
+  if (networkLog.msgType == "success"){   //successメッセージが届いたら、
+    status({"mode":STATUS, "msg" : {"msg" : networkLog.msg}});
+    diag_getDiag();
+  }
+}
 
 
 

@@ -120,6 +120,9 @@ function status(msg,type){
   else if(msg.mode == MACHINE){
     getMachineLog(msg.msg);
   }
+  else if(msg.mode == NETWORK){
+    diag_getNetworkLog(msg.msg);
+  }
 } 
 
 function status_status(msg){

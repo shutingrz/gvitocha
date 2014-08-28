@@ -35,11 +35,6 @@ class Jail
 	end
 
 	def self.create(machine)
-		if machine['machineType'] == SERVER.to_s then
-			#reserved
-		else
-			#reserved
-		end
 		
 		cmdLog = mkQjail(machine['flavour'],machine['name'])
 		if(cmdLog == false) then
@@ -73,6 +68,15 @@ class Jail
 		if (sqlid != nextid ) then #sqlidがnextidではない（恐らくnextid-1)場合は、machineが正常に作成されていない
 			return false,"database"
 		end	
+
+		#ネットワーク関係の仕上げ操作
+		if machine['machineType'] == SERVER.to_s then
+			#reserved
+		elsif machine["machineType"] == SWITCH.to_s then	#switchならbridgeを作成する(linkを作成する時は既にbridgeが作成されているものとする)
+			Network.createBridge(machine["name"])
+		else
+			#reserved
+		end
 		
 		return true
 	end

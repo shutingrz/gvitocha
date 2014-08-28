@@ -2,10 +2,12 @@
 
 class Network
 
-	@@tomocha = Operator.new
+	@@tomocha
 	@@daicho
 
 	def initialize()
+		@@tomocha = Operator.new
+		@@tomocha.load($daichoPath)
 		begin
 			@@daicho = eval(File.open($daichoPath).read)
 		rescue Errno::ENOENT
@@ -18,9 +20,20 @@ class Network
 	end
 
 	def self.main(data)
+		@@tomocha.load($daichoPath)	#毎回ファイルからdaichoを読み込む
+		@@daicho = @@tomocha.getDaicho()
+#		puts "Network.mainの最初"
+#		puts @@tomocha.getDaicho()
+
 		if (data["mode"] == "list") then
 			SendMsg.diag("link",to_link(@@daicho))
 			SendMsg.diag("l3",to_l3(@@daicho))
+		elsif (data["mode"] == "link") then
+			if (data["control"] == "add") then
+				createLink(data["msg"])
+			elsif (data["control"] == "delete") then
+				deleteLink(data["msg"])
+			end
 		end
 
 	end
@@ -92,6 +105,62 @@ class Network
 		return jailset_network
 	end
 
+	def self.createBridge(name)
+		switch = Bridge.new(name)
+		switch.create(name)
+	end
+
+	def self.createLink(data)
+		#{"source"=>"server01", "target"=>"server03"}
+		#SERVER = 0
+		#ROUTER = 1
+		#SWITCH = 2		#データベースのtypeの数値
+
+		source = data["source"]
+		target = data["target"]
+		puts "source:#{source},target:#{target}"
+
+
+		case (SQL.select("machine","name",source))[2]
+			when SERVER then
+				@@tomocha.setupserver(source)
+			when ROUTER then
+				@@tomocha.setuprouter(source)
+			when SWITCH then
+				@@tomocha.setupbridge(source)
+			else
+				@@tomocha.setupserver(source)	#何も一致しなかった時はserverとして
+		end
+
+		case (SQL.select("machine","name",target))[2]
+			when SERVER then
+				@@tomocha.setupserver(target)
+			when ROUTER then
+				@@tomocha.setuprouter(target)
+			when SWITCH then
+				@@tomocha.setupbridge(target)
+			else
+				@@tomocha.setupserver(target)	#何も一致しなかった時はserverとして
+		end
+
+
+		epaira, epairb = @@tomocha.createpair
+
+		@@tomocha.connect(source,epaira)
+		@@tomocha.connect(target,epairb)
+
+		@@tomocha.save($daichoPath)
+		puts "createLink,saveしたあと"
+		puts @@tomocha.getDaicho()
+
+		SendMsg.status(NETWORK,"success","完了しました。")
+
+
+	end
+
 
 
 end
+
+
+

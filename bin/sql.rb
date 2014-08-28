@@ -73,7 +73,7 @@ class SQL
 		end
 	end
 
-	def self.select(mode,id=nil)
+	def self.select(mode,id=nil,name=nil)
 		begin
 		if (mode == "pkg") then
 			if (id == "maxid")
@@ -94,6 +94,8 @@ class SQL
 				return @@db.execute("select id, name, type, templete, flavour, comment from machine")
 			elsif (id == "maxid")
 				return @@db.execute("select max(id) from machine")[0][0]		#maxid
+			elsif (id == "name")
+				return  @@db.execute("select id, name, type, templete, flavour, comment from machine where name='" + name + "';")[0]
 			else
 				machine = @@db.execute("select id, name, type, templete, flavour, comment from machine where id=" + id.to_s + ";")[0]
 				yield machine[0],machine[1],machine[2],machine[3],machine[4],machine[5]	#machineのデータ返却

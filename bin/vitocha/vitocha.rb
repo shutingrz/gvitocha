@@ -223,6 +223,10 @@ class Operator
     @daicho = eval(File.open(path).read)
   end
 
+  def getDaicho()
+    return @daicho
+  end
+
 
   attr_accessor :epairnum
   attr_accessor :daicho
