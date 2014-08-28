@@ -68,16 +68,16 @@ class Jail
 		if (sqlid != nextid ) then #sqlidがnextidではない（恐らくnextid-1)場合は、machineが正常に作成されていない
 			return false,"database"
 		end	
-
+=begin
 		#ネットワーク関係の仕上げ操作
 		if machine['machineType'] == SERVER.to_s then
 			#reserved
-		elsif machine["machineType"] == SWITCH.to_s then	#switchならbridgeを作成する(linkを作成する時は既にbridgeが作成されているものとする)
-			Network.createBridge(machine["name"])
+		elsif machine["machineType"] == SWITCH.to_s then
+			#reserved
 		else
 			#reserved
 		end
-		
+=end		
 		return true
 	end
 

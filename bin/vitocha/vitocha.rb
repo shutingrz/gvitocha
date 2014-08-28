@@ -81,8 +81,19 @@ class Operator
     sh.transact{
       ifconfig("#{epair}a destroy")
     }
+  #  @daicho.delete("#{epair}a".to_sym)
+  #  @daicho.delete("#{epair}b".to_sym)
+  end
+
+  def removepair(jailname,epaira,jailname2,epairb)
+    sh=Shell.new
+    sh.transact{
+      ifconfig("#{epaira} -vnet #{jailname}")
+      ifconfig("#{epairb} -vnet #{jailname2}")
+    }
     @daicho.delete("#{epair}a".to_sym)
     @daicho.delete("#{epair}b".to_sym)
+    self.destroypair(epaira)
   end
 
   def register(epair,jailname,ip4="",mask="",as="",ip6="",prefixlen="")
@@ -104,6 +115,9 @@ class Operator
 
   def setupbridge(jailname)
     eval("$#{jailname}=Bridge.new('#{jailname}')")
+    if(eval("$#{jailname}.find('#{jailname}') == false")) then
+      eval("$#{jailname}.create('#{jailname}')")
+    end
     puts "#{jailname} done!"
   end
 

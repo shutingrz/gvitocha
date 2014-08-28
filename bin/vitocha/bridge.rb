@@ -66,8 +66,8 @@ class Bridge < Equipment
     }
   end
 
-  def find
-    s,e = Open3.capture3("jexec switch ifconfig vbridge0")
+  def find(name)
+    s,e = Open3.capture3("jexec #{name} ifconfig vbridge0")
     if (e.include?("does not exist")) then
       return false
     else

@@ -106,8 +106,7 @@ class Network
 	end
 
 	def self.createBridge(name)
-		switch = Bridge.new(name)
-		switch.create(name)
+		@@tomocha.setupbridge(name)
 	end
 
 	def self.createLink(data)
