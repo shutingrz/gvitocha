@@ -153,12 +153,6 @@ class Network
 	end
 
 	def self.deleteLink(link)
-		#{"source"=>"server01", "target"=>"server03"}
-=begin
-		source = data["source"]
-		target = data["target"]
-		puts "source:#{source},target:#{target}"	
-=end
 		epair = link
 		epaira = epair + "a"
 		epairb = epair + "b"
@@ -166,39 +160,8 @@ class Network
 		epairbName = "_host_"
 
 		num = 0
-=begin
-		pairflg = false
-		epaira = ""
-		epairb = ""
 
 		#epairは数字1つあたり、a,bの2つがあるため、全ての各ループ時にnumを加算し、num mod 2にすることでa,bとして扱う。
-		#任意のepaira内のnameがsourceまたはtarget(どちらがsourceになるのかはクライアントによる。)に一致した場合は、pairになるかもしれないのでflgを立てる
-		#次に、epairb内で、かつpairflgが立っている状態で、epairaと同じように一致するか確認し、一致した場合はそのepairであるとわかるのでbreak。
-		#epairbが一致しなかった時、またはそもそもpairflgが立っていなかった場合は、epairaとpairflgをリセットする。
-		@@daicho.each do |key, value|
-			if(num%2 == 0) then
-				if(value[0] == source || value[0] == target) then
-					pairflg = true
-					epaira = key.to_s
-				end
-			elsif(num%2 == 1) then
-				if(pairflg == true) then
-					if(value[0] == source || value[0] == target) then
-						epairb = key.to_s
-					end
-				end
-
-				if( epairb != "") then
-					break
-				else
-					epaira = ""
-					pairflg = false
-				end			
-			end
-			num += 1
-		end
-=end
-
 		@@daicho.each do |key, value|
 			if(num%2 == 0) then
 				if(key.to_s == epaira) then
