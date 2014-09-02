@@ -152,14 +152,21 @@ class Network
 
 	end
 
-	def self.deleteLink(data)
+	def self.deleteLink(link)
 		#{"source"=>"server01", "target"=>"server03"}
-
+=begin
 		source = data["source"]
 		target = data["target"]
 		puts "source:#{source},target:#{target}"	
+=end
+		epair = link
+		epaira = epair + "a"
+		epairb = epair + "b"
+		epairaName = "_host_"
+		epairbName = "_host_"
 
 		num = 0
+=begin
 		pairflg = false
 		epaira = ""
 		epairb = ""
@@ -190,8 +197,23 @@ class Network
 			end
 			num += 1
 		end
+=end
 
-		@@tomocha.destroypair(epaira)
+		@@daicho.each do |key, value|
+			if(num%2 == 0) then
+				if(key.to_s == epaira) then
+					epairaName = value[0]
+				end
+			else
+				if(key.to_s == epairb) then
+					epairbName = value[0]
+				end	
+			end
+			num += 1
+		end
+		puts "#{epairaName},#{epairbName}"
+
+		@@tomocha.removepair(epairaName, epaira, epairbName, epairb)
 		@@tomocha.save($daichoPath)
 
 		SendMsg.status(NETWORK,"success","完了しました。")

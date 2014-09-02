@@ -16,24 +16,19 @@ function diag_getDiag(){
 //サーバから取得したepairの接続状態(L2)を代入
 function diag_link(data){
   linkDB = data;
-/*  linkDB.forEach(function(values,index){
-    console.log(values);
-  });*/
 }
 
 //サーバから取得したL3(ipアドレスなど)を代入し、diagをリロード
 //サーバはlink=>l3の順でデータを送るため、あとのl3でリロードを行う
 function diag_l3(data){
   l3DB = data;
-/*  l3DB.forEach(function(values,index){
-    console.log(values);
-  });*/
+
   reloadDiag();
 
 }
 
 //人間に見やすいsource/targetから、d3.js形式のsource/targetに変換
-//linkDB内のsource/targetのnameが、machineDBの要素の何番目に位置するか計算して、その要素の番号を代入
+//linkDB内のsource/targetのnameが、machineDBの要素の何番目に位置するか計算して、その要素の番号を代入、epairも入れ込む
 function diag_createLink(){
   var source,target;
   linkDB.forEach(function(lvalues,lindex){
@@ -59,6 +54,29 @@ function diag_displayInfo(name){
   diag_selectNode(name).forEach(function(value,index){
     $("#jIP").append("link: " + l3DB[value].epair + "(to " + diag_selectTargetNode(l3DB[value].epair) + "), IPAddr: " + l3DB[value].ipaddr + ", IPMask: " + l3DB[value].ipmask + "<br>");
   });
+}
+
+function diag_displayLink(epair){
+  $("#dLink").val(epair);
+
+  epaira = epair + "a";
+  epairb = epair + "b";
+  epairaName = "_host_";
+  epairbName = "_host_";
+
+
+  l3DB.forEach(function(values,index){
+    if(epaira == values.epair){
+      epairaName = values.name;
+    }
+    if(epairb == values.epair){
+      epairbName = values.name;
+    }
+  });
+
+  $("#dLinkA").val(epairaName);
+  $("#dLinkB").val(epairbName);
+
 }
 
 function diag_selectNode(name){
@@ -101,10 +119,14 @@ function diag_sendLink(){
 }
 
 function diag_deleteLink(){
-  source = $("#dlinksource").val();
-  target = $("#dlinktarget").val();
+//  source = $("#dlinksource").val();
+//  target = $("#dlinktarget").val();
 //  console.log(source + "," + target);
-  send(NETWORK,{mode: "link",  control: "delete", msg: {source: source, target: target}});
+    link = $("#dLink").val();
+    epairaName = $("#dLinkA").val();
+    epairbName = $("#dLinkB").val();
+
+  send(NETWORK,{mode: "link",  control: "delete", msg : link});
 }
 
 function diag_getNetworkLog(networkLog){

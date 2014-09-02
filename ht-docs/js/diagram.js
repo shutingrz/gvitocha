@@ -124,7 +124,7 @@ diag_displayInfo(d.name);
 }
 
 function clicklink(d){
-  diag_displayInfo(d.epair);
+  diag_displayLink(d.epair);
 }
 
 

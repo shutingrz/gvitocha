@@ -91,8 +91,8 @@ class Operator
       ifconfig("#{epaira} -vnet #{jailname}")
       ifconfig("#{epairb} -vnet #{jailname2}")
     }
-    @daicho.delete("#{epair}a".to_sym)
-    @daicho.delete("#{epair}b".to_sym)
+    @daicho.delete("#{epaira}".to_sym)
+    @daicho.delete("#{epairb}".to_sym)
     self.destroypair(epaira)
   end
 
