@@ -45,7 +45,7 @@ function diag_createLink(){
         target = nindex;
       }
     });
-    d3linkDB.push({source : source, target : target});
+    d3linkDB.push({source : source, target : target, epair : lvalues.epair});
   });
 }
 

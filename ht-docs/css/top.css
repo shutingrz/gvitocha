@@ -148,12 +148,13 @@ img.minimumNowloadingIcon{
 
 #network{
 	clear: both;
+	height : 70%;
 
 }
 #diagram{
 	float: left;
 	width : 950px;
-	height : 500px;
+	height : 100%;
 }
 
 #netInfo{
@@ -170,8 +171,8 @@ svg .connected {
 
 .link {
   fill: none;
-  stroke: #666;
-  stroke-width: 1.5px;
+  stroke: #ccc;
+  stroke-width: 5.5px;
 }
 
 .node circle {

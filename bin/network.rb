@@ -7,8 +7,8 @@ class Network
 
 	def initialize()
 		@@tomocha = Operator.new
-		@@tomocha.load($daichoPath)
 		begin
+			@@tomocha.load($daichoPath)
 			@@daicho = eval(File.open($daichoPath).read)
 		rescue Errno::ENOENT
 			puts "no daicho.dat file."
@@ -80,7 +80,7 @@ class Network
 				source = name
 			else
 				target = name
-				jailset_links_name << {"source" => source, "target" => target}
+				jailset_links_name << {"source" => source, "target" => target, "epair" => epair.chop}
 			end
 
 			num += 1
@@ -99,7 +99,7 @@ class Network
 			epairIP6MASK = value[4]
 			as = value[5]
 
-			jailset_network <<  {"name" => name, "ipaddr" => epairIP, "ipmask" =>  epairMASK, "ip6addr" => epairIP6, "ip6mask" => epairIP6MASK, "as" => as}
+			jailset_network <<  {"epair" => epair, "name" => name, "ipaddr" => epairIP, "ipmask" =>  epairMASK, "ip6addr" => epairIP6, "ip6mask" => epairIP6MASK, "as" => as}
 		end
 		
 		return jailset_network

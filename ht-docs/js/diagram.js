@@ -2,28 +2,6 @@
 var netDiag = [];
 
 
-//var linkDB = [];
- /*   {source : "_host_", target: "masterRouter"},
-    {source : "masterRouter", target: "mswitch"},
-    {source : "mswitch", target: "switch01"},
-    {source : "mswitch", target: "switch02"},
-    {source : "server01", target : "switch011"}, 
-    {source : "server02", target : "switch011"},
-    {source : "server03", target : "switch02"},
-    {source : "server04", target : "switch02"},
-    {source : "switch01", target : "switch011"},
-    {source : "switch01", target : "switch012"},
-    {source : "server05", target : "switch012"},
-    {source : "server06", target : "switch012"}  */
-
-//var l3DB = [];
-/*    {name: "_host_", ipaddr : "10.254.254.1", ipmask : "255.255.255.0", ip6addr : "", ip6mask : "", as : ""},
-    {name:"masterRouter", ipaddr : "10.254.254.2", ipmask : "255.255.255.0", ip6addr : "", ip6mask : "", as : ""},
-    {name:"masterRouter", ipaddr : "192.168.20.1", ipmask : "255.255.255.0", ip6addr : "", ip6mask : "", as : ""}, 
-    {name:"server01", ipaddr : "192.168.20.11", ipmask : "255.255.255.0", ip6addr : "", ip6mask : "", as : ""}, 
-    {name:"server02", ipaddr : "192.168.20.12", ipmask : "255.255.255.0", ip6addr : "", ip6mask : "", as : ""}, */
- 
-
 var d3linkDB = [];
 
 
@@ -109,22 +87,34 @@ function tick() {
                         });
 }
 
-function mouseover() {
+function node_mouseover() {
   d3.select(this).select("circle").transition()
       .duration(DUARATION)
       .attr("r", 16);
 }
 
-function mouseout() {
+function node_mouseout() {
   d3.select(this).select("circle").transition()
       .duration(DUARATION)
       .attr("r", 8);
+}
+
+function link_mouseover() {
+  d3.select(this).style("stroke","#666");
+}
+
+function link_mouseout() {
+  d3.select(this).style("stroke","#ccc");
 }
 
 function clickcircle(d){
 //  delNode(d.name);  /* こいつはノードを消す */
 //  update();
 diag_displayInfo(d.name);
+}
+
+function clicklink(d){
+  diag_displayInfo(d.epair);
 }
 
 
@@ -168,14 +158,18 @@ function update() {
   .data(d3linkDB, function(l) { return l.source + '-' + l.target; }) //linksデータを要素にバインド
   .enter()
   .append("line")
-  .attr("class", "link");
+  .on("mouseover",link_mouseover)
+  .on("mouseout",link_mouseout)
+  .on("click", function(d){ return clicklink(d);})
+  .attr("class", function(d) { return "link "+d.epair;});
+
 
  node = svg.selectAll(".node")
   .data(machineDB, function(d) { return d.name;})  //nodesデータを要素にバインド
   .enter().append("g")
   .attr("class", function(d) { return "node "+d.name;})   //[node]と要素の名前をクラスにする
-  .on("mouseover", mouseover)
-  .on("mouseout", mouseout)
+  .on("mouseover", node_mouseover)
+  .on("mouseout", node_mouseout)
   .call(force.drag);
 
 
@@ -211,41 +205,7 @@ function delNode(name) {
     machineDB = machineDB.filter(function(n) { return n.name !== name; });
     linkDB = linkDB.filter(function(l) { return (l.source !== name && l.target !== name); });
 }
-/*
-function selectNode(name){
 
-  machineDB.forEach(function(values,index){
- //   console.log(values.name);
-    if(name == values.name){
-      console.log(index);
-    }
-  });
-}
-*/
-/*
-*//*
-function diag_createLink(){
-  var source,target;
-//  d3linkDB = [];
-  linkDB.forEach(function(lvalues,lindex){
-    machineDB.forEach(function(nvalues,nindex){
-      if(lvalues.source == nvalues.name){
-        source = nindex;
-      }
-      if(lvalues.target == nvalues.name){
-        target = nindex;
-      }
-    });
-    d3linkDB.push({source : source, target : target});
-  });
-}*/
-/*
-function pushNetDiag(){
-  l3DB.forEach(function(value,index){
-    netDiag.push([value.name, value.ipaddr , value.ipmask, value.ip6addr, value.ip6mask, value.as]);
-  });
-}
-*/
 /*function init(){
   pushNetDiag();
   update();
