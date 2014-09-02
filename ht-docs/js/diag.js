@@ -57,7 +57,7 @@ function diag_displayInfo(name){
   $("#jName").text(name);
 
   diag_selectNode(name).forEach(function(value,index){
-    $("#jIP").append("IPAddr: " + l3DB[value].ipaddr + ", IPMask: " + l3DB[value].ipmask + "<br>");
+    $("#jIP").append("link: " + l3DB[value].epair + "(to " + diag_selectTargetNode(l3DB[value].epair) + "), IPAddr: " + l3DB[value].ipaddr + ", IPMask: " + l3DB[value].ipmask + "<br>");
   });
 }
 
@@ -66,11 +66,30 @@ function diag_selectNode(name){
 
   l3DB.forEach(function(values,index){
     if(name == values.name){
-    //  console.log(index);
       diagInfo.push(index);
     }
   });
   return diagInfo;
+
+}
+
+function diag_selectTargetNode(epair){
+  var target;
+  var targetName = "epair0a";   //念のためepair0aで初期化しておく
+  var epairNum = epair.slice(0,-1); //末尾削除
+  
+  if(epair.slice(-1) == "a"){   //末尾確認
+    target = epairNum + "b";
+  }else{
+    target = epairNum + "a";
+  }
+
+  l3DB.forEach(function(values,index){
+    if(target == values.epair){
+      targetName = values.name;
+    }
+  });
+  return targetName;
 
 }
 

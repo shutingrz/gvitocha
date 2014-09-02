@@ -100,11 +100,21 @@ function node_mouseout() {
 }
 
 function link_mouseover() {
-  d3.select(this).style("stroke","#666");
+  d3.select(this)
+    .style("stroke","#666")
+    .style("stroke-width","16.5px")
+    .transition()
+    .duration(DUARATION)
+    .attr("r", 8);
 }
 
 function link_mouseout() {
-  d3.select(this).style("stroke","#ccc");
+  d3.select(this)
+    .style("stroke","#ccc")
+    .style("stroke-width","5.5px")
+    .transition()
+    .duration(DUARATION)
+    .attr("r", 8);
 }
 
 function clickcircle(d){
