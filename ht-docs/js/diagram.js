@@ -91,6 +91,7 @@ function node_mouseover() {
   d3.select(this).select("circle").transition()
       .duration(DUARATION)
       .attr("r", 16);
+
 }
 
 function node_mouseout() {
@@ -141,17 +142,13 @@ function addNode(){
 function update() {
   d3linkDB = [];
 
-  diag_createLink();
-  console.log(d3linkDB)
-  
   svg.remove();
+
+  diag_createLink();  
   svg = d3.select(".diagram").append("svg")
   .attr("width", width)
   .attr("height", height);
 
-
-  link = svg.selectAll(".link").remove();
-  node = svg.selectAll(".node").remove();
 
   force = d3.layout.force()
   .nodes(machineDB)
@@ -205,6 +202,7 @@ function update() {
 
 
    force.start(); //forceグラフの描画を開始
+
 }
 
 

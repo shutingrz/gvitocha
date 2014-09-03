@@ -22,9 +22,8 @@ function diag_link(data){
 //サーバはlink=>l3の順でデータを送るため、あとのl3でリロードを行う
 function diag_l3(data){
   l3DB = data;
-
-  reloadDiag();
-
+  update();
+//  reloadDiag();
 }
 
 //人間に見やすいsource/targetから、d3.js形式のsource/targetに変換
@@ -52,12 +51,13 @@ function diag_displayInfo(name){
   $("#jName").text(name);
 
   diag_selectNode(name).forEach(function(value,index){
-    $("#jIP").append("link: " + l3DB[value].epair + "(to " + diag_selectTargetNode(l3DB[value].epair) + "), IPAddr: " + l3DB[value].ipaddr + ", IPMask: " + l3DB[value].ipmask + "<br>");
+    $("#jIP").append("link: " + l3DB[value].epair + "(<=> " + diag_selectTargetNode(l3DB[value].epair) + "), IPAddr: " + l3DB[value].ipaddr + ", IPMask: " + l3DB[value].ipmask + "<br>");
   });
+
 }
 
 function diag_displayLink(epair){
-  $("#dLink").val(epair);
+  $("#sendNet .dLink").val(epair);
 
   epaira = epair + "a";
   epairb = epair + "b";
@@ -74,8 +74,8 @@ function diag_displayLink(epair){
     }
   });
 
-  $("#dLinkA").val(epairaName);
-  $("#dLinkB").val(epairbName);
+  $("#dLinkA").text(epairaName);
+  $("#dLinkB").text(epairbName);
 
 }
 
@@ -119,12 +119,17 @@ function diag_sendLink(){
 }
 
 function diag_deleteLink(){
-//  source = $("#dlinksource").val();
-//  target = $("#dlinktarget").val();
-//  console.log(source + "," + target);
-    link = $("#dLink").val();
-    epairaName = $("#dLinkA").val();
-    epairbName = $("#dLinkB").val();
+    link = $("#sendNet .dLink").val();
+    force = d3.layout.force()
+  .nodes(machineDB)
+  .links(d3linkDB)
+  .charge(-200)
+  .linkDistance(50)
+  .size([width, height])
+  .charge(function(d) {
+    return REPULSE;
+  })
+  .on("tick", tick);
 
   send(NETWORK,{mode: "link",  control: "delete", msg : link});
 }
@@ -133,10 +138,15 @@ function diag_getNetworkLog(networkLog){
   if (networkLog.msgType == "success"){   //successメッセージが届いたら、
     status({"mode":STATUS, "msg" : {"msg" : networkLog.msg}});
     diag_getDiag();
+  //  reloadDB();
   }
 }
 
-
+function diag_createL3(){
+  data = {"epair" : $("#createL3 .epair").val(), "ipaddr" : $("#createL3 .ipaddr").val(), "ipmask" : $("#createL3 .ipmask").val(), "ip6addr" : $("#createL3 .ip6addr").val(), "ip6mask" : $("#createL3 .ip6mask").val(), "as" : $("#createL3 .as").val()};
+  
+  send(NETWORK, {mode: "l3", control: "create", msg : data});
+}
 
 
 

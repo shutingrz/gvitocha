@@ -34,6 +34,10 @@ class Network
 			elsif (data["control"] == "delete") then
 				deleteLink(data["msg"])
 			end
+		elsif (data["mode"] == "l3") then
+			if (data["control"] == "create") then
+				createL3(data["msg"])
+			end
 		end
 
 	end
@@ -143,7 +147,9 @@ class Network
 		epaira, epairb = @@tomocha.createpair
 
 		@@tomocha.connect(source,epaira)
+		@@tomocha.up(source,epaira)
 		@@tomocha.connect(target,epairb)
+		@@tomocha.up(target,epairb)
 
 		@@tomocha.save($daichoPath)
 
@@ -156,30 +162,57 @@ class Network
 		epair = link
 		epaira = epair + "a"
 		epairb = epair + "b"
-		epairaName = "_host_"
-		epairbName = "_host_"
+		epairaName = epairToname(epaira)
+		epairbName = epairToname(epairb)
 
-		num = 0
-
-		#epairは数字1つあたり、a,bの2つがあるため、全ての各ループ時にnumを加算し、num mod 2にすることでa,bとして扱う。
-		@@daicho.each do |key, value|
-			if(num%2 == 0) then
-				if(key.to_s == epaira) then
-					epairaName = value[0]
-				end
-			else
-				if(key.to_s == epairb) then
-					epairbName = value[0]
-				end	
-			end
-			num += 1
-		end
 		puts "#{epairaName},#{epairbName}"
 
 		@@tomocha.removepair(epairaName, epaira, epairbName, epairb)
 		@@tomocha.save($daichoPath)
 
 		SendMsg.status(NETWORK,"success","完了しました。")
+	end
+
+	def self.createL3(data)
+		epair = data["epair"]
+		name = epairToname(epair)
+		ipaddr = data["ipaddr"]
+		ipmask = data["ipmask"]
+		ip6addr = data["ip6addr"]
+		ip6mask = data["ip6mask"]
+		as = data["as"]
+
+		
+		@@tomocha.setupserver(name)
+		if(ipaddr != "" && ipmask != "") then
+			@@tomocha.assignip(name,epair,ipaddr,ipmask,as="")
+		end
+		@@tomocha.save($daichoPath)
+
+		SendMsg.status(NETWORK,"success","完了しました。")		
+	end
+
+	def self.epairToname(epair)
+		num = 0
+		epairName = ""
+		@@daicho.each do |key, value|
+			if(num%2 == 0) then
+				if(key.to_s == epair) then
+					epairName = value[0]
+				end
+			else
+				if(key.to_s == epair) then
+					epairName = value[0]
+				end	
+			end
+			num += 1
+		end
+
+		return epairName
+	end
+
+	def self.nameToepair(name)
+
 	end
 
 end
