@@ -204,7 +204,9 @@ function getMachineLog(machineLog){
 function reloadDB(){
   jail_getList();
   templete_getList();
-  diag_getDiag();
+  setTimeout(function(){
+    diag_getDiag();
+  },300);
 }
 
 function reloadDiag(){
