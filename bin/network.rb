@@ -187,6 +187,9 @@ class Network
 		if(ipaddr != "" && ipmask != "") then
 			@@tomocha.assignip(name,epair,ipaddr,ipmask,as="")
 		end
+		if(ip6addr != "" && ip6mask != "") then
+			@@tomocha.assignip6(name,epair,ip6addr,ip6mask,as="")
+		end
 		@@tomocha.save($daichoPath)
 
 		SendMsg.status(NETWORK,"success","完了しました。")		
