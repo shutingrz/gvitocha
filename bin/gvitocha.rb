@@ -44,7 +44,7 @@ $msg = ""
 $channel
 
 $daichoPath = $jails + "/daicho.dat"
-
+$bootPath = $jails + "/daicho.boot"
 
 
 
@@ -52,21 +52,17 @@ Process.daemon(nochdir=true) if ARGV[0] == "-D"
 @channel = EM::Channel.new
 $channel = @channel
 
+#必ずmasterRouterは起動させる
 Open3.capture3("qjail start masterRouter")
+#boot情報からjailを起動させる
+Jail.load($bootPath)
 
 EM::run do
 	EventMachine::WebSocket.start(host: "0.0.0.0", port: 3000) do |ws|
 	#start network then connect to client
 		$ws = ws
-		ws.onopen do
-=begin			EventMachine::defer do	#SQL
+		ws.onopen do				
 				sid = @channel.subscribe{|mes| ws.send mes}
-				sql = SQL.new		#初期化
-				#daicho
-				net = Network.new	#初期化
-
-			end
-=end				sid = @channel.subscribe{|mes| ws.send mes}
 				sql = SQL.new		#初期化
 				#daicho
 				net = Network.new	#初期化

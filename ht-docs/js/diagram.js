@@ -183,12 +183,25 @@ function update() {
   node.append("circle")
   .attr("r", 10)
   .style("fill", function(d) {
+    //typeによって色を変え、またbootしていない場合は薄い色で
     if(d.type == "0"){
-      return "blue";
+      if(d.boot == "1"){
+        return "#0000FF";
+      }else{
+        return "#A9A9F5";
+      }
     }else if(d.type == "1"){
-      return "orange";
+      if(d.boot == "1"){
+        return "#FF8000";
+      }else{
+        return "#F5D0A9";
+      }
     }else{
-      return "yellow";
+      if(d.boot == "1"){
+        return "#FFFF00";
+      }else{
+        return "#F2F5A9";
+      }
     }
   })
   .on("click", function(d) {

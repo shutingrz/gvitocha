@@ -18,9 +18,11 @@ class Jail
 			machine = data["machine"] #machineを入れる
 			puts "machine creating."
 			cmdLog,cause = create(machine)
+			save($bootPath)
 
 		elsif (data["control"] == "delete") then
 			cmdLog,cause = delete(data["name"])
+			save($bootPath)
 
 
 		elsif (data["control"] == "boot") then
@@ -108,6 +110,8 @@ class Jail
 		else
 			cmdLog,cause = stop(data["name"])
 		end
+
+		save($bootPath)
 		
 		return cmdLog,cause
 
@@ -157,15 +161,6 @@ class Jail
 			machine.each do |value|
 				machineList["key#{value[0]}"] = {"id" => value[0].to_s, "name" => value[1], "type" => value[2].to_s, "templete" => value[3].to_s, "flavour" => value[4].to_s, "comment" => value[5]}
 			end
-
-			if (machineList == {})
-				SendMsg.machine("jail","list","none")
-			else	
-				SendMsg.machine("jail","list",machineList)
-			end
-			id = 1
-
-
 		end	
 		
 		state = { }
@@ -176,6 +171,11 @@ class Jail
 			key += 1
 		end
 
+		if (machineList == {})
+				SendMsg.machine("jail","list","none")
+		else	
+				SendMsg.machine("jail","list",machineList)
+		end
 		SendMsg.machine("jail","boot",state)
 
 	end
@@ -271,9 +271,16 @@ class Jail
     end
 
     def self.load(path)
-		ujail = File.open(path).read
+    	begin
+			ujail = File.open(path).read
+		rescue
+			return
+		end
 		ujail.each_line do |jail|
-			start(jail)
+			flg = start(jail)
+			if (flg == false) then
+				puts "#{jail} boot failed."
+			end
 		end
 	end
 
