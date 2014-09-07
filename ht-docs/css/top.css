@@ -20,40 +20,6 @@ div.top div.header div.right{
 }
 
 
-div.top div.console{
-	clear :both;
-	width : 480px;
-	height : 600px;
-	float : left;
-	border-right : 1px solid;
-}
-
-#contxt{
-	overflow-y : scroll;
-	overflow-x : hidden;
-	width : 98%;
-	height : 80%;
-	border : 2px solid;
-	padding-left : 1px;
-	color : lime;
-	background-color : #111111;
-}
-
-div.top div.status{
-	float : right;
-	width : 49%;
-	height : 20%;
-	margin-right : auto;
-}
-#statxt{
-	overflow-y : scroll;
-	overflow-x : hidden;
-	width : 95%;
-	height : 90%;
-	border : 1px solid;
-	background-color : white;
-}
-
 #nowLoadingLog{
 	overflow-y : scroll;
 	overflow-x : hidden;

@@ -1,11 +1,14 @@
+/*
+""" WebShell Server """
+""" Released under the GPL 2.0 by Marc S. Ressl """
+*/
+
 webshell={};
 webshell.TerminalClass=function(id,width,height,handler) {
 	var ie=0;
 	if(window.ActiveXObject)
 		ie=1;
 	var sid=""+Math.round(Math.random()*1000000000);
-//	var jname="masterRouter"
-//	var qs;
 	var kb=[];
 	var isactive=false;
 	var islocked=false;
@@ -16,74 +19,24 @@ webshell.TerminalClass=function(id,width,height,handler) {
 	var div=document.getElementById(id);
 
 	function shupdate() {
-	//	console.log(jname);
 		if(initok) {
-			islocked=true;
-
-			qs="s="+sid+"&jname="+jname+"&w="+width+"&h="+height+"&k=";
-			/*
-			if (ie==1)
-				var r=new ActiveXObject("Microsoft.XMLHTTP");
-			else
-				var r=new XMLHttpRequest;
-			*/
 			var ssend="";
 			while(kb.length>0)
 				ssend+=kb.pop();
-			//r.open("GET","http://192.168.56.103:8022/u?"+qs+send,true);
 			console_write(jname,ssend);
-			//if(ie)
-			//	r.setRequestHeader("If-Modified-Since", "Sat, 1 Jan 2000 00:00:00 GMT");
-			//r.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-			//r.status=200;
-/*			r.onreadystatechange=function() {
-				if(r.readyState!=4)
-					return;
-				islocked=false;
-				if (!isactive) {
-					isactive=true;
-					handler('conn',0);
-				}
-				if(r.status==200) {
-					retry=0;
-					cy=r.responseText.substring(45,48);
-					html=r.responseText.substring(52);
-					if(html.length>0) {
-						div.innerHTML=html;
-						handler('curs',cy);
-						qtime=100;
-					} else {
-						qtime*=2;
-						if(qtime>2000)
-							qtime=2000;
-					}
-					qtimer=window.setTimeout(shupdate,qtime);
-				} else if (r.status==400)
-					handler('disc',0);
-				else {
-					retry++;
-					if (retry<3)
-						qtimer=window.setTimeout(shupdate,2000);
-					else
-						handler('disc',1);
-				}
-			}
-		//	r.send(null);*/
+			
 		}
 	}
 	function queue(s) {
-	//	console.log("queue");
 		kb.unshift(s);
 		qtime=100;
 		islocked = false;
 		if(!islocked) {
-		//	console.log("queue,islocked=>false");
 			window.clearTimeout(qtimer);
 			qtimer=window.setTimeout(shupdate,1);
 		}
 	}
 	function private_sendkey(kc) {
-	//	console.log("sendkey:" + kc);
 		var k="";
 		// Build character
 		switch(kc) {
@@ -124,7 +77,6 @@ webshell.TerminalClass=function(id,width,height,handler) {
 	this.keypress = function(ev) {
 		// Translate to standard keycodes
 		if (!ev) var ev=window.event;
-	//	console.log("keypress:" + ev);
 		var kc;
 //alert('kc:'+ev.keyCode+' which:'+ev.which+' ctrlKey:'+ev.ctrlKey);
 		if (ev.keyCode) kc=ev.keyCode;
@@ -183,7 +135,6 @@ webshell.TerminalClass=function(id,width,height,handler) {
 		return true;
 	}
 	this.keydown = function(ev) {
-	//	console.log("keydown:"+ev);
 		if (!ev) var ev=window.event;
 		if (ie) {
 			o={9:1,8:1,27:1,33:1,34:1,35:1,36:1,37:1,38:1,39:1,40:1,45:1,46:1,112:1,
@@ -199,3 +150,126 @@ webshell.TerminalClass=function(id,width,height,handler) {
 webshell.Terminal=function(id,width,height,handler) {
 	return new this.TerminalClass(id,width,height,handler);
 }
+
+
+  var is_scroll=false;
+  var curr_overlay=0;
+  var sel_overlay=1;
+  var cy=0;
+	window.onselectstart=function() {return false;};
+  // Toggle scroll
+  function ts() {
+	is_scroll=!is_scroll;
+	so(sel_overlay);
+  }
+  // Set overlay
+  function so(value) {
+	curr_overlay=value;
+	if (value>0)
+	  sel_overlay=value;
+	scroll(cy);
+	for(var i=0;i<10;i++)
+	  document.getElementById("ol"+i).style.display=(value == i)?'block':'none';
+	var term=document.getElementById("term");
+	if(value<0) {
+	  document.onkeypress=t.keypress;
+	  document.onkeydown=t.keydown;
+	  term.onclick=function(){so(sel_overlay);};
+	  term.style.cursor="pointer";
+	} else {
+	  document.onkeypress=null;
+	  document.onkeydown=null;
+	  term.onclick=null;
+	  term.style.cursor=null;
+	}
+	if (value==1)
+	  document.getElementById("t").focus();
+  }
+  // Send text
+  function st() {
+	console.log("st");
+	var textinput=document.getElementById("t").value;
+	document.getElementById("t").value='';
+	for(var i=0;i<textinput.length;i++)
+	  t.sendkey(textinput.charCodeAt(i));
+	if(!textinput.length)
+	  t.sendkey(13);
+	document.getElementById("t").focus();
+  }
+  // Send key
+  function sk(value) {
+	var textinput=document.getElementById("t").value;
+	if(textinput.length)
+	  st();
+	t.sendkey(value);
+  }
+  // Send text and go home
+  function sh(value) {
+	sk(value);
+	  so(-1);
+  }
+  // Set scroll
+  function scroll() {
+	var div=document.getElementById("term");
+	var sp=0;
+	if((curr_overlay>0) && (cy>4))
+	  sp=((4-cy)*11)+"px";
+	if (!is_scroll)
+	  sp=0;
+	div.style.top=sp;
+  }
+  // Handler
+  function handler(msg,value) {
+	switch(msg) {
+	case 'conn':
+	  startMsgAnim('Tap for keyboard',800,false);
+	  break;
+	case 'disc':
+	  startMsgAnim('Disconnected',0,true);
+	  break;
+	case 'curs':
+	  cy=value;
+	  scroll(cy);
+	  break;
+	}
+  }
+  // Animate box
+  var msgAnim={timer:null,up:false,duration:300,start:null};
+  function msgAnimTimer() {
+	var time=(new Date).getTime();
+	var fraction;
+	alpha=(time-msgAnim.start)/msgAnim.duration;
+	if(alpha<0.0)
+	  alpha=0.0;
+	else if (alpha>1.0) {
+		alpha=1.0;
+	 endMsgAnim();
+	}
+	if(!msgAnim.up)
+	  alpha=1.0-alpha;
+	  var sine=Math.sin((Math.PI/2.0)*alpha);
+	document.getElementById('ol0').style.opacity=sine*sine*0.66;
+  }
+
+  function startMsgAnim(msg,delay,up) {
+  
+	if(msgAnim.timer!=null) {
+	  clearInterval(msgAnim.timer);
+	  msgAnim.timer=null;
+	}
+	document.getElementById('ol0').innerHTML=msg;
+	so(0);
+	msgAnim.up=up;
+	msgAnim.start=(new Date).getTime()+delay-60;
+	msgAnimTimer();
+	msgAnim.timer=setInterval('msgAnimTimer();',60);
+	
+  }
+  function endMsgAnim () {
+	if(msgAnim.timer!=null) {
+	  clearInterval(msgAnim.timer);
+	  msgAnim.timer=null;
+	}
+	if(!msgAnim.up)
+	  so(-1);
+  }
