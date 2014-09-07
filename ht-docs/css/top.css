@@ -22,8 +22,8 @@ div.top div.header div.right{
 
 div.top div.console{
 	clear :both;
-	width : 50%;
-	height : 20%;
+	width : 480px;
+	height : 600px;
 	float : left;
 	border-right : 1px solid;
 }
@@ -161,6 +161,12 @@ img.minimumNowloadingIcon{
 	floar: right;
 
 }
+
+.sshel{
+	width: 15em;
+	height: 83em;
+}
+
 
 svg .connected {
    fill: limegreen;

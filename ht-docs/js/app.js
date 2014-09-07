@@ -20,10 +20,15 @@ var templeteDB = [];
 var flavorDB = [];
 var linkDB = [];
 var l3DB = [];
+var t;
+var jid;
 
 function init(){
   wsConnection();
    $("#powerSwitch").bootstrapSwitch('size', 'normal');
+   setTimeout(function(){
+   	t=webshell.Terminal("term",80,24,handler);
+   },1000);
  //  diagram();
 }
 
@@ -31,103 +36,120 @@ function init(){
 function wsConnection(){
   ws = new WebSocket("ws://192.168.56.103:3000");
 
-    
-        //接続時
+	
+		//接続時
   ws.onopen = function(event){
 
-    status({"mode":STATUS, "msg" : {"msg" : "connected."}});
-    reloadDB();
+	status({"mode":STATUS, "msg" : {"msg" : "connected."}});
+	reloadDB();
+
+	setTimeout(function(){window.scrollTo(0, 1);}, 100);
+	startMsgAnim('Connecting',0,false);
   }
 
   // メッセージ受信時の処理
   ws.onmessage = function(event){
-    //console,status,network,machine,disk,etc
-    msg = $.parseJSON(event.data);
+	//console,status,network,machine,disk,etc
+	msg = $.parseJSON(event.data);
   //  console.log("onmessage:" + msg.msgType)
-      if(msg.msgType == CONSOLE) {
-        vconsole(msg.data);
-      }
-      else if (msg.msgType == STATUS) {
-        status(msg.data,'info');
-      }
-      else if (msg.msgType == MACHINE) {  //machine関数はpowerSwitch周りで不具合があるので封印 todo
-        if(msg.data.mode == "templete"){
-          templete_main(msg.data);
-        }
-        else if(msg.data.mode == "pkg"){
-          getPackageResult(msg.data);
-        }
-        else if(msg.data.mode == "jail"){
-          jail(msg.data);
-        }
-        else{
-          machine(msg.data);
-        }
-      }
-      else if(msg.msgType == NETWORK){
-        diag(msg.data);
-      }
+	  if(msg.msgType == CONSOLE) {
+		vconsole(msg.data);
+	  }
+	  else if (msg.msgType == STATUS) {
+		status(msg.data,'info');
+	  }
+	  else if (msg.msgType == MACHINE) {  //machine関数はpowerSwitch周りで不具合があるので封印 todo
+		if(msg.data.mode == "templete"){
+		  templete_main(msg.data);
+		}
+		else if(msg.data.mode == "pkg"){
+		  getPackageResult(msg.data);
+		}
+		else if(msg.data.mode == "jail"){
+		  jail(msg.data);
+		}
+		else{
+		  machine(msg.data);
+		}
+	  }
+	  else if(msg.msgType == NETWORK){
+		diag(msg.data);
+	  }
   }
 /*
   if(ws.readyState != WebSocket.OPEN){
   //  if(retryCount < RETRYTIME){
   //    if(ws.readyState != WebSocket.OPEN){
-      if(retryCount < RETRYTIME){
-        status_status("サーバーとの接続に失敗しました。5秒後に再接続します。");
-        retryCount += 1;
-        setTimeout(function(){
-        wsConnection();
-        },1000);
-      }else{
-        status_status("再度接続するには接続ボタンを押してください。");
-        return;
-      }
+	  if(retryCount < RETRYTIME){
+		status_status("サーバーとの接続に失敗しました。5秒後に再接続します。");
+		retryCount += 1;
+		setTimeout(function(){
+		wsConnection();
+		},1000);
+	  }else{
+		status_status("再度接続するには接続ボタンを押してください。");
+		return;
+	  }
 //  },700);
-    }else{
+	}else{
 */
-      
+	  
   //エラー時のメッセージ
   ws.onerror = function (event) {
-    status('WebSocket Error ' + event);
+	status('WebSocket Error ' + event);
   }
 
   //切断時のメッセージ
   ws.onclose = function (event) {
-    if(myDisconnect == true){
-      myDisconnect = false;
-    }else{
-      retryCount = 0;
-      wsConnection();
-    }
+	if(myDisconnect == true){
+	  myDisconnect = false;
+	}else{
+	  retryCount = 0;
+	  wsConnection();
+	}
   }
 }
 
 //コンソールへのメッセージ
 function vconsole(msg){
+  /*
   //今までのデータに追加
   $("#contxt").append("<p>" + msg + "</p>");
   go_bottom("contxt");
+  */
+  //$("#contxt").val("<span>aaa</span>");
+//  console.log(msg);
+//  console.log(msg);
+  if(msg != ""){
+  //  $("#contxt").html(msg);
+	  $("#term").html(msg);
+  }
 }
 
 //通知へのメッセージ
 function status(msg,type){
   if (msg.mode == STATUS){//今までのデータに追加
-    $("#statxt").append("<p>" + msg.msg.msg + "</p>");
-    go_bottom("statxt");
-    $.growl(msg.msg.msg, {  type: type,
-                        position: {from: "top", align: "right"}});
+  //  $("#statxt").append("<p>" + msg.msg.msg + "</p>");
+  //  go_bottom("statxt");
+	$.growl(msg.msg.msg, {  type: type,
+						position: {from: "top", align: "right"}});
   }
   else if(msg.mode == MACHINE){
-    getMachineLog(msg.msg);
+	getMachineLog(msg.msg);
   }
   else if(msg.mode == NETWORK){
-    diag_getNetworkLog(msg.msg);
+	diag_getNetworkLog(msg.msg);
   }
 } 
 
 function status_status(msg){
   message = {"mode":STATUS, "msg" : {"msg" : msg}};
   status(message);
+}
+
+function console_sendConsole(jid,msg){
+	message = {"jid" : jid, "msg" : msg};
+	send(CONSOLE,message);
 }
 
 //machineへのメッセージ
@@ -138,13 +160,13 @@ function machine(msg){
 //  console.log("machine:" + msg.mode);
 
   if (msg.mode == "pkg"){
-    getPackageResult(msg);
+	getPackageResult(msg);
   }
   else if(msg.mode == "jail"){
-    jail(msg);
+	jail(msg);
   }
   else if(msg.mode == "templete"){
-    templete_main(msg);
+	templete_main(msg);
   }
 }
 
@@ -167,37 +189,37 @@ function close(no,msg){
 function getMachineLog(machineLog){
   console.log(machineLog.msgType)
   if (machineLog.msgType == "success"){   //successメッセージが届いたら、
-    status({"mode":STATUS, "msg" : {"msg" : machineLog.msg}});
-    reloadDB();
-    if(($("#powerSwitch").bootstrapSwitch('disabled')) == true){
-      $("#powerSwitch").bootstrapSwitch('toggleDisabled');
-      $('#machineList').removeAttr('disabled');
-    }
+	status({"mode":STATUS, "msg" : {"msg" : machineLog.msg}});
+	reloadDB();
+	if(($("#powerSwitch").bootstrapSwitch('disabled')) == true){
+	  $("#powerSwitch").bootstrapSwitch('toggleDisabled');
+	  $('#machineList').removeAttr('disabled');
+	}
 
-    $("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/check.png");
-    setTimeout(function(){
-      $("#nowLoadingModal").modal("hide");
-    },1500); 
+	$("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/check.png");
+	setTimeout(function(){
+	  $("#nowLoadingModal").modal("hide");
+	},1500); 
   }
   else if(machineLog.msgType== "failed"){
-    if(($("#powerSwitch").bootstrapSwitch('disabled')) == true){
-      $("#powerSwitch").bootstrapSwitch('toggleDisabled');
-      $('#machineList').removeAttr('disabled');
-    }
-    status({"mode":STATUS, "msg" : {"msg" : machineLog.msg}});
-    $("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/failed.png");
-    $("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='failed'>"+ machineLog.msg +"</span>");
+	if(($("#powerSwitch").bootstrapSwitch('disabled')) == true){
+	  $("#powerSwitch").bootstrapSwitch('toggleDisabled');
+	  $('#machineList').removeAttr('disabled');
+	}
+	status({"mode":STATUS, "msg" : {"msg" : machineLog.msg}});
+	$("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/failed.png");
+	$("#nowLoadingModal .modal-dialog .modal-content .modal-body").append("<span class='br' id='failed'>"+ machineLog.msg +"</span>");
   }
   else if(machineLog.msgType == "report"){  //stateを１つ進める
-    $("#state"+Number($("#state").text())).css("color","gray");
-    $("#state"+Number($("#state").text())).css("font-weight","normal");
-    $("#state").text(　Number($("#state").text()) + 1);
-    $("#state"+Number($("#state").text())).css("font-weight","bolder");
+	$("#state"+Number($("#state").text())).css("color","gray");
+	$("#state"+Number($("#state").text())).css("font-weight","normal");
+	$("#state").text(　Number($("#state").text()) + 1);
+	$("#state"+Number($("#state").text())).css("font-weight","bolder");
   }
   else if(machineLog.msgType== "log"){  //logボックスに表示
-    $("#nowLoadingLog").append("<span>" + machineLog.msg + "</span>");
-    go_bottom("nowLoadingLog");
-    
+	$("#nowLoadingLog").append("<span>" + machineLog.msg + "</span>");
+	go_bottom("nowLoadingLog");
+	
   }
 }
 
@@ -205,7 +227,7 @@ function reloadDB(){
   jail_getList();
   templete_getList();
   setTimeout(function(){
-    diag_getDiag();
+	diag_getDiag();
   },300);
 }
 
@@ -217,23 +239,23 @@ function reloadDiag(){
 
 function getPackageResult(log){
   if (log.control == "search"){
-    var flag = false;
-    $("#newPackageModal .modal-dialog .modal-content .modal-body .packageSearchForm .searchPkgLoading").css("display","none");  
-    $("#pkgList option").each( function() { //インストール済のパッケージを全て回して重複しないかを確認
-      if (log.msg == $(this).text()){
-        $("#pkgSearchResult").append($("<option disabled>").html(log.msg + " (インストール済)").val(0));
-        flag = true     //フラグ立てるのはあんまり良くない・・・できたら直す todo
-        return;
-      }
-    })
-    if ( flag == false){  //インストール済のパッケージになかったら
-      $("#pkgSearchResult").append($("<option>").html(log.msg).val(0));
-    }
+	var flag = false;
+	$("#newPackageModal .modal-dialog .modal-content .modal-body .packageSearchForm .searchPkgLoading").css("display","none");  
+	$("#pkgList option").each( function() { //インストール済のパッケージを全て回して重複しないかを確認
+	  if (log.msg == $(this).text()){
+		$("#pkgSearchResult").append($("<option disabled>").html(log.msg + " (インストール済)").val(0));
+		flag = true     //フラグ立てるのはあんまり良くない・・・できたら直す todo
+		return;
+	  }
+	})
+	if ( flag == false){  //インストール済のパッケージになかったら
+	  $("#pkgSearchResult").append($("<option>").html(log.msg).val(0));
+	}
   }
   else if(log.control == "list"){
-    $(".installedPkgLoading").css("display","none"); 
-    $("#pkgList").append($("<option>").html(log.msg).val(0)); 
-    $("#pkgCheckBox").append('<label><input type="checkbox" name="pkgCheckBox" value="' + log.msg + '" />' + log.msg + '</label><br>');
+	$(".installedPkgLoading").css("display","none"); 
+	$("#pkgList").append($("<option>").html(log.msg).val(0)); 
+	$("#pkgCheckBox").append('<label><input type="checkbox" name="pkgCheckBox" value="' + log.msg + '" />' + log.msg + '</label><br>');
 
   }
 
@@ -247,141 +269,144 @@ $(document).ready(function(){
 
 
   //キーイベント
-  $("#console").keypress(function(e) {
-    //Ctrl-C
-    if (e.which == 99 && e.ctrlKey == true){
-      $("#contxt").append("^C");
-    }
+/*  $("#console").keypress(function(e) {
+	//Ctrl-C
+	if (e.which == 99 && e.ctrlKey == true){
+	  $("#contxt").append("^C");
+	}
 
-    //Enter key
+	//Enter key
    if (e.which == 13) {
 
-      send(CONSOLE,$("#console").val())
-      $("#console").val("");
+	  send(CONSOLE,$("#console").val())
+	  $("#console").val("");
    } 
   });
-
+*/
+	$("#term").bind('keydown',function(e){t.keydown(e)});
+	$("#term").bind('keypress',function(e){t.keypress(e)});
+	
   //クリックイベント
   //Machine.newボタン
   $(".top .machine .new").click(function(){
-    alert();
+	alert();
   });
 
   //接続ボタン
   $(".top .header .right .connect").click(function(){
-    retryCount = 0;
-    wsConnection();
+	retryCount = 0;
+	wsConnection();
   });
 
   //切断ボタン
   $(".top .header .right .disconnect").click(function(){
-    retryCount = RETRYTIME;
-    close(4001,"切断ボタン");
+	retryCount = RETRYTIME;
+	close(4001,"切断ボタン");
   });
 
 
   //machinePropertyのPowerSwitchボタン
   $(".plabel").click(function(){
-    if(($("#powerSwitch").bootstrapSwitch('disabled')) == true){
+	if(($("#powerSwitch").bootstrapSwitch('disabled')) == true){
 
-    }else{
-      $("#powerSwitch").bootstrapSwitch('toggleDisabled');
-      $('#machineList').attr('disabled', 'disabled');
-      if(($("#powerSwitch").bootstrapSwitch('state')) == true){  //falseだったものがクリックされたらtrueになるため
-        jail_start($("#machineProperty .name .name").val());
-      }
-      else{
-        jail_stop($("#machineProperty .name .name").val());
-      }
-    }
+	}else{
+	  $("#powerSwitch").bootstrapSwitch('toggleDisabled');
+	  $('#machineList').attr('disabled', 'disabled');
+	  if(($("#powerSwitch").bootstrapSwitch('state')) == true){  //falseだったものがクリックされたらtrueになるため
+		jail_start($("#machineProperty .name .name").val());
+	  }
+	  else{
+		jail_stop($("#machineProperty .name .name").val());
+	  }
+	}
   });
 
   //machinePropertyのdeleteボタン
   $("#machineDelete").click(function(){
-    confirm_addHead("マシンの削除");
-    confirm_addBody("以下のマシンを削除します。よろしいですか？");
-    confirm_addBody("・" + $("#machineProperty .name .name").val());
-    confirm_addCmd('jail_delete($("#machineProperty .name .name").val());');
-    confirm_show();
+	confirm_addHead("マシンの削除");
+	confirm_addBody("以下のマシンを削除します。よろしいですか？");
+	confirm_addBody("・" + $("#machineProperty .name .name").val());
+	confirm_addCmd('jail_delete($("#machineProperty .name .name").val());');
+	confirm_show();
   //  jail_delete($("#machineProperty .id").text());
   });
 
   //新しいマシンを作成ボタン
   $("#newMachineForm").submit(function() {
-    $("#newMachineModal").modal("hide");
-    $("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/loading.gif").addClass("nowloadingIcon");
-    mkNowLoading.addHead(3,"新しいマシンを作成中...");
-    mkNowLoading.addBody("state1","・jailへ登録");
-    mkNowLoading.addBody("state2","・パッケージを追加");
-    mkNowLoading.addBody("state3","・データベースへ登録");
-    mkNowLoading.show();
-    jail_createJail();
-    $("#nowLoadingModal").modal("show");
+	$("#newMachineModal").modal("hide");
+	$("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/loading.gif").addClass("nowloadingIcon");
+	mkNowLoading.addHead(3,"新しいマシンを作成中...");
+	mkNowLoading.addBody("state1","・jailへ登録");
+	mkNowLoading.addBody("state2","・パッケージを追加");
+	mkNowLoading.addBody("state3","・データベースへ登録");
+	mkNowLoading.show();
+	jail_createJail();
+	$("#nowLoadingModal").modal("show");
   });
 
   //nowLoadingキャンセルボタン
   $("#nowLoadingModalCancel").click(function() {
-    $("#nowLoadingModal").modal("hide");
+	$("#nowLoadingModal").modal("hide");
   });
 
 
   //パッケージSearchボタン
   $("#newPackageModal .modal-dialog .modal-content .modal-body .packageSearchForm").submit(function(){
-    var data = { mode : "pkg",
-                 control : "search",
-                 name : $("#newPackageModal .modal-dialog .modal-content .modal-body .searchText").val()
-                }
-    send(MACHINE,data);
-    $("#pkgSearchResult option").remove();   //検索したパッケージリストの中身を全て消す
-    $("#newPackageModal .modal-dialog .modal-content .modal-body .packageSearchForm .searchPkgLoading").css("display","inline");  
-    $("#newPackageModal .modal-dialog .modal-content .modal-body .packageSearchForm .searchPkgLoading").attr("src","./img/loading.gif").addClass("minimumNowloadingIcon");
+	var data = { mode : "pkg",
+				 control : "search",
+				 name : $("#newPackageModal .modal-dialog .modal-content .modal-body .searchText").val()
+				}
+	send(MACHINE,data);
+	$("#pkgSearchResult option").remove();   //検索したパッケージリストの中身を全て消す
+	$("#newPackageModal .modal-dialog .modal-content .modal-body .packageSearchForm .searchPkgLoading").css("display","inline");  
+	$("#newPackageModal .modal-dialog .modal-content .modal-body .packageSearchForm .searchPkgLoading").attr("src","./img/loading.gif").addClass("minimumNowloadingIcon");
   });
 
   //パッケージ追加ボタン
   $("#newPackageModal .modal-dialog .modal-content .modal-body .packageInstallForm").submit(function(){
-    var data = { mode : "pkg",
-                 control : "install",
-                 name : $("#pkgSearchResult option:selected").text()
-                }
-    
-    mkNowLoading.addHead(3,"新しいパッケージを追加中...");
-    mkNowLoading.addBody("state1","・リポジトリからダウンロード");
-    mkNowLoading.addBody("state2","・sharedfsへコピー");
-    mkNowLoading.addBody("state3","・データベースへ登録");
+	var data = { mode : "pkg",
+				 control : "install",
+				 name : $("#pkgSearchResult option:selected").text()
+				}
+	
+	mkNowLoading.addHead(3,"新しいパッケージを追加中...");
+	mkNowLoading.addBody("state1","・リポジトリからダウンロード");
+	mkNowLoading.addBody("state2","・sharedfsへコピー");
+	mkNowLoading.addBody("state3","・データベースへ登録");
 
-    $("#newPackageModal").modal("hide");
-    mkNowLoading.show();
-    send(MACHINE,data);
+	$("#newPackageModal").modal("hide");
+	mkNowLoading.show();
+	send(MACHINE,data);
   });
 
   //テンプレート作成ボタン
   $("#newTempleteModal .modal-dialog .modal-content .modal-body .templeteCreateForm").submit(function(){
-    var pkglist = "";
-    $('[name="pkgCheckBox"]:checked').each(function(){
+	var pkglist = "";
+	$('[name="pkgCheckBox"]:checked').each(function(){
    //   console.log($(this).val())  
-      pkglist += $(this).val() + ";";
-    })
-    var data = { mode : "templete",
-                 control : "create",
-                 msg : {
-                        name :  $("#newTempleteModal .modal-dialog .modal-content .modal-body .name").val(),
-                        pkglist : pkglist
-                        }
-                }
-    mkNowLoading.addHead(1,"新しいパッケージを追加中...");
-    mkNowLoading.addBody("state1","・データベースへ登録");
+	  pkglist += $(this).val() + ";";
+	})
+	var data = { mode : "templete",
+				 control : "create",
+				 msg : {
+						name :  $("#newTempleteModal .modal-dialog .modal-content .modal-body .name").val(),
+						pkglist : pkglist
+						}
+				}
+	mkNowLoading.addHead(1,"新しいパッケージを追加中...");
+	mkNowLoading.addBody("state1","・データベースへ登録");
 
-    $("#newTempleteModal").modal("hide");
-    mkNowLoading.show();
-    send(MACHINE,data);
+	$("#newTempleteModal").modal("hide");
+	mkNowLoading.show();
+	send(MACHINE,data);
 
   });
 
   //ConfirmOKボタン
   $("#confirmForm").submit(function(){
-    $("#confirmModal").modal("hide");
+	$("#confirmModal").modal("hide");
   //  console.log($("#confirmForm .cmd").val());
-    eval($("#confirmForm .cmd").val());
+	eval($("#confirmForm .cmd").val());
   });
 
 
@@ -389,54 +414,54 @@ $(document).ready(function(){
   //MachineListでmachineを選択した時
   $("#machineList").change(function(){    //プロパティにフォーカスした項目のname,machineType,commentを表示する
   //  var id = $("#machineList option:selected").val();
-    var name = $("#machineList option:selected").text();
+	var name = $("#machineList option:selected").text();
   //  machine = ((sdb.exec("select * from machine where id == '" +id+ "'"))[0]).values[0];
-    machine = db_machine("select",name);
+	machine = db_machine("select",name);
 
-    if (machine.boot == "1"){
-      $('#powerSwitch').bootstrapSwitch('state', true, true);
-    }else{
-      $('#powerSwitch').bootstrapSwitch('state', false,false);
-    }    
+	if (machine.boot == "1"){
+	  $('#powerSwitch').bootstrapSwitch('state', true, true);
+	}else{
+	  $('#powerSwitch').bootstrapSwitch('state', false,false);
+	}    
 
   //  $("#machineProperty .id").text(id);
-    $("#machineProperty .name .name").val(machine.name);
-    $("#machineProperty .machineType .machineType").val(machine.type);
+	$("#machineProperty .name .name").val(machine.name);
+	$("#machineProperty .machineType .machineType").val(machine.type);
 
-    $("#machineProperty .templete .templete").empty();
-    ftemplete = templete_list("all");
-    ftemplete.forEach(function(value,index){
-      $("#machineProperty .templete .templete").append($("<option>").html(value).val(index));  
-    });
-    $("#machineProperty .templete .templete").val(machine.templete);  
-    $("#machineProperty .machineType .templete").val(ftemplete);
-    $("#machineProperty .flavour .flavour").val(machine.flavour);
-    $("#machineProperty .comment .comment").val(machine.comment);     
+	$("#machineProperty .templete .templete").empty();
+	ftemplete = templete_list("all");
+	ftemplete.forEach(function(value,index){
+	  $("#machineProperty .templete .templete").append($("<option>").html(value).val(index));  
+	});
+	$("#machineProperty .templete .templete").val(machine.templete);  
+	$("#machineProperty .machineType .templete").val(ftemplete);
+	$("#machineProperty .flavour .flavour").val(machine.flavour);
+	$("#machineProperty .comment .comment").val(machine.comment);     
   });
 
 
   //newMachineFormでtempleteを選択した時
   $("#newMachineForm .templete").change(function(){
-    var pkg;
-    var name = ($("#newMachineForm .templete option:selected").text());
-    $("#newMachineForm .package").empty();
-    pkg = (db_templete("select",name)).pkg;
-    pkg = pkg.split(";");
-    pkg.forEach(function(pkg, index){
-      $("#newMachineForm .package").append($("<option disabled>").html(pkg).val(0)); 
-    });
-    
+	var pkg;
+	var name = ($("#newMachineForm .templete option:selected").text());
+	$("#newMachineForm .package").empty();
+	pkg = (db_templete("select",name)).pkg;
+	pkg = pkg.split(";");
+	pkg.forEach(function(pkg, index){
+	  $("#newMachineForm .package").append($("<option disabled>").html(pkg).val(0)); 
+	});
+	
 
   });
 
   //モーダルが開いた時のイベント
   $('#newPackageModal, #newTempleteModal').on('shown.bs.modal', function() {
-    $(".installedPkgLoading").attr("src","./img/loading.gif").addClass("minimumNowloadingIcon");
-    $(".installedPkgLoading").attr("src","./img/loading.gif").addClass("minimumNowloadingIcon");
-    var data = { mode : "pkg",
-                 control : "list",
-                }
-    send(MACHINE,data);
+	$(".installedPkgLoading").attr("src","./img/loading.gif").addClass("minimumNowloadingIcon");
+	$(".installedPkgLoading").attr("src","./img/loading.gif").addClass("minimumNowloadingIcon");
+	var data = { mode : "pkg",
+				 control : "list",
+				}
+	send(MACHINE,data);
   });
 
   $("#newMachineModal").on("shown.bs.modal", function(){
@@ -446,12 +471,12 @@ $(document).ready(function(){
 
   //モーダルが消えた場合のイベント
   $('#newPackageModal, #newTempleteModal').on('hidden.bs.modal', function () {      //newTempleteとnewPackageは構造が似ているので同じ関数に
-    $(".modal-content select option").remove();
-    $("#pkgCheckBox").empty();
-    $("#packageSearchForm .searchText").val("");
-    $("#templeteCreateForm .name").val("");
-    reloadDB();
-    
+	$(".modal-content select option").remove();
+	$("#pkgCheckBox").empty();
+	$("#packageSearchForm .searchText").val("");
+	$("#templeteCreateForm .name").val("");
+	reloadDB();
+	
   });
 
 
@@ -530,3 +555,129 @@ function confirm_show(){
   $("#confirmModal").modal("show");
 }
 
+
+
+
+//########test
+  var is_scroll=false;
+  var curr_overlay=0;
+  var sel_overlay=1;
+  var cy=0;
+	window.onselectstart=function() {return false;};
+  // Toggle scroll
+  function ts() {
+	is_scroll=!is_scroll;
+	so(sel_overlay);
+  }
+  // Set overlay
+  function so(value) {
+	curr_overlay=value;
+	if (value>0)
+	  sel_overlay=value;
+	scroll(cy);
+	for(var i=0;i<10;i++)
+	  document.getElementById("ol"+i).style.display=(value == i)?'block':'none';
+	var term=document.getElementById("term");
+	if(value<0) {
+	  document.onkeypress=t.keypress;
+	  document.onkeydown=t.keydown;
+	  term.onclick=function(){so(sel_overlay);};
+	  term.style.cursor="pointer";
+	} else {
+	  document.onkeypress=null;
+	  document.onkeydown=null;
+	  term.onclick=null;
+	  term.style.cursor=null;
+	}
+	if (value==1)
+	  document.getElementById("t").focus();
+  }
+  // Send text
+  function st() {
+	console.log("st");
+	var textinput=document.getElementById("t").value;
+//	var textinput=keycode;
+	document.getElementById("t").value='';
+	for(var i=0;i<textinput.length;i++)
+	  t.sendkey(textinput.charCodeAt(i));
+	if(!textinput.length)
+	  t.sendkey(13);
+	document.getElementById("t").focus();
+  }
+  // Send key
+  function sk(value) {
+	var textinput=document.getElementById("t").value;
+	if(textinput.length)
+	  st();
+	t.sendkey(value);
+  }
+  // Send text and go home
+  function sh(value) {
+	sk(value);
+	  so(-1);
+  }
+  // Set scroll
+  function scroll() {
+	var div=document.getElementById("term");
+	var sp=0;
+	if((curr_overlay>0) && (cy>4))
+	  sp=((4-cy)*11)+"px";
+	if (!is_scroll)
+	  sp=0;
+	div.style.top=sp;
+  }
+  // Handler
+  function handler(msg,value) {
+	switch(msg) {
+	case 'conn':
+	  startMsgAnim('Tap for keyboard',800,false);
+	  break;
+	case 'disc':
+	  startMsgAnim('Disconnected',0,true);
+	  break;
+	case 'curs':
+	  cy=value;
+	  scroll(cy);
+	  break;
+	}
+  }
+  // Animate box
+  var msgAnim={timer:null,up:false,duration:300,start:null};
+  function msgAnimTimer() {
+	var time=(new Date).getTime();
+	var fraction;
+	alpha=(time-msgAnim.start)/msgAnim.duration;
+	if(alpha<0.0)
+	  alpha=0.0;
+	else if (alpha>1.0) {
+		alpha=1.0;
+	 endMsgAnim();
+	}
+	if(!msgAnim.up)
+	  alpha=1.0-alpha;
+	  var sine=Math.sin((Math.PI/2.0)*alpha);
+	document.getElementById('ol0').style.opacity=sine*sine*0.66;
+  }
+
+  function startMsgAnim(msg,delay,up) {
+  /*
+	if(msgAnim.timer!=null) {
+	  clearInterval(msgAnim.timer);
+	  msgAnim.timer=null;
+	}
+	document.getElementById('ol0').innerHTML=msg;
+	so(0);
+	msgAnim.up=up;
+	msgAnim.start=(new Date).getTime()+delay-60;
+	msgAnimTimer();
+	msgAnim.timer=setInterval('msgAnimTimer();',60);
+	*/
+  }
+  function endMsgAnim () {
+	if(msgAnim.timer!=null) {
+	  clearInterval(msgAnim.timer);
+	  msgAnim.timer=null;
+	}
+	if(!msgAnim.up)
+	  so(-1);
+  }

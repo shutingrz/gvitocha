@@ -42,6 +42,7 @@ $jails = "/usr/jails"
 $ws
 $msg = ""
 $channel
+$webshellURI = "http://192.168.56.103:8022"
 
 $daichoPath = $jails + "/daicho.dat"
 $bootPath = $jails + "/daicho.boot"

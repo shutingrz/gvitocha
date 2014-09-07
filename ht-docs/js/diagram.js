@@ -13,11 +13,14 @@ var MRTNAME = "masterRouter"
 var HOSTWIDTH = width/2;
 var HOSTHEIGHT = height/6;
 var MRTWIDTH = width/2;
-var MRTHEIGHT = ((height/6)+30);
+var MRTHEIGHT = ((height/6)+70);
 var REPULSE = -500;       //反発力
 var DUARATION = 750;      //
-var CIRCLESIZE = 8;       //標準状態の円の大きさ
-var BIGCIRCLESIZE = 16;   //大きい時(たとえばカーソルフォーカス時)の円の大きさ
+var CIRCLESIZE = 12;       //標準状態の円の大きさ
+var BIGCIRCLESIZE = 25;   //大きい時(たとえばカーソルフォーカス時)の円の大きさ
+var LINKSIZE = 8;
+var BIGLINKSIZE = 16;
+
 
 var svg = d3.select(".diagram").append("svg")
   .attr("width", width)
@@ -90,14 +93,14 @@ function tick() {
 function node_mouseover() {
   d3.select(this).select("circle").transition()
       .duration(DUARATION)
-      .attr("r", 16);
+      .attr("r", BIGCIRCLESIZE);
 
 }
 
 function node_mouseout() {
   d3.select(this).select("circle").transition()
       .duration(DUARATION)
-      .attr("r", 8);
+      .attr("r", CIRCLESIZE);
 }
 
 function link_mouseover() {
@@ -106,7 +109,7 @@ function link_mouseover() {
     .style("stroke-width","16.5px")
     .transition()
     .duration(DUARATION)
-    .attr("r", 8);
+    .attr("r", BIGLINKSIZE);
 }
 
 function link_mouseout() {
@@ -115,7 +118,7 @@ function link_mouseout() {
     .style("stroke-width","5.5px")
     .transition()
     .duration(DUARATION)
-    .attr("r", 8);
+    .attr("r", LINKSIZE);
 }
 
 function clickcircle(d){
@@ -181,7 +184,7 @@ function update() {
 
 
   node.append("circle")
-  .attr("r", 10)
+  .attr("r", CIRCLESIZE)
   .style("fill", function(d) {
     //typeによって色を変え、またbootしていない場合は薄い色で
     if(d.type == "0"){
