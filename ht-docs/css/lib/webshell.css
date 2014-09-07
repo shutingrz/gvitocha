@@ -3,6 +3,7 @@
 .container {
 margin:0 auto 0 auto;
 width:480px;
+minimum-height:264px;
 margin:0;
 padding:0;
 background:#141414;

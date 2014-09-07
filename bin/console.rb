@@ -1,33 +1,81 @@
 # -*- coding: utf-8 -*-
 require 'net/http'
 	#console msg
-	def console(data)
-=begin
-		SendMsg.console(">" + message)
-		begin
-			Open3.popen3(message) do |stdin, stdout, stderr, thread|
-				stdout.each do |line|
-					line = line.chomp
-					SendMsg.console(line)
-				end
-				stderr.each do |line|
-					line = line.chomp
-					SendMsg.console(line)
-				end
-				SendMsg.console("")
-			end
-		rescue => exc		#存在しないコマンドが打たれた時
-			p exc
-			SendMsg.console("command not found: " + message + "\n")
+class Console
+
+	@task = Hash.new
+
+	def self.main(data)
+
+		if(data["mode"] == "write") then
+			jname = data["msg"]["jname"]
+			jid = Jail.nameTojid(jname)
+			cmd = data["msg"]["cmd"]
+			self.write(jid,cmd)
 		end
-=end
-		jid = data["jid"]
-		msg = data["msg"]
+
+		if(data["mode"] == "register" ) then
+			jname = data["jname"]
+			jid = Jail.nameTojid(jname)
+			register(jid)
+			self.loop(jid)
+		end	
+		if(data["mode"] == "unregister") then
+			jname = data["jname"]
+			jid = Jail.nameTojid(jname)
+			unregister(jid)
+		end
+	end
+
+	def self.register(jid)
+		@task[jid] = true
+	end
+
+	def self.unregister(jid)
+		@task[jid] = false
+	end
+
+	def self.unregisterAll()
+		@task.each do |key, value|
+			@task[key] = false
+		end
+	end
+
+	def self.write(jid,cmd)
+		param = "/u?s=00000#{jid}&jid=#{jid}&w=80&h=24&k=#{cmd}"
+		res = self.send(param)
+		SendMsg.console(res.gsub("\n","<br>"))
+	end
+
+	def self.read(jid)
+		param = "/u?s=00000#{jid}&jid=#{jid}&w=80&h=24&k="
+		res = self.send(param)
+		return res
+	end
+
+	def self.loop(jid)
+		EM::defer do
+			#puts "task:#{@task[jid]}"
+			while(@task[jid]) do
+				res = self.read(jid)
+				if(res != "") then
+					SendMsg.console(res.gsub("\n","<br>"))
+				end
+				sleep(1)
+			end
+			puts "#{jid} unregisterd."
+		end
+	end
+
+	def self.send(param)
+		#puts "send:" + param
 		url = URI.parse($webshellURI)
-		req = Net::HTTP::Get.new("/u?s=00000#{jid}&jid=#{jid}&w=80&h=24&k=#{msg}")
+		req = Net::HTTP::Get.new(param)
 		res = Net::HTTP.start(url.host, url.port) {|http|
 		  http.request(req)
 		}
-		
-		SendMsg.console(res.body.gsub("\n","<br>"))
+		#puts "body:" + res.body
+		return res.body
 	end
+
+end

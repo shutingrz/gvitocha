@@ -47,7 +47,7 @@ function diag_createLink(){
 function diag_displayInfo(name){
   $("#jName").text("");
   $("#jIP").empty();
-
+  $("#netInfo .shellBtn").val(name);
   $("#jName").text(name);
 
   diag_selectNode(name).forEach(function(value,index){

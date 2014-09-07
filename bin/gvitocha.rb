@@ -75,7 +75,7 @@ EM::run do
         		msg = JSON.parse(message)
         		message = msg[1]
         		if (msg["msgType"] == CONSOLE) then
-        			console(msg["data"])
+        			Console.main(msg["data"])
 	
 				elsif (msg["msgType"] == STATUS) then
         			p "STATUS"
@@ -95,6 +95,7 @@ EM::run do
 	
 		ws.onclose	do |event|
 			puts "disconnected."
+			Console.unregisterAll()
 		end
 	
 

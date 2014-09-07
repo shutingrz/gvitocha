@@ -284,6 +284,19 @@ class Jail
 		end
 	end
 
+	def self.nameTojid(name)
+		jid = 0
+		s,e = Open3.capture3("jls |grep #{$jails}|grep #{name}")
+		s.each_line do |line|
+			str = line.split(" ")
+			if(str[2] == name) then
+				jid = str[0]
+				break
+			end
+		end
+		return jid
+	end
+
 end
 
 

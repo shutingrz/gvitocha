@@ -4,8 +4,8 @@ webshell.TerminalClass=function(id,width,height,handler) {
 	if(window.ActiveXObject)
 		ie=1;
 	var sid=""+Math.round(Math.random()*1000000000);
-//	var jid="20"
-	var qs="s="+sid+"&jid="+jid+"&w="+width+"&h="+height+"&k=";
+//	var jname="masterRouter"
+//	var qs;
 	var kb=[];
 	var isactive=false;
 	var islocked=false;
@@ -16,9 +16,11 @@ webshell.TerminalClass=function(id,width,height,handler) {
 	var div=document.getElementById(id);
 
 	function shupdate() {
-		console.log(jid);
-		if(!islocked) {
+	//	console.log(jname);
+		if(initok) {
 			islocked=true;
+
+			qs="s="+sid+"&jname="+jname+"&w="+width+"&h="+height+"&k=";
 			/*
 			if (ie==1)
 				var r=new ActiveXObject("Microsoft.XMLHTTP");
@@ -29,8 +31,7 @@ webshell.TerminalClass=function(id,width,height,handler) {
 			while(kb.length>0)
 				ssend+=kb.pop();
 			//r.open("GET","http://192.168.56.103:8022/u?"+qs+send,true);
-			console.log(jid+ " " +ssend);
-			console_sendConsole(jid,ssend);
+			console_write(jname,ssend);
 			//if(ie)
 			//	r.setRequestHeader("If-Modified-Since", "Sat, 1 Jan 2000 00:00:00 GMT");
 			//r.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
@@ -76,7 +77,7 @@ webshell.TerminalClass=function(id,width,height,handler) {
 		qtime=100;
 		islocked = false;
 		if(!islocked) {
-			console.log("queue,islocked=>false");
+		//	console.log("queue,islocked=>false");
 			window.clearTimeout(qtimer);
 			qtimer=window.setTimeout(shupdate,1);
 		}
@@ -113,8 +114,8 @@ webshell.TerminalClass=function(id,width,height,handler) {
 		}
 		queue(encodeURIComponent(k));
 	};
-	this.update = function(jid2){
-		jid = jid2
+	this.update = function(jname2){
+		jname = jname2
 		shupdate();
 	}
 	this.sendkey = function(kc) {

@@ -15,6 +15,7 @@
 		<script src="./js/templete.js"></script>
 		<script src="./js/diag.js"></script>
 		<script src="./js/diagram.js"></script>
+		<script src="./js/console.js"></script>
 
 	
 		<link rel="stylesheet" type="text/css" href="./css/top.css" />
@@ -47,35 +48,9 @@
 	<!--	<div id="contxt" class="console" ></div>
 		<br>
 		<input size="85" id="console" type="text"> -->
-		<div class="container">
-			<pre id="term" tabindex="1"></pre>
-			<div id="ol0" class="olAlert"></div>
 
-			<div id="ol1" class="olCtrl">
-				<div class="hd">
-					<div class="h hb" onclick="so(-1)">Back</div>
-					<div class="hr">
-						<div class="h hscroll" onclick="ts()">Scroll</div>
-					</div>
-				</div>
-				<div class="kd"></div>
-				<div class="kd"></div>
-				<div class="kd">
-					<form class="k k2" name="textform" onsubmit="st();return false;">
-						<input type="text" id="t" class="t" name="textinput" />
-					</form>
-					<div class="k k6" onclick="sh(13)">Send</div>
-				</div>
-				<div class="kd">
-					<div class="k k6s" onclick="so(1)">Text</div>
-					<div class="k k6" onclick="so(2)">Nav</div>
-					<div class="k k6" onclick="so(3)">ABC</div>
-					<div class="k k6" onclick="so(4)">.?123</div>
-					<div class="k k6" onclick="so(5)">Ctrl</div>
-					<div class="k k6" onclick="so(6)">Fn</div>
-				</div>
-			</div>
-		</div>
+					  	
+
 	</div>
 <!--
 	<div class="status">
@@ -288,7 +263,7 @@
 		</div><!-- /.modal -->
 
 		<!-- Shellモーダル -->
-		<div class="modal fade" id="shellModal" tabindex="-1" role="dialog" aria-labelledby="shellModal" aria-hidden="true">
+		<div class="modal" id="shellModal" tabindex="-1" role="dialog" aria-labelledby="shellModal" aria-hidden="true" data-keyboard="false" >
 		  <div class="modal-dialog">
 			<div class="modal-content">
 			  <div class="modal-header">
@@ -296,8 +271,9 @@
 				<h4 class="modal-title" id="shellModalTitle">Shell</h4>
 			  </div>
 			  <div class="modal-body"> 
-			  <div id="sshel">
-
+			  	<div class="container">
+					<pre id="term" tabindex="1"></pre>
+				</div>
 			  </div>
 				<div class="modal-footer">
 				  <button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
@@ -317,7 +293,7 @@
 			<div class="info" id="netInfo">
 				Name<br><div id="jName"></div>
 				<br>
-				<button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#shellModal">Shell</button><br>
+				<button class="shellBtn btn btn-primary btn-xs" data-toggle="modal" data-target="#shellModal" value="">Shell</button><br>
 
 				IPAddresses<br>
 				<div id="jIP"></div>

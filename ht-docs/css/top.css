@@ -162,9 +162,8 @@ img.minimumNowloadingIcon{
 
 }
 
-.sshel{
-	width: 15em;
-	height: 83em;
+#shellModal .modal-dialog .modal-content .modal-body{
+	height : 340px;
 }
 
 
