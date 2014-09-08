@@ -232,10 +232,8 @@ class Operator
     end
   end
 
-  def load(path)
-    @daicho = {}
-    @daicho = eval(File.open(path).read)
-    return @daicho
+  def load(daicho)
+    @daicho = daicho
   end
 
   def getDaicho()

@@ -5,7 +5,6 @@ require 'open3'
 class Jail
 
 	def initialize()
-
 	end
 
 	def self.main(data)

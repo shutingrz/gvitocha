@@ -8,7 +8,7 @@ class Network
 	def initialize()
 		@@tomocha = Operator.new
 		begin
-			@@tomocha.load($daichoPath)
+		#	@@tomocha.load($daichoPath)
 			@@daicho = eval(File.open($daichoPath).read)
 		rescue Errno::ENOENT
 			puts "no daicho.dat file."
@@ -17,10 +17,14 @@ class Network
 			Network.init()
 			retry
 		end
+		if(@@daicho != Hash.new) then
+			puts "start resume."
+		#	Network.resume(@@daicho)
+		end
 	end
 
 	def self.main(data)
-		@@tomocha.load($daichoPath)	#毎回ファイルからdaichoを読み込む
+		@@tomocha.load(@@daicho)	#毎回ファイルからdaichoを読み込む
 		@@daicho = @@tomocha.getDaicho()
 #		puts "Network.mainの最初"
 #		puts @@tomocha.getDaicho()
@@ -38,13 +42,29 @@ class Network
 
 		elsif (data["mode"] == "link") then
 			if (data["control"] == "add") then
-				createLink(data["msg"])
+				source = data["msg"]["source"]
+				target = data["msg"]["target"]
+				res = createLink(source,target)
+				if(res) then
+					SendMsg.status(NETWORK,"success","完了しました。")
+				end
 			elsif (data["control"] == "delete") then
-				deleteLink(data["msg"])
+				link = data["msg"]
+				deleteLink(link)
 			end
 		elsif (data["mode"] == "l3") then
 			if (data["control"] == "create") then
-				createL3(data["msg"])
+				epair = data["msg"]["epair"]
+				ipaddr = data["msg"]["ipaddr"]
+				ipmask = data["msg"]["ipmask"]
+				ip6addr = data["msg"]["ip6addr"]
+				ip6mask = data["msg"]["ip6mask"]
+				as = data["msg"]["as"]
+
+				res = createL3(epair,ipaddr,ipmask,ip6addr,ip6mask,as)
+				if(res) then
+					SendMsg.status(NETWORK,"success","完了しました。")	
+				end
 			end
 		end
 
@@ -58,7 +78,7 @@ class Network
 
 		ifconfig(epaira + " inet " + epairaIP + " netmask " + epairaMASK)
 		ifconfig(epaira + " up")
-		@@tomocha.register(epaira,"_host_",epairaIP,epairaMASK)
+	#	@@tomocha.register(epaira,"_host_",epairaIP,epairaMASK)
 
 		#masterRouter to hostjail
 		serverNAME = "masterRouter"
@@ -68,7 +88,7 @@ class Network
 		@@tomocha.setuprouter(serverNAME)
 		@@tomocha.connect(serverNAME,epairb)
 		@@tomocha.assignip(serverNAME,epairb,epairbIP,epairbMASK)
-		@@tomocha.register(epairb,serverNAME,epairbIP,epairbMASK)
+	#	@@tomocha.register(epairb,serverNAME,epairbIP,epairbMASK)
 		@@tomocha.up(serverNAME,epairb)
 	#	@@tomocha.save($daichoPath)
 	end
@@ -80,7 +100,7 @@ class Network
 		target = ""
 		jailset_links_name = []
 
-		if (daicho != "") then	#daichoにデータが書き込まれていたら
+		if (daicho != Hash.new) then	#daichoにデータが書き込まれていたら
 			begin 
 				daicho.each do |key,value|
 					epair = key.to_s
@@ -110,7 +130,7 @@ class Network
 
 	def self.to_l3(daicho)
 		jailset_network = []
-		if (daicho != "") then		#daichoにデータが書き込まれていたら
+		if (daicho != Hash.new) then		#daichoにデータが書き込まれていたら
 			begin
 				daicho.each do |key, value|
 					epair = key.to_s
@@ -137,16 +157,13 @@ class Network
 		@@tomocha.setupbridge(name)
 	end
 
-	def self.createLink(data)
+	def self.createLink(source,target)
 		#{"source"=>"server01", "target"=>"server03"}
 		#SERVER = 0
 		#ROUTER = 1
 		#SWITCH = 2		#データベースのtypeの数値
 
-		source = data["source"]
-		target = data["target"]
 
-		type = 
 		case (SQL.select("machine","name",source))[2]
 			when SERVER then
 				@@tomocha.setupserver(source)
@@ -177,8 +194,7 @@ class Network
 
 		@@tomocha.save($daichoPath)
 
-		SendMsg.status(NETWORK,"success","完了しました。")
-
+		return epaira, epairb
 
 	end
 
@@ -197,14 +213,8 @@ class Network
 		SendMsg.status(NETWORK,"success","完了しました。")
 	end
 
-	def self.createL3(data)
-		epair = data["epair"]
+	def self.createL3(epair,ipaddr,ipmask,ip6addr,ip6mask,as)
 		name = epairToname(epair)
-		ipaddr = data["ipaddr"]
-		ipmask = data["ipmask"]
-		ip6addr = data["ip6addr"]
-		ip6mask = data["ip6mask"]
-		as = data["as"]
 
 		
 		@@tomocha.setupserver(name)
@@ -216,7 +226,7 @@ class Network
 		end
 		@@tomocha.save($daichoPath)
 
-		SendMsg.status(NETWORK,"success","完了しました。")		
+		return true	
 	end
 
 	def self.epairToname(daicho,epair)
@@ -231,6 +241,46 @@ class Network
 
 	def self.nameToepair(daicho,name)
 
+	end
+
+	def self.destroyDaicho(daichoPath)
+		File::open(path,"w") do |f|
+      		f.puts ""
+    	end
+	end
+
+	def self.resume(path)
+		@@tomocha.daicho = ""
+		if(@@daicho != "") then
+			num = 0
+			source = ""
+			target = ""
+			epaira = ""
+			epairb = ""
+			valuea = []
+			valueb = []
+			@@daicho.each do |key, value|	
+			#	name = value[0]
+			#	ipaddr = value[1]
+			#	ipmask = value[2]
+			#	ip6addr = value[3]
+			#	ip6mask = value[4]
+			#	as = value[5]
+			#######################
+				if (num%2 == 0) then			#a
+					valuea = value
+					source = valuea[0]
+				else							#b
+					valueb = value
+					target = valueb[0]
+					epaira, epairb = createLink(source,target)
+
+					createL3(epaira,valuea[1], valuea[2], valuea[3], valuea[4], valuea[5])
+					createL3(epairb,valueb[1], valueb[2], valueb[3], valueb[4], valueb[5])
+				end
+				num += 1
+			end
+		end
 	end
 
 end
