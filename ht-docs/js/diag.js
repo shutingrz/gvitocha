@@ -15,15 +15,18 @@ function diag_getDiag(){
 
 //サーバから取得したepairの接続状態(L2)を代入
 function diag_link(data){
-  linkDB = data;
+  if(data != "none"){ //noneだった場合は代入しない
+    linkDB = data;
+  }
 }
 
 //サーバから取得したL3(ipアドレスなど)を代入し、diagをリロード
 //サーバはlink=>l3の順でデータを送るため、あとのl3でリロードを行う
 function diag_l3(data){
-  l3DB = data;
+  if(data != "none"){ //noneだった場合は代入しない
+    l3DB = data;
+  }
   update();
-//  reloadDiag();
 }
 
 //人間に見やすいsource/targetから、d3.js形式のsource/targetに変換

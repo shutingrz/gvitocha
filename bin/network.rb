@@ -26,8 +26,16 @@ class Network
 #		puts @@tomocha.getDaicho()
 
 		if (data["mode"] == "list") then
-			SendMsg.diag("link",to_link(@@daicho))
-			SendMsg.diag("l3",to_l3(@@daicho))
+			link = to_link(@@daicho)
+			if(link) then
+				SendMsg.diag("link",link)
+			end
+
+			l3 = to_l3(@@daicho)
+			if(l3) then
+				SendMsg.diag("l3",l3)
+			end
+
 		elsif (data["mode"] == "link") then
 			if (data["control"] == "add") then
 				createLink(data["msg"])
@@ -62,7 +70,7 @@ class Network
 		@@tomocha.assignip(serverNAME,epairb,epairbIP,epairbMASK)
 		@@tomocha.register(epairb,serverNAME,epairbIP,epairbMASK)
 		@@tomocha.up(serverNAME,epairb)
-		@@tomocha.save($daichoPath)
+	#	@@tomocha.save($daichoPath)
 	end
 
 
@@ -71,39 +79,55 @@ class Network
 		source = ""
 		target = ""
 		jailset_links_name = []
-		daicho.each do |key,value|
-			epair = key.to_s
-			name = value[0]
-			epairIP = value[1]
-			epairMASK = value[2]
-			epairIP6 = value[3]
-			epairIP6MASK = value[4]
-			as = value[5]
-		
-			if (num%2 == 0) then
-				source = name
-			else
-				target = name
-				jailset_links_name << {"source" => source, "target" => target, "epair" => epair.chop}
-			end
 
-			num += 1
+		if (daicho != "") then	#daichoにデータが書き込まれていたら
+			begin 
+				daicho.each do |key,value|
+					epair = key.to_s
+					name = value[0]
+					epairIP = value[1]
+					epairMASK = value[2]
+					epairIP6 = value[3]
+					epairIP6MASK = value[4]
+					as = value[5]
+	
+					if (num%2 == 0) then
+						source = name
+					else
+						target = name
+						jailset_links_name << {"source" => source, "target" => target, "epair" => epair.chop}
+					end
+					num += 1
+				end
+			rescue#不正なデータが書き込まれていたら
+				jailset_links_name = "none"
+			end
+		else#daichoに何も書き込まれていなかったら
+			jailset_links_name = "none"
 		end
 		return jailset_links_name
 	end
 
 	def self.to_l3(daicho)
 		jailset_network = []
-		daicho.each do |key, value|
-			epair = key.to_s
-			name = value[0]
-			epairIP = value[1]
-			epairMASK = value[2]
-			epairIP6 = value[3]
-			epairIP6MASK = value[4]
-			as = value[5]
+		if (daicho != "") then		#daichoにデータが書き込まれていたら
+			begin
+				daicho.each do |key, value|
+					epair = key.to_s
+					name = value[0]
+					epairIP = value[1]
+					epairMASK = value[2]
+					epairIP6 = value[3]
+					epairIP6MASK = value[4]
+					as = value[5]
 
-			jailset_network <<  {"epair" => epair, "name" => name, "ipaddr" => epairIP, "ipmask" =>  epairMASK, "ip6addr" => epairIP6, "ip6mask" => epairIP6MASK, "as" => as}
+					jailset_network <<  {"epair" => epair, "name" => name, "ipaddr" => epairIP, "ipmask" =>  epairMASK, "ip6addr" => epairIP6, "ip6mask" => epairIP6MASK, "as" => as}
+				end
+			rescue	#不正なデータが書き込まれていたら
+				jailset_network = "none"
+			end
+		else	#daichoに何も書き込まれていなかったら
+			jailset_network = "none"
 		end
 		
 		return jailset_network
@@ -122,7 +146,7 @@ class Network
 		source = data["source"]
 		target = data["target"]
 
-
+		type = 
 		case (SQL.select("machine","name",source))[2]
 			when SERVER then
 				@@tomocha.setupserver(source)
@@ -162,8 +186,8 @@ class Network
 		epair = link
 		epaira = epair + "a"
 		epairb = epair + "b"
-		epairaName = epairToname(epaira)
-		epairbName = epairToname(epairb)
+		epairaName = epairToname(@@daicho,epaira)
+		epairbName = epairToname(@@daicho,epairb)
 
 		puts "#{epairaName},#{epairbName}"
 
@@ -195,26 +219,17 @@ class Network
 		SendMsg.status(NETWORK,"success","完了しました。")		
 	end
 
-	def self.epairToname(epair)
-		num = 0
+	def self.epairToname(daicho,epair)
 		epairName = ""
-		@@daicho.each do |key, value|
-			if(num%2 == 0) then
-				if(key.to_s == epair) then
-					epairName = value[0]
-				end
-			else
-				if(key.to_s == epair) then
-					epairName = value[0]
-				end	
+		daicho.each do |key, value|
+			if(key.to_s == epair) then
+				epairName = value[0]
 			end
-			num += 1
 		end
-
 		return epairName
 	end
 
-	def self.nameToepair(name)
+	def self.nameToepair(daicho,name)
 
 	end
 

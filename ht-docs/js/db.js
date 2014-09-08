@@ -24,7 +24,7 @@ function db_machine(control,msg){
 
   if (control == "delete"){
     if (msg == "all"){
-      machineDB = [{name:"_host_", type:"1", templete:"0", flavour:"0",comment:"host Machine",boot:"1"}];
+      machineDB = [];
     }
     else{
       machineDB.splice(db_selectDB("machine",msg),1);

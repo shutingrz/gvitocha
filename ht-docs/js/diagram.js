@@ -10,10 +10,10 @@ var height = 500;
 
 var HOSTNAME = "_host_"
 var MRTNAME = "masterRouter"
-var HOSTWIDTH = width/2;
-var HOSTHEIGHT = height/6;
+//var HOSTWIDTH = width/2;
+//var HOSTHEIGHT = height/6;
 var MRTWIDTH = width/2;
-var MRTHEIGHT = ((height/6)+70);
+var MRTHEIGHT = height/6;
 var REPULSE = -500;       //反発力
 var DUARATION = 750;      //
 var CIRCLESIZE = 12;       //標準状態の円の大きさ
@@ -41,36 +41,28 @@ function tick() {
     link = svg.selectAll(".link");
     link
       .attr("x1", function(d) { 
-                    if(d.source.name == HOSTNAME){
-                      return HOSTWIDTH;
-                    }else if(d.source.name == MRTNAME){
+                    if(d.source.name == MRTNAME){
                       return MRTWIDTH;
                     }else{
                       return d.source.x; 
                     }
                   })
       .attr("y1", function(d) { 
-                    if(d.source.name == HOSTNAME){
-                      return HOSTHEIGHT;
-                    }else if(d.source.name == MRTNAME){
+                    if(d.source.name == MRTNAME){
                       return MRTHEIGHT;
                     }else{
                       return d.source.y; 
                     }
                   })
       .attr("x2", function(d) { 
-                    if(d.target.name == HOSTNAME){
-                      return HOSTWIDTH;
-                    }else if(d.target.name == MRTNAME){
+                    if(d.target.name == MRTNAME){
                       return MRTWIDTH;
                     }else{
                       return d.target.x; 
                     }
                   })
       .attr("y2", function(d) { 
-                    if(d.target.name == HOSTNAME){
-                      return HOSTHEIGHT;
-                    }else if(d.target.name == MRTNAME){
+                    if(d.target.name == MRTNAME){
                       return MRTHEIGHT;
                     }else{
                       return d.target.y; 
@@ -80,9 +72,7 @@ function tick() {
     node = svg.selectAll(".node");
     node
       .attr("transform", function(d) {
-                          if(d.name == HOSTNAME){
-                            return "translate(" + HOSTWIDTH + "," + HOSTHEIGHT + ")";
-                          }else if(d.name == MRTNAME){
+                          if(d.name == MRTNAME){
                             return "translate(" + MRTWIDTH + "," + MRTHEIGHT + ")";
                           }else{
                             return "translate(" + d.x + "," + d.y + ")";

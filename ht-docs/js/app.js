@@ -15,14 +15,14 @@ var sendMsg = {
   msgType : "",
   data : ""
 }
-var machineDB = [{name:"_host_", type:"1", templete:"0", flavour:"0",comment:"host Machine",boot:"1"}];
+//var machineDB = [{name:"_host_", type:"1", templete:"0", flavour:"0",comment:"host Machine",boot:"1"}];
+var machineDB = [];
 var templeteDB = [];
 var flavorDB = [];
 var linkDB = [];
 var l3DB = [];
 var t;
 var jname = "masterRouter";
-var qs;
 var initok = false;		//初期化が済んだか
 
 function init(){
