@@ -199,7 +199,8 @@ function update() {
   })
   .on("click", function(d) {
        return clickcircle(d);       
-  });
+  })
+  .on('contextmenu',function(d,i){open_context(d,i);});
 
   node.append("text")
     .attr("x", 12)

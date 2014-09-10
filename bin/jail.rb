@@ -105,9 +105,9 @@ class Jail
 
 	def self.boot(data)
 		if(data["state"] == "start") then
-			cmdLog,cause = start(data["name"])
+			cmdLog,cause = self.start(data["name"])
 		else
-			cmdLog,cause = stop(data["name"])
+			cmdLog,cause = self.stop(data["name"])
 		end
 
 		save($bootPath)
@@ -118,9 +118,9 @@ class Jail
 
 	def self.start(machine)
 		s,e = Open3.capture3("qjail start #{machine}")
+		flag = false
 		
 		upjail = upjail()
-		flag = false
 		upjail.each do |jail|
 			if(jail == machine) then	#upjailに存在したらtrue
 				s,e = Open3.capture3("jail -m name=#{machine} devfs_ruleset=5")
@@ -128,6 +128,8 @@ class Jail
 				flag = true
 			end
 		end
+
+
 		return flag,"起動に失敗"
 	end
 
@@ -273,12 +275,16 @@ class Jail
     	begin
 			ujail = File.open(path).read
 		rescue
-			return
+			return false
 		end
 		ujail.each_line do |jail|
-			flg = start(jail)
-			if (flg == false) then
-				puts "#{jail} boot failed."
+			jail.chomp!
+			print "starting #{jail}..."
+			flg = self.start(jail)
+			if (flg) then
+				print "ok\n"
+			else
+				print "ng\n"
 			end
 		end
 	end

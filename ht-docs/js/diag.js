@@ -156,6 +156,23 @@ function diag_createL3(){
 
 
 
-
-
+				function open_context(d,i){
+					$(settings.menuSelector)
+                    .data("invokedOn", $(e.target))
+                    .show()
+                    .css({
+                        position: "absolute",
+                        left: getLeftLocation(e),
+                        top: getTopLocation(e)
+                    })
+                    .off('click')
+                    .on('click', function (e) {
+                        $(this).hide();
+                
+                        var $invokedOn = $(this).data("invokedOn");
+                        var $selectedMenu = $(e.target);
+                        
+                        settings.menuSelected.call(this, $invokedOn, $selectedMenu);
+                	});
+                }
 

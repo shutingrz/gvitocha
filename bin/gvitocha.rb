@@ -54,10 +54,13 @@ Process.daemon(nochdir=true) if ARGV[0] == "-D"
 $channel = @channel
 
 #必ずmasterRouterは起動させる
-Open3.capture3("qjail start masterRouter")
+#Open3.capture3("qjail start masterRouter")
 #boot情報からjailを起動させる
+
 Jail.load($bootPath)
 
+puts "init ok!"
+puts "websocket server start."
 EM::run do
 	EventMachine::WebSocket.start(host: "0.0.0.0", port: 3000) do |ws|
 	#start network then connect to client
