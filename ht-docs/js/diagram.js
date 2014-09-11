@@ -159,6 +159,9 @@ function update() {
   .on("mouseover",link_mouseover)
   .on("mouseout",link_mouseout)
   .on("click", function(d){ return clicklink(d);})
+  .on('contextmenu',function(d,i){
+    diag_showLinkContextMenu(d);
+  })
   .attr("class", function(d) { return "link "+d.epair;});
 
 

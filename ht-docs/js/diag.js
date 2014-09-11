@@ -124,8 +124,9 @@ function diag_sendLink(source,target){
 	send(NETWORK,{mode: "link", control: "add", msg: {source: source, target: target}});
 }
 
-function diag_deleteLink(){
-	link = $("#sendNet .dLink").val();
+function diag_deleteLink(epair){
+	//link = $("#sendNet .dLink").val();
+	link = epair;
 	force = d3.layout.force()
 	.nodes(machineDB)
 	.links(d3linkDB)
@@ -156,17 +157,16 @@ function diag_createL3(){
 
 function diag_showNodeContextMenu(d){
 	
-	//context_setName(d.name);
 	if(d.boot == "1"){
 		if(d.name != "masterRouter"){	//基本的にmasterRouterは停止させない
-			context_addList("停止", "diag_stopMachine('" + d.name + "')");
+			context_addList("停止", "jail_stop('" + d.name + "')");
 		}
 		context_addList("他のマシンに接続","diag_connectMode('" + d.name + "')");	
 
 	/*	nest =[ {"caption" : "server01(epair3a)", "func" : "diag_setL3()"},{"caption" : "server02(epair3b)", "func" : "diag_setL3()"} ]
 		context_nest("IPアドレス設定", nest);*/
 	}else{
-		context_addList("起動","diag_startMachine('" + d.name + "')");
+		context_addList("起動","jail_start('" + d.name + "')");
 	}
 	context_show();
 	setTimeout(function(){		//タイミングの関係でcontextmenuが開いてすぐに閉じるのを防ぐ
@@ -175,12 +175,13 @@ function diag_showNodeContextMenu(d){
 	return false;
 }
 
-function diag_startMachine(name){
-	jail_start(name);
-}
-
-function diag_stopMachine(name){
-	jail_stop(name);
+function diag_showLinkContextMenu(d){
+	context_addList("切断","diag_deleteLink('" + d.epair + "')");
+	context_show();
+	setTimeout(function(){		//タイミングの関係でcontextmenuが開いてすぐに閉じるのを防ぐ
+		openContext = true;
+	},200);
+	return false;
 }
 
 function diag_setL3(){
