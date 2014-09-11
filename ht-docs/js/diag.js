@@ -154,17 +154,17 @@ function diag_createL3(){
 	send(NETWORK, {mode: "l3", control: "create", msg : data});
 }
 
-function diag_showContextMenu(d){
+function diag_showNodeContextMenu(d){
 	
 	//context_setName(d.name);
 	if(d.boot == "1"){
 		context_addList("停止", "diag_stopMachine('" + d.name + "')");
-		context_addList("他のマシンに接続","diag_connectEpair('" + d.name + "')");	
+		context_addList("他のマシンに接続","diag_connectMode('" + d.name + "')");	
 
 	/*	nest =[ {"caption" : "server01(epair3a)", "func" : "diag_setL3()"},{"caption" : "server02(epair3b)", "func" : "diag_setL3()"} ]
 		context_nest("IPアドレス設定", nest);*/
 	}else{
-		context_addList("起動","diag_startMachine()");
+		context_addList("起動","diag_startMachine('" + d.name + "')");
 	}
 	context_show();
 	setTimeout(function(){		//タイミングの関係でcontextmenuが開いてすぐに閉じるのを防ぐ
@@ -173,17 +173,12 @@ function diag_showContextMenu(d){
 	return false;
 }
 
-function diag_connectEpair(name){
-	cupdate(name);
-}
-
-function diag_startMachine(){
-	console.log($("#contextMenu .name").val() + " start");
+function diag_startMachine(name){
+	jail_start(name);
 }
 
 function diag_stopMachine(name){
-	console.log(name + " stop");
-
+	jail_stop(name);
 }
 
 function diag_setL3(){
@@ -191,7 +186,7 @@ function diag_setL3(){
 }
 
 
-function cupdate(source) {
+function diag_connectMode(source) {
   d3linkDB = [];
 
   svg.remove();

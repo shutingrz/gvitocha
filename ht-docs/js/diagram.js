@@ -112,9 +112,7 @@ function link_mouseout() {
 }
 
 function clickcircle(d){
-//  delNode(d.name);  /* こいつはノードを消す */
-//  update();
-diag_displayInfo(d.name);
+  diag_displayInfo(d.name);
 }
 
 function clicklink(d){
@@ -196,8 +194,7 @@ function update() {
        return clickcircle(d);       
   })
   .on('contextmenu',function(d,i){
-    diag_showContextMenu(d);
-    d3.event.preventDefault();
+    diag_showNodeContextMenu(d);
   });
 
   node.append("text")
@@ -209,18 +206,3 @@ function update() {
    force.start(); //forceグラフの描画を開始
 
 }
-
-
-
-function delNode(name) {
-  console.log(machineDB.filter(function(n) { return n.name !== name; }));
-  console.log(linkDB.filter(function(l) { return (l.source !== name && l.target !== name); }));
-    machineDB = machineDB.filter(function(n) { return n.name !== name; });
-    linkDB = linkDB.filter(function(l) { return (l.source !== name && l.target !== name); });
-}
-
-/*function init(){
-  pushNetDiag();
-  update();
-}*/
-
