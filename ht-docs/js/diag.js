@@ -125,8 +125,8 @@ function diag_sendLink(source,target){
 }
 
 function diag_deleteLink(epair){
-	//link = $("#sendNet .dLink").val();
 	link = epair;
+	/*
 	force = d3.layout.force()
 	.nodes(machineDB)
 	.links(d3linkDB)
@@ -136,7 +136,7 @@ function diag_deleteLink(epair){
 	.charge(function(d) {
 	return REPULSE;
 	})
-	.on("tick", tick);
+	.on("tick", tick);*/
 
 	send(NETWORK,{mode: "link",  control: "delete", msg : link});
 }
@@ -315,7 +315,10 @@ function cnode_mouseout() {
 }
 
 function cclickcircle(d,source){
-	if(d.boot == "1"&&d.name != source){
+	if(d.name == source){
+		update();
+	}
+	else if(d.boot == "1"){
 		var target = d.name;
 		diag_sendLink(source,target);
 	}

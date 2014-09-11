@@ -213,6 +213,22 @@ class Network
 		SendMsg.status(NETWORK,"success","完了しました。")
 	end
 
+	def self.deleteLinkAll(jname)
+		epairList = []
+		@@daicho.each do |key, value|
+			epair = key.to_s
+			name = value[0]
+			if (name == jname) then
+				epairList << epair.chop
+			end
+		end
+		if(epairList != []) then
+			epairList.each do |epair|
+				deleteLink(epair)
+			end
+		end
+	end
+
 	def self.createL3(epair,ipaddr,ipmask,ip6addr,ip6mask,as)
 		name = epairToname(epair)
 
