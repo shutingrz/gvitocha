@@ -230,7 +230,7 @@ class Network
 	end
 
 	def self.createL3(epair,ipaddr,ipmask,ip6addr,ip6mask,as)
-		name = epairToname(epair)
+		name = epairToname(@@daicho,epair)
 
 		
 		@@tomocha.setupserver(name)

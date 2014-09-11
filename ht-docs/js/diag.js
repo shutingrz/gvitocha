@@ -152,8 +152,8 @@ function diag_showNodeContextMenu(d){
 		context_addConsole(d.name);
 		context_addList("他のマシンに接続","diag_connectMode('" + d.name + "')");	
 
-	/*	nest =[ {"caption" : "server01(epair3a)", "func" : "diag_setL3()"},{"caption" : "server02(epair3b)", "func" : "diag_setL3()"} ]
-		context_nest("IPアドレス設定", nest);*/
+		epairList = diag_getepairList(d.name);
+		context_nest("IPアドレス設定", epairList);
 	}else{
 		context_addList("起動","jail_start('" + d.name + "')");
 	}
@@ -162,6 +162,16 @@ function diag_showNodeContextMenu(d){
 		openContext = true;
 	},200);
 	return false;
+}
+
+function diag_getepairList(name){
+	var epairList = [];
+	var epair;
+	diag_selectNode(name).forEach(function(value,index){
+		epairList.push({"caption": l3DB[value].epair + "(<=> " + diag_selectTargetNode(l3DB[value].epair) + ")", "func" : "l3Modal_show('" + name + "','" + l3DB[value].epair + "')"});
+//	$("#jIP").append("link: " + l3DB[value].epair + "(<=> " + diag_selectTargetNode(l3DB[value].epair) + "), IPAddr: " + l3DB[value].ipaddr + ", IPMask: " + l3DB[value].ipmask + "<br>");
+	});
+	return epairList;
 }
 
 function diag_showLinkContextMenu(d){
@@ -176,7 +186,6 @@ function diag_showLinkContextMenu(d){
 function diag_setL3(){
 	console.log("diag_setL3");
 }
-
 
 function diag_connectMode(source) {
   d3linkDB = [];

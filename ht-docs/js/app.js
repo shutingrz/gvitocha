@@ -371,6 +371,14 @@ $(document).ready(function(){
 
   });
 
+  //l3submitボタン
+  $("#l3Form").submit(function(){
+	var data = {"epair" : $("#l3Form .link").text(), "ipaddr" : $("#l3Form .ipaddr").val(), "ipmask" : $("#l3Form .ipmask").val(), "ip6addr" : $("#l3Form .ip6addr").val(), "ip6mask" : $("#l3Form .ip6mask").val(), "as" : $("#l3Form .as").val()};
+	$("#l3Modal").modal("hide");
+  	send(NETWORK, {mode: "l3", control: "create", msg : data});
+
+  });
+
   //ConfirmOKボタン
   $("#confirmForm").submit(function(){
 	$("#confirmModal").modal("hide");
@@ -473,6 +481,17 @@ $(document).ready(function(){
 	jname = "masterRouter";
   });
 
+  //l3モーダルが消えたら
+  $("#l3Modal").on("hidden.bs.modal", function(){
+  	$("#l3Form .name").val("");
+	$("#l3Form .epair").val("");
+	$("#l3Form .ipaddr").val("");
+	$("#l3Form .ipmask").val("");
+	$("#l3Form .ip6addr").val("");
+	$("#l3Form .ip6mask").val("");
+	$("#l3Form .as").val("");
+  });
+
 
 	//その他
 
@@ -540,6 +559,15 @@ function confirm_show(){
   $("#confirmModal").modal("show");
 }
 
+
+//IPアドレスモーダル
+function l3Modal_show(name,epair){
+	$("#l3Form .name").text(name);
+	$("#l3Form .link").text(epair);
+	$("#l3Modal").modal("show");
+}
+
+
 //contextを形成する
 
 function context_addList(caption,func){
@@ -573,11 +601,10 @@ function context_nest(caption, array){
 	str +='	<a tabindex="-1" href="#">' + caption + '</a>\n'
 	str +='	<ul class="dropdown-menu">\n'
 	array.forEach(function(value,index){
-		str +='		<li><a tabindex="-1" href="' + value.func + ';context_hide();">' + value.caption + '</a></li>\n';
+		str +='		<li><a tabindex="-1" href="javascript:' + value.func + ';context_hide();">' + value.caption + '</a></li>\n';
 	});
 	str +='	</ul>\n'
 	str +='</li>\n'
-	console.log(str);
 	$("#contextMenu .dropdown-menu").append(str);
 }
 

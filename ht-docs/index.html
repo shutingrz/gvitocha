@@ -264,6 +264,35 @@
 		</div><!-- /.modal -->
 
 
+		<!-- IPアドレスモーダル -->
+		<div class="modal" id="l3Modal" tabindex="-1" role="dialog" aria-labelledby="l3Modal" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+						<h4 class="modal-title" id="l3ModalTitle">IPアドレスの設定</h4>
+					</div>
+					<div class="modal-body">  
+						<form method="post" id="l3Form" action="javascript:void(0);">
+							Name:<span class="name"></span><br>
+							link:<span class="link"></span><br>
+							<hr>
+							IPaddr:		<input class="ipaddr" type="text" value=""><br>
+							IPMask:		<input class="ipmask" type="text" value=""><br>
+							IP6Addr:	<input class="ip6addr" type="text" value=""><br>
+							IP6Plefixlen:<input class="ip6mask" type="text" value=""><br>
+							ASNum:<input class="as" type="text" value=""><br>
+					</div>
+					<div class="modal-footer">
+				  		<button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
+				  		<button type="submit" class="btn btn-primary" id="l3SubmitButton">送信</button>
+				</div>
+			  			</form>
+			</div><!-- /.modal-content -->
+		  </div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+
+
 	  </div>
 	  </div>
 
