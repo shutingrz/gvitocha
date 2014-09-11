@@ -170,31 +170,26 @@ function update() {
   .attr("class", function(d) { return "node "+d.name;})   //[node]と要素の名前をクラスにする
   .on("mouseover", node_mouseover)
   .on("mouseout", node_mouseout)
+  .style("opacity", function(d){    //透明度
+    if(d.boot == "1"){
+      return 1;
+    }else{
+      return 0.4;
+    }
+  })
   .call(force.drag);
 
 
   node.append("circle")
   .attr("r", CIRCLESIZE)
   .style("fill", function(d) {
-    //typeによって色を変え、またbootしていない場合は薄い色で
+    //typeによって色を変える
     if(d.type == "0"){
-      if(d.boot == "1"){
         return "#0000FF";
-      }else{
-        return "#A9A9F5";
-      }
     }else if(d.type == "1"){
-      if(d.boot == "1"){
         return "#FF8000";
-      }else{
-        return "#F5D0A9";
-      }
     }else{
-      if(d.boot == "1"){
         return "#FFFF00";
-      }else{
-        return "#F2F5A9";
-      }
     }
   })
   .on("click", function(d) {

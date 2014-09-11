@@ -156,10 +156,10 @@ function diag_createL3(){
 
 function diag_showContextMenu(d){
 	
-	context_setName(d.name);
+	//context_setName(d.name);
 	if(d.boot == "1"){
-		context_addList("停止","diag_stopMachine()");
-		context_addList("他のマシンに接続","diag_connectEpair()");	
+		context_addList("停止", "diag_stopMachine('" + d.name + "')");
+		context_addList("他のマシンに接続","diag_connectEpair('" + d.name + "')");	
 
 	/*	nest =[ {"caption" : "server01(epair3a)", "func" : "diag_setL3()"},{"caption" : "server02(epair3b)", "func" : "diag_setL3()"} ]
 		context_nest("IPアドレス設定", nest);*/
@@ -173,17 +173,16 @@ function diag_showContextMenu(d){
 	return false;
 }
 
-function diag_connectEpair(){
-	var name = $("#contextMenu .name").val();
-	console.log(name);
+function diag_connectEpair(name){
+	cupdate(name);
 }
 
 function diag_startMachine(){
 	console.log($("#contextMenu .name").val() + " start");
 }
 
-function diag_stopMachine(){
-	console.log($("#contextMenu .name").val() + " stop");
+function diag_stopMachine(name){
+	console.log(name + " stop");
 
 }
 
@@ -192,7 +191,83 @@ function diag_setL3(){
 }
 
 
+function cupdate(name) {
+  d3linkDB = [];
 
+  svg.remove();
+
+  diag_createLink();  
+  svg = d3.select(".diagram").append("svg")
+  .attr("width", width)
+  .attr("height", height);
+
+
+  force = d3.layout.force()
+  .nodes(machineDB)
+  .links(d3linkDB)
+  .charge(-200)
+  .linkDistance(50)
+  .size([width, height])
+  .charge(function(d) {
+    return REPULSE;
+  })
+  .on("tick", tick);
+
+  link = svg.selectAll(".link")
+  .data(d3linkDB, function(l) { return l.source + '-' + l.target; }) //linksデータを要素にバインド
+  .enter()
+  .append("line")
+  .on("mouseover",link_mouseover)
+  .on("mouseout",link_mouseout)
+  .on("click", function(d){ return clicklink(d);})
+  .attr("class", function(d) { return "link "+d.epair;});
+
+
+ node = svg.selectAll(".node")
+  .data(machineDB, function(d) { return d.name;})  //nodesデータを要素にバインド
+  .enter().append("g")
+  .attr("class", function(d) { return "node "+d.name;})   //[node]と要素の名前をクラスにする
+  .on("mouseover", node_mouseover)
+  .on("mouseout", node_mouseout)
+  .style("opacity", function(d){
+    if(d.boot == "1"){
+      return 1;
+    }else{
+      return 0.3;
+    }
+  })
+  .call(force.drag);
+
+
+  node.append("circle")
+  .attr("r", CIRCLESIZE)
+  .style("fill", function(d) {
+    //typeによって色を変え、またbootしていない場合は薄い色で
+    if(d.type == "0"){
+        return "#0000FF";
+    }else if(d.type == "1"){
+        return "#FF8000";
+    }else{
+        return "#FFFF00";
+    }
+  })
+  .on("click", function(d) {
+       return clickcircle(d);       
+  })
+  .on('contextmenu',function(d,i){
+    diag_showContextMenu(d);
+    d3.event.preventDefault();
+  });
+
+  node.append("text")
+    .attr("x", 12)
+    .attr("dy", ".35em")
+    .text(function(d) { return d.name; });
+
+
+   force.start(); //forceグラフの描画を開始
+
+}
 
 
 

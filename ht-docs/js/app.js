@@ -480,7 +480,7 @@ $(document).ready(function(){
 
 
 	//その他
-	
+
 	//contextmenuを閉じる
 	$(document).click(function() {
 		if(openContext){
@@ -551,7 +551,7 @@ function context_setName(name){
 }
 
 function context_addList(caption,func){
-	$("#contextMenu .dropdown-menu").append('<li><a tabindex="-1" href="javascript:' + func + ';context_hide();">' + caption + '</a></li>');
+	$("#contextMenu .dropdown-menu").append('<li><a "tabindex="-1" href="javascript:' + func + ';context_hide();">' + caption + '</a></li>');
 }
 
 function context_show(){
@@ -567,7 +567,6 @@ function context_divider(){
 }
 
 function context_hide(){
-	console.log("hide");
 	$("#contextMenu").hide();
 	$("#contextMenu .dropdown-menu").empty();
 }
