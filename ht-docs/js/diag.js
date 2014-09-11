@@ -154,25 +154,45 @@ function diag_createL3(){
 	send(NETWORK, {mode: "l3", control: "create", msg : data});
 }
 
+function diag_showContextMenu(d){
+	
+	context_setName(d.name);
+	if(d.boot == "1"){
+		context_addList("停止","diag_stopMachine()");
+		context_addList("他のマシンに接続","diag_connectEpair()");	
+
+	/*	nest =[ {"caption" : "server01(epair3a)", "func" : "diag_setL3()"},{"caption" : "server02(epair3b)", "func" : "diag_setL3()"} ]
+		context_nest("IPアドレス設定", nest);*/
+	}else{
+		context_addList("起動","diag_startMachine()");
+	}
+	context_show();
+	setTimeout(function(){		//タイミングの関係でcontextmenuが開いてすぐに閉じるのを防ぐ
+		openContext = true;
+	},200);
+	return false;
+}
+
+function diag_connectEpair(){
+	var name = $("#contextMenu .name").val();
+	console.log(name);
+}
+
+function diag_startMachine(){
+	console.log($("#contextMenu .name").val() + " start");
+}
+
+function diag_stopMachine(){
+	console.log($("#contextMenu .name").val() + " stop");
+
+}
+
+function diag_setL3(){
+	console.log("diag_setL3");
+}
 
 
-				function open_context(d,i){
-					$(settings.menuSelector)
-                    .data("invokedOn", $(e.target))
-                    .show()
-                    .css({
-                        position: "absolute",
-                        left: getLeftLocation(e),
-                        top: getTopLocation(e)
-                    })
-                    .off('click')
-                    .on('click', function (e) {
-                        $(this).hide();
-                
-                        var $invokedOn = $(this).data("invokedOn");
-                        var $selectedMenu = $(e.target);
-                        
-                        settings.menuSelected.call(this, $invokedOn, $selectedMenu);
-                	});
-                }
+
+
+
 

@@ -24,12 +24,13 @@ var l3DB = [];
 var t;
 var jname = "masterRouter";
 var initok = false;		//初期化が済んだか
+var openContext = false;	//contextmenuが開いているかどうか
 
 function init(){
   wsConnection();
    $("#powerSwitch").bootstrapSwitch('size', 'normal');
    setTimeout(function(){
-   	t=webshell.Terminal("term",80,24,handler);
+	t=webshell.Terminal("term",80,24,handler);
    },1000);
  //  diagram();
 }
@@ -436,8 +437,8 @@ $(document).ready(function(){
 
 	//shellモーダルが開いたら
   $("#shellModal").on("shown.bs.modal", function(){
-  	$("#term").html("<span class=\"ff be\">Now loading...</span>");
-  	jname = $("#netInfo .shellBtn").val()
+	$("#term").html("<span class=\"ff be\">Now loading...</span>");
+	jname = $("#netInfo .shellBtn").val()
 	console_register(jname);
   });
 
@@ -478,16 +479,17 @@ $(document).ready(function(){
   });
 
 
-//test
-/*
-	$("#myTable td").contextMenu({
-    menuSelector: "#contextMenu",
-    menuSelected: function (invokedOn, selectedMenu) {
-        var msg = "You selected the menu item '" + selectedMenu.text() +
-            "' on the value '" + invokedOn.text() + "'";
-        alert(msg);
-    }
-	});*/
+	//その他
+	
+	//contextmenuを閉じる
+	$(document).click(function() {
+		if(openContext){
+			context_hide();
+			openContext = false;
+		}
+	});
+
+	//test
 });
 
 
@@ -543,7 +545,46 @@ function confirm_show(){
   $("#confirmModal").modal("show");
 }
 
+//contextを形成する
+function context_setName(name){
+	$("#contextMenu .name").val(name);
+}
 
+function context_addList(caption,func){
+	$("#contextMenu .dropdown-menu").append('<li><a tabindex="-1" href="javascript:' + func + ';context_hide();">' + caption + '</a></li>');
+}
+
+function context_show(){
+	$("#contextMenu").css({
+		display: "block",
+		left: d3.event.pageX,
+		top: d3.event.pageY
+	});
+}
+
+function context_divider(){
+	$("#contextMenu .dropdown-menu").append('<li class="divider"></li>');
+}
+
+function context_hide(){
+	console.log("hide");
+	$("#contextMenu").hide();
+	$("#contextMenu .dropdown-menu").empty();
+}
+
+function context_nest(caption, array){
+	var str="";
+	str +='<li class="dropdown-submenu">\n'
+	str +='	<a tabindex="-1" href="#">' + caption + '</a>\n'
+	str +='	<ul class="dropdown-menu">\n'
+	array.forEach(function(value,index){
+		str +='		<li><a tabindex="-1" href="' + value.func + ';context_hide();">' + value.caption + '</a></li>\n';
+	});
+	str +='	</ul>\n'
+	str +='</li>\n'
+	console.log(str);
+	$("#contextMenu .dropdown-menu").append(str);
+}
 
 
 //########test

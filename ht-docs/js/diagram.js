@@ -200,7 +200,10 @@ function update() {
   .on("click", function(d) {
        return clickcircle(d);       
   })
-  .on('contextmenu',function(d,i){open_context(d,i);});
+  .on('contextmenu',function(d,i){
+    diag_showContextMenu(d);
+    d3.event.preventDefault();
+  });
 
   node.append("text")
     .attr("x", 12)

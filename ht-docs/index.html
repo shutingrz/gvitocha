@@ -251,7 +251,7 @@
 				<h4 class="modal-title" id="shellModalTitle">Shell</h4>
 			  </div>
 			  <div class="modal-body"> 
-			  	<div class="container">
+				<div class="container">
 					<pre id="term" tabindex="1"></pre>
 				</div>
 			  </div>
@@ -306,15 +306,46 @@
 				</form>
 			</div>
 		</div>
+<!--
+	<div id="startContext" class="dropdown clearfix contextMenu">
+		<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu" style="display:block;position:static;margin-bottom:5px;">
+			<li><a id="connectEpair" tabindex="-1" href="javascript:void(0);">他のマシンに接続</a></li>
+			<li><a tabindex="-1" href="#">Another action</a></li>
+			<li><a tabindex="-1" href="#">Something else here</a></li>
+			<li class="divider"></li>
+			<li><a tabindex="-1" href="#">Separated link</a></li>
+		</ul>
+	</div>
 
-	<ul id="contextMenu" class="dropdown-menu" role="menu" style="display:none" >
-    <li><a tabindex="-1" href="#">Action</a></li>
-    <li><a tabindex="-1" href="#">Another action</a></li>
-    <li><a tabindex="-1" href="#">Something else here</a></li>
-    <li class="divider"></li>
-    <li><a tabindex="-1" href="#">Separated link</a></li>
-	</ul>
-
+	<div id="stopContext" class="dropdown clearfix contextMenu">
+		<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu" style="display:block;position:static;margin-bottom:5px;">
+			<li><a id="bootMachine" tabindex="-1" href="javascript:void(0);">起動</a></li>
+		</ul>
+	</div>
+-->
+	<div id="contextMenu" class="dropdown clearfix contextMenu">
+		<ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu" style="display:block;position:static;margin-bottom:5px;">
+<!--		<li class="dropdown-submenu">
+			<a tabindex="-1" href="#">IPアドレス設定</a>
+			<ul class="dropdown-menu">
+				<li><a href="diag_setL3();context_hide();">server01(epair3a)</a></li>
+				<li><a href="diag_setL3();context_hide();">server02(epair3b)</a></li>
+			</ul>
+		</li>
+		</ul>-->
+		<input class="name" type="hidden" value="">
+	</div>
+<!--
+		<ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
+              <li class="dropdown-submenu">
+                <a tabindex="-1" href="#">Hover me for more options</a>
+                <ul class="dropdown-menu">
+                  <li><a href="#">Second level</a></li>
+                  <li><a href="#">Second level</a></li>
+                </ul>
+              </li>
+            </ul>
+-->
 
   
   </body>
