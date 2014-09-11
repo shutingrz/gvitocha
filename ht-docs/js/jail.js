@@ -38,7 +38,6 @@ function jail_show(name){
     })
   }
   else{
-  //  res = db.exec("select id, name from machine where id='" + id + "';")
     res = db_machine("select",name);
     $("#machineList").append($("<option>").html(res.name).val(res.name)); 
   }
@@ -55,10 +54,6 @@ function jail_start(jname){
 	send(MACHINE,data);
 
 }
-
-function jail_sstart(jname){}
-
-function jail_sstop(jname){}
 
 function jail_stop(jname){
 	var data = { mode : "jail",

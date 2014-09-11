@@ -11,7 +11,9 @@ function console_write(jname,cmd){
 	send(CONSOLE,message);
 }
 
-function console_register(jname){
+function console_register(name){
+	jname = name;
+//	$("#term").html("<span class=\"ff be\">Now loading...</span>");
 	message = {"mode" : "register", "jname" : jname};
 	send(CONSOLE,message);
 	console_write(jname,"%0D");

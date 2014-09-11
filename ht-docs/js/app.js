@@ -25,6 +25,7 @@ var t;
 var jname = "masterRouter";
 var initok = false;		//初期化が済んだか
 var openContext = false;	//contextmenuが開いているかどうか
+var consoleName = ""
 
 function init(){
   wsConnection();
@@ -438,7 +439,7 @@ $(document).ready(function(){
 	//shellモーダルが開いたら
   $("#shellModal").on("shown.bs.modal", function(){
 	$("#term").html("<span class=\"ff be\">Now loading...</span>");
-	jname = $("#netInfo .shellBtn").val()
+	jname = $("#jName").val()
 	console_register(jname);
   });
 
@@ -546,12 +547,13 @@ function confirm_show(){
 }
 
 //contextを形成する
-function context_setName(name){
-	$("#contextMenu .name").val(name);
-}
 
 function context_addList(caption,func){
 	$("#contextMenu .dropdown-menu").append('<li><a "tabindex="-1" href="javascript:' + func + ';context_hide();">' + caption + '</a></li>');
+}
+
+function context_addConsole(name){
+	$("#contextMenu .dropdown-menu").append('<li><a "tabindex="-1" data-toggle="modal" data-target="#shellModal" href="javascript:context_hide();">コンソール</a></li>');
 }
 
 function context_show(){

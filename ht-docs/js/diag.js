@@ -51,9 +51,11 @@ function diag_createLink(){
 //選択したノードの詳細を表示
 function diag_displayInfo(name){
 	$("#jName").text("");
+	$("#jName").val("");
 	$("#jIP").empty();
 	$("#netInfo .shellBtn").val(name);
 	$("#jName").text(name);
+	$("#jName").val(name);
 
 	diag_selectNode(name).forEach(function(value,index){
 	$("#jIP").append("link: " + l3DB[value].epair + "(<=> " + diag_selectTargetNode(l3DB[value].epair) + "), IPAddr: " + l3DB[value].ipaddr + ", IPMask: " + l3DB[value].ipmask + "<br>");
@@ -156,11 +158,13 @@ function diag_createL3(){
 }
 
 function diag_showNodeContextMenu(d){
+	$("#jName").val(d.name);
 	
 	if(d.boot == "1"){
 		if(d.name != "masterRouter"){	//基本的にmasterRouterは停止させない
 			context_addList("停止", "jail_stop('" + d.name + "')");
 		}
+		context_addConsole(d.name);
 		context_addList("他のマシンに接続","diag_connectMode('" + d.name + "')");	
 
 	/*	nest =[ {"caption" : "server01(epair3a)", "func" : "diag_setL3()"},{"caption" : "server02(epair3b)", "func" : "diag_setL3()"} ]
