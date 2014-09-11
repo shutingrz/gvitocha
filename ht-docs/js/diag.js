@@ -117,9 +117,9 @@ function diag_selectTargetNode(epair){
 
 }
 
-function diag_sendLink(){
-	source = $("#linksource").val();
-	target = $("#linktarget").val();
+function diag_sendLink(source,target){
+//	source = $("#linksource").val();
+//	target = $("#linktarget").val();
 //  console.log(source + "," + target);
 	send(NETWORK,{mode: "link", control: "add", msg: {source: source, target: target}});
 }
@@ -191,7 +191,7 @@ function diag_setL3(){
 }
 
 
-function cupdate(name) {
+function cupdate(source) {
   d3linkDB = [];
 
   svg.remove();
@@ -227,13 +227,13 @@ function cupdate(name) {
   .data(machineDB, function(d) { return d.name;})  //nodesデータを要素にバインド
   .enter().append("g")
   .attr("class", function(d) { return "node "+d.name;})   //[node]と要素の名前をクラスにする
-  .on("mouseover", node_mouseover)
-  .on("mouseout", node_mouseout)
+  .on("mouseover", cnode_mouseover)
+  .on("mouseout", cnode_mouseout)
   .style("opacity", function(d){
     if(d.boot == "1"){
       return 1;
     }else{
-      return 0.3;
+      return 0.05;
     }
   })
   .call(force.drag);
@@ -241,8 +241,13 @@ function cupdate(name) {
 
   node.append("circle")
   .attr("r", CIRCLESIZE)
+  .attr("class",function(d){
+  	if(d.boot == "1"){
+  		return "rotate"
+  	}
+  })
   .style("fill", function(d) {
-    //typeによって色を変え、またbootしていない場合は薄い色で
+    //typeによって色を変える
     if(d.type == "0"){
         return "#0000FF";
     }else if(d.type == "1"){
@@ -252,22 +257,68 @@ function cupdate(name) {
     }
   })
   .on("click", function(d) {
-       return clickcircle(d);       
+       return cclickcircle(d,source);       
   })
   .on('contextmenu',function(d,i){
     diag_showContextMenu(d);
     d3.event.preventDefault();
+  })
+  //接続元と起動していないマシンは除外
+  .style("stroke", function(d){if(d.boot == "1"&&d.name != source){return "black";}})
+  .style("stroke-width", function(d){if(d.boot == "1"&&d.name != source){return "3";}})
+  .style("stroke-dasharray",function(d){if(d.boot == "1"&&d.name != source){return ("5,5");}})
+  .style("stroke-opacity", function(d){
+    if(d.boot == "1"&&d.name != source){
+      return 0.5;
+    }
   });
+
 
   node.append("text")
     .attr("x", 12)
     .attr("dy", ".35em")
     .text(function(d) { return d.name; });
 
+	//回転
+  circle = svg.selectAll(".rotate")
+  circle.append("animateTransform")
+  .attr("attributeType","xml") 
+  .attr("attributeName","transform")
+  .attr("type","rotate")
+  .attr("from","0")
+  .attr("to","360")
+  .attr("begin","0")
+  .attr("dur","5s")
+  .attr("repeatCount","indefinite");
+
 
    force.start(); //forceグラフの描画を開始
 
 }
 
+function cnode_mouseover() {
+	name = $(d3.select(this).select("text")).text();	//textからname抜き出し
+	data = machineDB[db_selectDB("machine",name)];		//indexからdata抜き出し
+	if(data.boot == "1"){
+  		d3.select(this).select("circle").transition()
+      	.duration(DUARATION)
+      	.attr("r", BIGCIRCLESIZE);
+	}
+}
 
+function cnode_mouseout() {
+	name = $(d3.select(this).select("text")).text();
+	data = machineDB[db_selectDB("machine",name)];
+	if(data.boot == "1"){
+  		d3.select(this).select("circle").transition()
+      	.duration(DUARATION)
+      	.attr("r", CIRCLESIZE);
+	}
+}
 
+function cclickcircle(d,source){
+	if(d.boot == "1"&&d.name != source){
+		var target = d.name;
+		diag_sendLink(source,target);
+	}
+}
