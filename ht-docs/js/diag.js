@@ -158,7 +158,9 @@ function diag_showNodeContextMenu(d){
 	
 	//context_setName(d.name);
 	if(d.boot == "1"){
-		context_addList("停止", "diag_stopMachine('" + d.name + "')");
+		if(d.name != "masterRouter"){	//基本的にmasterRouterは停止させない
+			context_addList("停止", "diag_stopMachine('" + d.name + "')");
+		}
 		context_addList("他のマシンに接続","diag_connectMode('" + d.name + "')");	
 
 	/*	nest =[ {"caption" : "server01(epair3a)", "func" : "diag_setL3()"},{"caption" : "server02(epair3b)", "func" : "diag_setL3()"} ]
