@@ -2,7 +2,6 @@
 function jail(msg){
   if(msg.control == "list"){
       $("#machineList option").remove();
-  //    sql("machine","delete","all")
       db_machine("delete","all");
 
       if (msg.msg == "none"){
@@ -11,7 +10,6 @@ function jail(msg){
       } 
       else{
         for(var i in msg.msg){//サーバから送られたMachineデータを全てローカルsqlに保存
-      //    sql("machine","insert",msg.msg[i]);
           db("machine","insert",msg.msg[i]);
         }
       }
@@ -19,7 +17,6 @@ function jail(msg){
   }
   else if(msg.control == "boot"){
   	for(var i in msg.msg){//サーバから送られたMachineのbootstateデータを全てローカルsqlに保存
-        //  sql("machine","boot",msg.msg[i]);
           db("machine","boot",msg.msg[i]);
     }
   }

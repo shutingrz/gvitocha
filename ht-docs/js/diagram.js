@@ -34,8 +34,7 @@ var force;
 
 /*
 tick:linkの座標を特定
-host(HOSTNAME)とmasterRouter(MRTNAME)は固定
-
+masterRouter(MRTNAME)は固定
 */
 function tick() {
     link = svg.selectAll(".link");

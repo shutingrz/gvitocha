@@ -120,26 +120,11 @@ function diag_selectTargetNode(epair){
 }
 
 function diag_sendLink(source,target){
-//	source = $("#linksource").val();
-//	target = $("#linktarget").val();
-//  console.log(source + "," + target);
 	send(NETWORK,{mode: "link", control: "add", msg: {source: source, target: target}});
 }
 
 function diag_deleteLink(epair){
 	link = epair;
-	/*
-	force = d3.layout.force()
-	.nodes(machineDB)
-	.links(d3linkDB)
-	.charge(-200)
-	.linkDistance(50)
-	.size([width, height])
-	.charge(function(d) {
-	return REPULSE;
-	})
-	.on("tick", tick);*/
-
 	send(NETWORK,{mode: "link",  control: "delete", msg : link});
 }
 
@@ -260,10 +245,6 @@ function diag_connectMode(source) {
   })
   .on("click", function(d) {
        return cclickcircle(d,source);       
-  })
-  .on('contextmenu',function(d,i){
-    diag_showContextMenu(d);
-    d3.event.preventDefault();
   })
   //接続元と起動していないマシンは除外
   .style("stroke", function(d){if(d.boot == "1"&&d.name != source){return "black";}})

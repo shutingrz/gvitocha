@@ -173,7 +173,6 @@ function close(no,msg){
 }
 
 function getMachineLog(machineLog){
-  console.log(machineLog.msgType)
   if (machineLog.msgType == "success"){   //successメッセージが届いたら、
 	status({"mode":STATUS, "msg" : {"msg" : machineLog.msg}});
 	reloadDB();
@@ -218,7 +217,6 @@ function reloadDB(){
 }
 
 function reloadDiag(){
-//  pushNetDiag();
   update();
 }
 
@@ -300,7 +298,6 @@ $(document).ready(function(){
 	confirm_addBody("・" + $("#machineProperty .name .name").val());
 	confirm_addCmd('jail_delete($("#machineProperty .name .name").val());');
 	confirm_show();
-  //  jail_delete($("#machineProperty .id").text());
   });
 
   //新しいマシンを作成ボタン
@@ -385,9 +382,7 @@ $(document).ready(function(){
   //フォーカスイベント
   //MachineListでmachineを選択した時
   $("#machineList").change(function(){    //プロパティにフォーカスした項目のname,machineType,commentを表示する
-  //  var id = $("#machineList option:selected").val();
 	var name = $("#machineList option:selected").text();
-  //  machine = ((sdb.exec("select * from machine where id == '" +id+ "'"))[0]).values[0];
 	machine = db_machine("select",name);
 
 	if (machine.boot == "1"){
@@ -396,7 +391,6 @@ $(document).ready(function(){
 	  $('#powerSwitch').bootstrapSwitch('state', false,false);
 	}    
 
-  //  $("#machineProperty .id").text(id);
 	$("#machineProperty .name .name").val(machine.name);
 	$("#machineProperty .machineType .machineType").val(machine.type);
 
