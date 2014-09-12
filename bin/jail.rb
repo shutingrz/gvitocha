@@ -87,14 +87,13 @@ class Jail
 		#SQL.select("machine",name) do |id,name,type,templete,flavour,comment|
 			jname = name
 		#end
-	
+		Network.deleteLinkAll(jname)
 		cmdLog,cause = stop(jname)
 		if(cmdLog == false) then
 			return cmdLog,cause
 		end
 		s,e = Open3.capture3("qjail delete #{jname}")
-		cmdLog,e = Open3.capture3("qjail list|grep #{jname}")
-		if(cmdLog != "") then
+		if(isExist(jname)) then
 			return false,"削除に失敗"
 		end
 
@@ -302,6 +301,20 @@ class Jail
 		end
 		return jid
 	end
+
+	def self.isExist(name)
+		isExist = false
+		s,e = Open3.capture3("jls |grep #{$jails}|grep #{name}")
+		s.each_line do |line|
+			str = line.split(" ")
+			if(str[2] == name) then
+				isExist = true
+				break
+			end
+		end
+		return isExist
+	end
+
 
 end
 
