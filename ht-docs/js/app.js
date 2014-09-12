@@ -379,6 +379,14 @@ $(document).ready(function(){
 
   });
 
+  //deleteAllMachineボタン
+  $("#deleteAllMachine").click(function(){
+	confirm_addHead("全マシンの削除");
+	confirm_addBody("全てのマシンを削除します。よろしいですか？");
+	confirm_addCmd("jail_delete('_all');");
+	confirm_show();
+  });
+
   //ConfirmOKボタン
   $("#confirmForm").submit(function(){
 	$("#confirmModal").modal("hide");

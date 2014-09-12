@@ -20,9 +20,12 @@ class Jail
 			save($bootPath)
 
 		elsif (data["control"] == "delete") then
-			cmdLog,cause = delete(data["name"])
+			if(data["name"] == "_all") then
+				cmdLog,cause = deleteAll()
+			else
+				cmdLog,cause = delete(data["name"])
+			end
 			save($bootPath)
-
 
 		elsif (data["control"] == "boot") then
 			cmdLog,cause = boot(data)
@@ -84,9 +87,7 @@ class Jail
 
 	def self.delete(name)
 		jname = ""
-		#SQL.select("machine",name) do |id,name,type,templete,flavour,comment|
-			jname = name
-		#end
+		jname = name
 		Network.deleteLinkAll(jname)
 		cmdLog,cause = stop(jname)
 		if(cmdLog == false) then
@@ -96,10 +97,24 @@ class Jail
 		if(isExist(jname)) then
 			return false,"削除に失敗"
 		end
-
 		s = SQL.delete("machine",jname)
 		puts s
 		return true
+	end
+
+	def self.deleteAll()
+		dbjail = dbjail()
+		dbjail.delete_at(0) #masterRouterを除く
+		res = true
+		cause = ""
+		dbjail.each do |jail|
+			res = delete(jail)
+			if(!res) then
+				cause = "削除に失敗:" + jail
+				break
+			end
+		end
+		return res, cause
 	end
 
 	def self.boot(data)
@@ -217,7 +232,6 @@ class Jail
 
 		key = 0
 		dbjail.each do |odbjail|
-			odbjail = odbjail[0]
 			flag = false
 			upjail.each do |oupjail|
 				if (odbjail == oupjail.chomp) then
@@ -256,8 +270,12 @@ class Jail
 
 	def self.dbjail()
 		dbjail = Array.new
-		dbjail = SQL.sql("select name from machine order by id asc ;")
-		dbjail.delete_at(0)
+		dbjail2 = SQL.sql("select name from machine order by id asc ;")
+		dbjail2.delete_at(0)
+
+		dbjail2.each do |jail|
+			dbjail << jail[0]
+		end
 
 		return dbjail
 	end
