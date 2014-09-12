@@ -187,6 +187,8 @@ function diag_setL3(){
 	console.log("diag_setL3");
 }
 
+
+//epairをGUIで繋ぐためのエフェクト
 function diag_connectMode(source) {
   d3linkDB = [];
 
@@ -234,7 +236,7 @@ function diag_connectMode(source) {
   })
   .call(force.drag);
 
-
+  if(nodeStyle == CIRCLE){
   node.append("circle")
   .attr("r", CIRCLESIZE)
   .attr("class",function(d){
@@ -264,6 +266,43 @@ function diag_connectMode(source) {
       return 0.5;
     }
   });
+  }
+  else if(nodeStyle == CISCO){
+  node.append("image")
+		.attr("class",function(d){
+  		if(d.boot == "1"){
+  			return "rotate"
+  		}
+  		})
+		.attr("xlink:href", function(d) {
+			//typeによって色を変える
+			if(d.type == "0"){
+					return "./img/server.svg";
+			}else if(d.type == "1"){
+					return "./img/router.svg";
+			}else{
+					return "./img/switch.svg";
+			}
+		})
+		.attr("x", "-16px")
+		.attr("y", "-16px")
+		.attr("width", "32px")
+		.attr("height", "32px")
+  .on("click", function(d) {
+       return cclickcircle(d,source);       
+  })
+  //接続元と起動していないマシンは除外
+  .style("stroke", function(d){if(d.boot == "1"&&d.name != source){return "black";}})
+  .style("stroke-width", function(d){if(d.boot == "1"&&d.name != source){return "3";}})
+  .style("stroke-dasharray",function(d){if(d.boot == "1"&&d.name != source){return ("5,5");}})
+  .style("stroke-opacity", function(d){
+    if(d.boot == "1"&&d.name != source){
+      return 0.5;
+    }
+  });
+
+
+  }
 
 
   node.append("text")
@@ -292,9 +331,18 @@ function cnode_mouseover() {
 	name = $(d3.select(this).select("text")).text();	//textからname抜き出し
 	data = machineDB[db_selectDB("machine",name)];		//indexからdata抜き出し
 	if(data.boot == "1"){
-  		d3.select(this).select("circle").transition()
-      	.duration(DUARATION)
-      	.attr("r", BIGCIRCLESIZE);
+  		if(nodeStyle == CIRCLE){
+		d3.select(this).select("circle").transition()
+				.duration(DUARATION)
+				.attr("r", BIGCIRCLESIZE);
+		}
+		else if(nodeStyle == CISCO){
+			d3.select(this).select("image").transition()
+			.attr("x", "-24px")
+			.attr("y", "-24px")
+			.attr("width", "48px")
+			.attr("height", "48px");
+		}
 	}
 }
 
@@ -302,9 +350,18 @@ function cnode_mouseout() {
 	name = $(d3.select(this).select("text")).text();
 	data = machineDB[db_selectDB("machine",name)];
 	if(data.boot == "1"){
-  		d3.select(this).select("circle").transition()
-      	.duration(DUARATION)
-      	.attr("r", CIRCLESIZE);
+  		if(nodeStyle == CIRCLE){
+		d3.select(this).select("circle").transition()
+				.duration(DUARATION)
+				.attr("r", CIRCLESIZE);
+		}
+		else if(nodeStyle == CISCO){
+			d3.select(this).select("image").transition()
+			.attr("x", "-16px")
+			.attr("y", "-16px")
+			.attr("width", "32px")
+			.attr("height", "32px");
+		}
 	}
 }
 
