@@ -193,6 +193,12 @@ function getMachineLog(machineLog){
 	  $('#machineList').removeAttr('disabled');
 	}
 
+	$(".easyBtn").removeAttr("disabled");
+
+	if($("#easyCreateLoading").css("display") == "inline"){
+		$("#easyCreateLoading").css("display","none");
+	}
+
 	$("#nowLoadingModal .modal-dialog .modal-content .modal-body img").attr("src","./img/check.png");
 	setTimeout(function(){
 	  $("#nowLoadingModal").modal("hide");
@@ -421,14 +427,24 @@ $(document).ready(function(){
 
 	//簡易作成ボタン
   $("#easyServerBtn").click(function(){
+  	$(".easyBtn").attr("disabled","disabled");
+  	$("#easyCreateLoading").css("display","inline");  
+	$("#easyCreateLoading").attr("src","./img/loading.gif").addClass("minimumNowloadingIcon");
+ 
 	jail_easyCreate(SERVER);
   });
 
   $("#easyRouterBtn").click(function(){
+  	$(".easyBtn").attr("disabled","disabled");
+  	$("#easyCreateLoading").css("display","inline");  
+	$("#easyCreateLoading").attr("src","./img/loading.gif").addClass("minimumNowloadingIcon");
 	jail_easyCreate(ROUTER);
   });
 
-  $("#easySwtichBtn").click(function(){
+  $("#easySwitchBtn").click(function(){
+  	$(".easyBtn").attr("disabled","disabled");
+  	$("#easyCreateLoading").css("display","inline");  
+	$("#easyCreateLoading").attr("src","./img/loading.gif").addClass("minimumNowloadingIcon");
 	jail_easyCreate(SWITCH);
   });
 

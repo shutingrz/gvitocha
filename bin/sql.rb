@@ -28,14 +28,18 @@ class SQL
 			@@db.execute("create table templete(id integer, name text, pkg text);")
 			@@db.execute("create table flavour (id integer, name text);")
 			@@db.execute("create table pkg(id integer, name text);")
+			@@db.execute("create table easyConf(type integer, id integer, template integer, flavour integer);")
 			@@db.execute("insert into templete (id, name, pkg) values (0, 'default', '');")
 			@@db.execute("insert into templete (id, name, pkg) values (1, 'router', 'quagga-0.99.22.4_1');")
 			@@db.execute("insert into flavour (id, name) values (0, 'default');")
 			@@db.execute("insert into pkg(id, name) values (1, 'quagga-0.99.22.4_1');")
+			@@db.execute("insert into easyConf(type, id, template, flavour) values (#{SERVER.to_s}, 0, 0, 0);")
+			@@db.execute("insert into easyConf(type, id, template, flavour) values (#{ROUTER.to_s}, 0, 0, 0);")
+			@@db.execute("insert into easyConf(type, id, template, flavour) values (#{SWITCH.to_s}, 0, 0, 0);")
 
 			@@db.execute("insert into machine (id, name, type, templete, flavour, comment) values ( -1, 'dummy', 0, 0, 0, 'dummy');")
 		
-			machine = {"name" => "masterRouter", "machineType" => "1", "templete" => "1", "flavour" => "0","comment" => "masterRouter" }
+			machine = {"name" => "masterRouter", "machineType" => ROUTER.to_s, "templete" => "1", "flavour" => "0","comment" => "masterRouter" }
 	
 	#		s,e = Open3.capture3("mkdir #{$jails}/basejail/pkg")
 	#		s,e = Open3.capture3("mkdir #{$jails}/flavours/default")
@@ -69,7 +73,8 @@ class SQL
 		begin
 			return @@db.execute(str)
 		rescue
-			puts "sql error"
+			puts "sql error:#{str}"
+			return false
 		end
 	end
 
@@ -95,13 +100,16 @@ class SQL
 			elsif (id == "maxid")
 				return @@db.execute("select max(id) from machine")[0][0]		#maxid
 			elsif (id == "name")
-				return  @@db.execute("select id, name, type, templete, flavour, comment from machine where name='" + name + "';")[0]
+				return @@db.execute("select id, name, type, templete, flavour, comment from machine where name='" + name + "';")[0]
 			else
 				machine = @@db.execute("select id, name, type, templete, flavour, comment from machine where id=" + id.to_s + ";")[0]
 				yield machine[0],machine[1],machine[2],machine[3],machine[4],machine[5]	#machineのデータ返却
 			end
 		elsif (mode == "flavour") then
 			return @@db.execute("select name from flavour where id = #{id}")[0][0]
+
+		elsif (mode == "easyConf")
+				return @@db.execute("select type, id, template, flavour from easyConf where type='" + id.to_s + "';")[0]
 		end
 		rescue
 			return false
@@ -134,6 +142,14 @@ class SQL
 		return @@db.execute(sql)
 	end
 
+	def self.update(table,data)
+
+		if(table == "easyConf") then
+			sql = "update easyConf set id=" + data["id"].to_s + ", template=" + data["template"].to_s + ", flavour=" + data["flavour"].to_s + " where type=" + data["type"].to_s + ";"
+		end
+
+		return @@db.execute(sql)
+	end
 end
 
 =begin

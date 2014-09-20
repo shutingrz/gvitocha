@@ -337,40 +337,36 @@ class Jail
 	end
 
 	def self.easyCreate(type)
-		puts "easyCreate:#{type}"
+		cause = ""
+		tmp = SQL.select("easyConf",type)
+		id = tmp[1]+1
+		template = tmp[2]
+		flavour = tmp[3]
+		easyData = { "type" => type, "id" => id, "template" => template, "flavour" => flavour }
+
+		start_time = Time.now
+
+		cmdLog = SQL.update("easyConf",easyData)	#万が一jailが作成できなくても先にupdateしておけば重複を防げる
+
+		puts "SQL.update:  #{Time.now - start_time}s"
+
+		case type
+		when SERVER then
+			name = "_Server#{id}"
+		when ROUTER then
+			name = "_Router#{id}"
+		when SWITCH then
+			name = "_Switch#{id}"
+		else
+			name = "_Server#{id}"
+		end
+
+		machine = { "name" => name , "machineType" => type.to_s, "templete" => template.to_s, "flavour" => flavour.to_s, "comment" => "create by easyCreate" }
+	
+		cmdLog, cause = create(machine)
+
+		return cmdLog, cause
 	end
 
 
 end
-
-
-
-=begin
-
-	def self.start_obsolute(machine)
-
-		s,e = Open3.capture3("/usr/sbin/jail -c vnet host.hostname=#{machine} name=#{machine} path=#{$jails}/#{machine} persist")
-		puts s
-		s,e = Open3.capture3("mount -t devfs devfs #{$jails}/#{machine}/dev")
-		puts s
-		s,e = Open3.capture3("mount_nullfs #{$jails}/basejail #{$jails}/#{machine}/basejail")
-		puts s
-		cmdLog = Open3.capture3("jls|grep #{machine}")	#jlsに載っていたら正常
-		if(cmdLog == "")
-			return false
-		end
-		return true
-	end
-
-	def self.stop_obsolute(machine)
-		s,e = Open3.capture3("ezjail-admin stop #{machine} ")
-		s,e = Open3.capture3("umount #{$jails}/#{machine}/dev")
-		s,e = Open3.capture3("umount #{$jails}/#{machine}/basejail")
-		cmdLog = Open3.capture3("jls|grep #{machine}")	#jlsに載っていたら正常
-		if(cmdLog != "")
-			return false
-		end
-		return true
-	end
-
-=end
