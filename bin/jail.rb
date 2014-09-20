@@ -117,6 +117,15 @@ class Jail
 				break
 			end
 		end
+
+		#easyCreateの通し番号をリセット
+		easyData = { "type" => SERVER, "id" => 0, "template" => 0, "flavour" => 0 }
+		SQL.update("easyConf",easyData)
+		easyData = { "type" => ROUTER, "id" => 0, "template" => 0, "flavour" => 0 }
+		SQL.update("easyConf",easyData)
+		easyData = { "type" => SWITCH, "id" => 0, "template" => 0, "flavour" => 0 }
+		SQL.update("easyConf",easyData)
+
 		return res, cause
 	end
 
@@ -344,11 +353,7 @@ class Jail
 		flavour = tmp[3]
 		easyData = { "type" => type, "id" => id, "template" => template, "flavour" => flavour }
 
-		start_time = Time.now
-
 		cmdLog = SQL.update("easyConf",easyData)	#万が一jailが作成できなくても先にupdateしておけば重複を防げる
-
-		puts "SQL.update:  #{Time.now - start_time}s"
 
 		case type
 		when SERVER then
