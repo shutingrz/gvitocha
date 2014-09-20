@@ -301,14 +301,18 @@
 		<div class="network" id="network">
 		<div class="header">Network</div>
 			<div oncontextmenu="return false;" class="diagram" id="diagram"></div>
+			<h3>簡易作成</h3>
+			<button class="btn btn-primary btn-s" >Server</button>
+			<button class="btn btn-primary btn-s" >Router</button>
+			<button class="btn btn-primary btn-s" >Switch</button>
+			<h3>表示設定</h3>
+			Ciscoライクなネットワーク図にする
+			<div class="make-switch ciscoSwitch">
+				<label class="ciscolabel" >
+					<input id="ciscoSwitch" class="ciscoSwitch" type="checkbox">
+				</label>
+			</div>
 			<div class="info" id="netInfo">
-				<h3>表示設定</h3>
-				Ciscoライクなネットワーク図にする
-				<div class="make-switch ciscoSwitch">
-					<label class="ciscolabel" >
-						<input id="ciscoSwitch" class="ciscoSwitch" type="checkbox">
-					</label>
-				</div>
 				Name<br><div id="jName"></div>
 				<br>
 				IPAddresses<br>
