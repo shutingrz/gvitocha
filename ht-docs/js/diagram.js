@@ -161,7 +161,6 @@ function update() {
 	svg = d3.select(".diagram").append("svg")
 	.attr("width", width)
 	.attr("height", height);
-	//.on("contextmenu", function(data, index) {console.log("right click");});
 
 
 	force = d3.layout.force()

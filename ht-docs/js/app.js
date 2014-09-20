@@ -171,6 +171,10 @@ function send(msgType,msg){
   sendMsg.msgType = msgType;
   sendMsg.data = msg;
   var jsonSendMsg = JSON.stringify(sendMsg);
+
+  if(msgType == MACHINE){	//machine関係の操作はセンシティブなのでdiagを触れないようにする
+  	diag_nowloading();
+  }
   
 	if(initok == true){
 		ws.send(jsonSendMsg);

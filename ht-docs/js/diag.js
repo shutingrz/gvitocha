@@ -187,6 +187,21 @@ function diag_setL3(){
 	console.log("diag_setL3");
 }
 
+function diag_nowloading(){
+	svg.append("rect")
+	.style("fill","white")
+	.style("opacity","0.7")
+	.attr("width",width)
+	.attr("height",height);
+
+	svg.append("image")
+	.attr("xlink:href", "./img/loading.gif")
+    .style("opacity","0.7")
+    .attr("x", width/2)
+	.attr("y", height/2)
+	.attr("width", width/5)
+	.attr("height", height/5);
+}
 
 //epairをGUIで繋ぐためのエフェクト
 function diag_connectMode(source) {
