@@ -61,7 +61,7 @@
 				<label class="plabel" >
 					<input id="powerSwitch" class="pswitch" type="checkbox">
 				</label>
-			<div>
+			</div>
 			<hr>
 			id:<span class="id"></span>
 			<div class="name">
@@ -302,35 +302,22 @@
 		<div class="header">Network</div>
 			<div oncontextmenu="return false;" class="diagram" id="diagram"></div>
 			<div class="info" id="netInfo">
+				<h3>表示設定</h3>
+				Ciscoライクなネットワーク図にする
+				<div class="make-switch ciscoSwitch">
+					<label class="ciscolabel" >
+						<input id="ciscoSwitch" class="ciscoSwitch" type="checkbox">
+					</label>
+				</div>
 				Name<br><div id="jName"></div>
 				<br>
 				IPAddresses<br>
 				<div id="jIP"></div>
 			</div>
-			<div id="createL3">
-				-----createL3-----<br>
-				<form action="javascript:diag_createL3()">
-					link:<input class="epair" type="text" value=""><br>
-					IPaddr:<input class="ipaddr" type="text" value=""><br>
-					IPMask:<input class="ipmask" type="text" value=""><br>
-					IP6Addr:<input class="ip6addr" type="text" value=""><br>
-					IP6Plefixlen:<input class="ip6mask" type="text" value=""><br>
-					ASNum:<input class="as" type="text" value=""><br>
-					<input type="submit" value="送信">
-				</form>
-			</div>
 		</div>
 
 	<div id="contextMenu" class="dropdown clearfix contextMenu">
 		<ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu" style="display:block;position:static;margin-bottom:5px;">
-<!--		<li class="dropdown-submenu">
-			<a tabindex="-1" href="#">IPアドレス設定</a>
-			<ul class="dropdown-menu">
-				<li><a href="diag_setL3();context_hide();">server01(epair3a)</a></li>
-				<li><a href="diag_setL3();context_hide();">server02(epair3b)</a></li>
-			</ul>
-		</li>
-		</ul>-->
 		<input class="name" type="hidden" value="">
 	</div>
 

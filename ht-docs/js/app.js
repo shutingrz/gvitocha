@@ -28,8 +28,16 @@ var openContext = false;	//contextmenuが開いているかどうか
 var consoleName = ""
 
 function init(){
-  wsConnection();
    $("#powerSwitch").bootstrapSwitch('size', 'normal');
+   $("#ciscoSwitch").bootstrapSwitch('size', 'normal');
+	if(($("#ciscoSwitch").bootstrapSwitch('state')) == true){  //ciscoライク表示スイッチがオンの場合
+ 		nodeStyle = CISCO;
+   	}
+	else{
+		nodeStyle = CIRCLE;
+	}
+
+	wsConnection();
    setTimeout(function(){
 	t=webshell.Terminal("term",80,24,handler);
    },1000);
@@ -289,6 +297,19 @@ $(document).ready(function(){
 		jail_stop($("#machineProperty .name .name").val());
 	  }
 	}
+  });
+
+  //ciscoSwitchボタン
+  $(".ciscolabel").click(function(){
+	  if(($("#ciscoSwitch").bootstrapSwitch('state')) == true){  //falseだったものがクリックされたらtrueになるため
+		nodeStyle = CIRCLE;
+	  }
+	  else{
+		nodeStyle = CISCO;
+	  }
+	  update();	
+
+	  $("#ciscoSwitch").bootstrapSwitch('toggleState');
   });
 
   //machinePropertyのdeleteボタン

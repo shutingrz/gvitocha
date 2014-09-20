@@ -26,7 +26,7 @@ var BIGLINKSIZE = 16;
 var IMAGESIZE = 32;
 var BIGIMAGESIZE = 48;
 
-var nodeStyle = CISCO;   
+var nodeStyle ;   
 
 var svg = d3.select(".diagram").append("svg")
 	.attr("width", width)
