@@ -14,11 +14,14 @@ class Jail
 			return
 
 		elsif (data["control"] == "new") then
-			machine = data["machine"] #machineを入れる
-			puts "machine creating."
-			cmdLog,cause = create(machine)
-			save($bootPath)
-
+			if(data["machine"] == "easy")then
+				easyCreate(data["machineType"])
+			else
+				machine = data["machine"] #machineを入れる
+				puts "machine creating."
+				cmdLog,cause = create(machine)
+				save($bootPath)
+			end
 		elsif (data["control"] == "delete") then
 			if(data["name"] == "_all") then
 				cmdLog,cause = deleteAll()
@@ -331,6 +334,10 @@ class Jail
 			end
 		end
 		return isExist
+	end
+
+	def self.easyCreate(type)
+		puts "easyCreate:#{type}"
 	end
 
 

@@ -7,6 +7,10 @@ var NETWORK = 4;
 var ETC = 10;
 var RETRYTIME=5;
 
+var SERVER = 0;
+var ROUTER = 1;
+var SWITCH = 2;
+
 var ws;
 //var sdb;
 var retryCount=0;
@@ -413,6 +417,19 @@ $(document).ready(function(){
 	$("#confirmModal").modal("hide");
   //  console.log($("#confirmForm .cmd").val());
 	eval($("#confirmForm .cmd").val());
+  });
+
+	//簡易作成ボタン
+  $("#easyServerBtn").click(function(){
+	jail_easyCreate(SERVER);
+  });
+
+  $("#easyRouterBtn").click(function(){
+	jail_easyCreate(ROUTER);
+  });
+
+  $("#easySwtichBtn").click(function(){
+	jail_easyCreate(SWITCH);
   });
 
 

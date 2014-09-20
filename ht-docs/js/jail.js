@@ -102,6 +102,9 @@ function jail_delete(name){
 
 
 function jail_getList(){
-  send(MACHINE,{"mode":"jail", "control":"select", "id":"all"})
+  send(MACHINE,{mode:"jail", control:"select", id:"all"});
+}
 
+function jail_easyCreate(type){
+  send(MACHINE,{mode:"jail", control:"new", machine:"easy", machineType:type});
 }
