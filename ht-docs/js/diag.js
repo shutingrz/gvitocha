@@ -214,6 +214,54 @@ function diag_connectMode(source) {
   .attr("width", width)
   .attr("height", height);
 
+  	gradServer = svg.append("svg:defs")
+    .append("svg:linearGradient")
+      .attr("id", "gradServer")
+      .attr("fx","70%")
+      .attr("fy","20%");
+
+  	gradServer.append("svg:stop")
+    .attr("offset", "0%")
+    .attr("stop-color", "#642EFE")
+    .attr("stop-opacity", 1)
+
+  	gradServer.append("svg:stop")
+    .attr("offset", "100%")
+    .attr("stop-color", "#0000ff")
+    .attr("stop-opacity", 1)
+
+	gradRouter = svg.append("svg:defs")
+    .append("svg:linearGradient")
+      .attr("id", "gradRouter")
+      .attr("fx","70%")
+      .attr("fy","20%");
+
+  	gradRouter.append("svg:stop")
+    .attr("offset", "0%")
+    .attr("stop-color", "#ff8000")
+    .attr("stop-opacity", 1)
+
+  	gradRouter.append("svg:stop")
+    .attr("offset", "100%")
+    .attr("stop-color", "#FACC2E")
+    .attr("stop-opacity", 1)
+
+    gradSwitch = svg.append("svg:defs")
+    .append("svg:linearGradient")
+      .attr("id", "gradSwitch")
+      .attr("fx","70%")
+      .attr("fy","20%");
+
+  	gradSwitch.append("svg:stop")
+    .attr("offset", "0%")
+    .attr("stop-color", "#00aa00")
+    .attr("stop-opacity", 1)
+
+  	gradSwitch.append("svg:stop")
+    .attr("offset", "100%")
+    .attr("stop-color", "#006600")
+    .attr("stop-opacity", 1)
+
 
   force = d3.layout.force()
   .nodes(machineDB)
@@ -262,11 +310,11 @@ function diag_connectMode(source) {
   .style("fill", function(d) {
     //typeによって色を変える
     if(d.type == "0"){
-        return "#0000FF";
+        return "url(#gradServer)";
     }else if(d.type == "1"){
-        return "#FF8000";
+        return "url(#gradRouter)";
     }else{
-        return "#FFFF00";
+        return "url(#gradSwitch)";
     }
   })
   .on("click", function(d) {
