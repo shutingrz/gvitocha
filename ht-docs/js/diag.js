@@ -203,6 +203,39 @@ function diag_nowloading(){
 	.attr("height", height/5);
 }
 
+function diag_showMachineInfoModal(d){
+	machine = db_machine("select",d.name);
+	switch(machine.type){
+		case ROUTER.toString():
+			machine.type = "Router";
+			break;
+		case SWITCH.toString():
+			machine.type = "Switch";
+			break;
+		default:
+			machine.type = "Server";
+			break;
+	}
+	machine.templete = templete_list("all")[machine.templete];
+
+	$("#machineInfoModal .modal-dialog .modal-content .modal-header .modal-title").text(machine.name);
+	$("#machineData_property .name .name").text(machine.name);
+	$("#machineData_property .machineType .machineType").text(machine.type);
+	$("#machineData_property .templete .templete").text(machine.templete);
+	$("#machineData_property .comment .comment").text(machine.comment);
+	$("#machineInfoModal").modal("show");
+	$("#machineInfo_machineData").focus();
+}
+
+
+
+
+
+
+
+
+
+
 //epairをGUIで繋ぐためのエフェクト
 function diag_connectMode(source) {
   d3linkDB = [];

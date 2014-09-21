@@ -279,10 +279,6 @@ $(document).ready(function(){
 	$("#term").bind('keypress',function(e){t.keypress(e)});
 	
   //クリックイベント
-  //Machine.newボタン
-  $(".top .machine .new").click(function(){
-	alert();
-  });
 
   //接続ボタン
   $(".top .header .right .connect").click(function(){
@@ -465,18 +461,18 @@ $(document).ready(function(){
 	  $('#powerSwitch').bootstrapSwitch('state', false,false);
 	}    
 
-	$("#machineProperty .name .name").val(machine.name);
-	$("#machineProperty .machineType .machineType").val(machine.type);
+	$(".machineProperty .name .name").val(machine.name);
+	$(".machineProperty .machineType .machineType").val(machine.type);
 
-	$("#machineProperty .templete .templete").empty();
+	$(".machineProperty .templete .templete").empty();
 	ftemplete = templete_list("all");
 	ftemplete.forEach(function(value,index){
-	  $("#machineProperty .templete .templete").append($("<option>").html(value).val(index));  
+	  $(".machineProperty .templete .templete").append($("<option>").html(value).val(index));  
 	});
-	$("#machineProperty .templete .templete").val(machine.templete);  
-	$("#machineProperty .machineType .templete").val(ftemplete);
-	$("#machineProperty .flavour .flavour").val(machine.flavour);
-	$("#machineProperty .comment .comment").val(machine.comment);     
+	$(".machineProperty .templete .templete").val(machine.templete);  
+	$(".machineProperty .machineType .templete").val(ftemplete);
+	$(".machineProperty .flavour .flavour").val(machine.flavour);
+	$(".machineProperty .comment .comment").val(machine.comment);     
   });
 
 

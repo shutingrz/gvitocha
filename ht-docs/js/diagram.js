@@ -264,7 +264,8 @@ function update() {
 			}
 		})
 		.on("click", function(d) {
-				 return clickcircle(d);       
+			//	 return clickcircle(d);   
+				return diag_showMachineInfoModal(d);    
 		})
 		.on('contextmenu',function(d,i){
 			diag_showNodeContextMenu(d);

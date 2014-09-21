@@ -18,6 +18,9 @@
 		<script src="./js/console.js"></script>
 	
 		<link rel="stylesheet" type="text/css" href="./css/top.css" />
+		<link rel="stylesheet" type="text/css" href="./css/diagram.css" />
+		<link rel="stylesheet" type="text/css" href="./css/dropdown.css" />
+		<link rel="stylesheet" type="text/css" href="./css/tabs.css" />
 		<link rel="stylesheet" type="text/css" href="./css/lib/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="./css/lib/bootstrap-switch.css" />
 		<link rel="stylesheet" type="text/css" href="./css/lib/webshell.css" />
@@ -55,7 +58,7 @@
 
 			</div>
 		</div>
-		<div id="machineProperty" class="property" >
+		<div id="machineProperty" class="machineProperty" >
 			PowerSwitch
 			<div class="make-switch powerSwitch">
 				<label class="plabel" >
@@ -279,11 +282,31 @@
 							Name:<span class="name"></span><br>
 							link:<span class="link"></span><br>
 							<hr>
+							<div class="l3input">
+								<div class="l3inputName">
+									IPAddr:<br>
+									IPMask:<br>
+									IP6Addr:<br>
+									IP6Plefixlen:<br>
+									ASNum:<br>
+								</div>
+								<div class="l3inputData">
+									<input class="ipaddr1" type="text" style="width: 36px" maxlength=3>.
+									<input class="ipaddr2" type="text" style="width: 36px" maxlength=3>.
+									<input class="ipaddr3" type="text" style="width: 36px" maxlength=3>.
+									<input class="ipaddr4" type="text" style="width: 36px" maxlength=3><br>
+									<input class="ipmask1" type="text" style="width: 36px" maxlength=3>.
+									<input class="ipmask2" type="text" style="width: 36px" maxlength=3>.
+									<input class="ipmask3" type="text" style="width: 36px" maxlength=3>.
+									<input class="ipmask4" type="text" style="width: 36px" maxlength=3><br>
+								</div>
+							</div>
+							<!--
 							IPaddr:		<input class="ipaddr" type="text" value=""><br>
 							IPMask:		<input class="ipmask" type="text" value=""><br>
 							IP6Addr:	<input class="ip6addr" type="text" value=""><br>
 							IP6Plefixlen:<input class="ip6mask" type="text" value=""><br>
-							ASNum:<input class="as" type="text" value=""><br>
+							ASNum:<input class="as" type="text" value=""><br>-->
 					</div>
 					<div class="modal-footer">
 				  		<button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
@@ -294,7 +317,136 @@
 		  </div><!-- /.modal-dialog -->
 		</div><!-- /.modal -->
 
+		<!-- machineInfoモーダル -->
+		<div class="modal" id="machineInfoModal" tabindex="-1" role="dialog" aria-labelledby="machineInfoModal" aria-hidden="true" data-keyboard="false" >
+		  <div class="modal-dialog">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h3 class="modal-title" id="machineInfoModalTitle"></h3>
+			  </div>
+			  <div class="modal-body"> 
+			  <!-- Nav tabs -->
+				<ul class="nav nav-tabs" role="tablist">
+					<li class="active"><a href="#machineInfo_machineData" role="tab" data-toggle="tab">マシン情報</a></li>
+					<li><a href="#machineInfo_network" role="tab" data-toggle="tab">ネットワーク</a></li>
+					<li><a href="#machineInfo_shell" role="tab" data-toggle="tab">コンソール</a></li>
+				</ul>
 
+				<!-- Tab panes -->
+				<div class="tab-content tab-content2">
+					<div class="tabbable tabs-left tabs-data" id="machineInfo_machineData">
+						<ul class="nav nav-tabs nav-tabs-left" role="tablist">
+							<li class="active"><a href="#machineData_property" role="tab" data-toggle="tab">基本情報</a></li>
+							<li><a href="#machineData_template" role="tab" data-toggle="tab">Template</a></li>
+						</ul>
+
+						<div class="tab-content tab-content2">
+							<div class="tab-pane active" id="machineData_property">
+								<div class="name">
+									<h4>Name</h4>
+									<span class="name align-right br"></span>
+								</div>
+								<div class="machineType">
+									<h4>MachineType</h4>
+									<span class="machineType align-right br"></span>
+								</div>
+								<div class="templete">
+									<h4>Templete</h4>
+									<span class="templete align-right br"></span>
+								</div>
+								<div class="comment">
+									<h4>Comment</h4>
+									<span class="comment align-right br"></span>
+								</div>
+							</div>
+							<div class="tab-pane" id="machineData_template">未実装</div>
+
+						</div>
+					</div>
+
+					<div class="tabs-data tab-pane" id="machineInfo_network">
+						未実装
+					</div>
+
+
+					<div class="tab-pane" id="machineInfo_networkl">未実装</div>
+				</div>
+
+
+
+			  </div>
+				<div class="modal-footer">
+				  <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+				</form>
+				</div>
+			</div><!-- /.modal-content -->
+		  </div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+
+
+
+<!--	いい感じにできあがったタブ
+		<div class="modal" id="machineInfoModal" tabindex="-1" role="dialog" aria-labelledby="machineInfoModal" aria-hidden="true" data-keyboard="false" >
+		  <div class="modal-dialog">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title" id="machineInfoModalTitle"></h4>
+			  </div>
+			  <div class="modal-body"> 
+				<ul class="nav nav-tabs" role="tablist">
+					<li class="active"><a href="#home" role="tab" data-toggle="tab">Home</a></li>
+					<li><a href="#profile" role="tab" data-toggle="tab">Profile</a></li>
+					<li><a href="#messages" role="tab" data-toggle="tab">Messages</a></li>
+					<li><a href="#settings" role="tab" data-toggle="tab">Settings</a></li>
+				</ul>
+
+				<div class="tab-content">
+					<div class="tabbable tabs-left tabs-data" id="home">
+						<ul class="nav nav-tabs nav-tabs-left" role="tablist">
+							<li class="active"><a href="#home2" role="tab" data-toggle="tab">Home</a></li>
+							<li><a href="#profile2" role="tab" data-toggle="tab">Profile</a></li>
+							<li><a href="#messages2" role="tab" data-toggle="tab">Messages</a></li>
+							<li><a href="#settings2"role="tab" data-toggle="tab">Settings2</a></li>
+							<li><a href="#settings3"role="tab" data-toggle="tab">Settings3</a></li>
+							<li><a href="#settings4"role="tab" data-toggle="tab">Settings4</a></li>
+							<li><a href="#settings5"role="tab" data-toggle="tab">Settings5</a></li>
+							<li><a href="#settings6"role="tab" data-toggle="tab">Settings6</a></li>
+							<li><a href="#settings7"role="tab" data-toggle="tab">Settings7</a></li>
+						</ul>
+
+						<div class="tab-content tab-content2">
+							<div class="tab-pane active" id="home2">aaa<br>1<br>2<br>3<br>4<br>5<br>6<br>7<br>73<br>4<br>5<br>6<br>7<br>7<br>7<br>7<br>7<br>7<br>8<br>8<br>8<br>7</div>
+							<div class="tab-pane" id="profile2">bbb<br><br><br><br><br><br><br><br><br></div>
+							<div class="tab-pane" id="messages2">ccc<br><br><br><br><br><br><br><br><br><br></div>
+							<div class="tab-pane" id="settings2">Settings2</div>
+							<div class="tab-pane" id="settings3">Settings3</div>
+							<div class="tab-pane" id="settings4">Settings4</div>
+							<div class="tab-pane" id="settings5">Settings5</div>
+							<div class="tab-pane" id="settings6">Settings6</div>
+							<div class="tab-pane" id="settings7">Settings7</div>
+
+						</div>
+					</div>
+
+					<div class="tab-pane" id="profile">
+					</div>
+					<div class="tab-pane" id="messages">...</div>
+					<div class="tab-pane" id="settings">...</div>
+				</div>
+
+
+
+			  </div>
+				<div class="modal-footer">
+				  <button type="button" class="btn btn-default">適用</button>
+				  <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+				</form>
+				</div>
+			</div>
+		  </div>
+		</div>-->
 	  </div>
 	  </div>
 
