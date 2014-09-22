@@ -518,7 +518,6 @@ $(document).ready(function(){
 	
   });
 
-
   $('#nowLoadingModal').on('hidden.bs.modal', function () {
    $("#nowLoadingModal .modal-dialog .modal-content span").remove();
   });
@@ -554,6 +553,14 @@ $(document).ready(function(){
 	$("#l3Form .as").val("");
   });
 
+	//タブイベント
+	//shellタブが開いたら
+  $("a[href='#machineInfo_shell']").click(function(){
+  	console.log("shell shown!");
+	$("#term").html("<span class=\"ff be\">Now loading...</span>");
+	jname = $("#machineInfoModalTitle").text();
+	console_register(jname);
+  });
 
 	//その他
 

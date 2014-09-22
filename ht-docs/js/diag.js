@@ -223,8 +223,9 @@ function diag_showMachineInfoModal(d){
 	$("#machineData_property .machineType .machineType").text(machine.type);
 	$("#machineData_property .templete .templete").text(machine.templete);
 	$("#machineData_property .comment .comment").text(machine.comment);
+	$("#machineInfo a:first").tab('show')
+	$("#machineInfo_machineData a:first").tab('show')
 	$("#machineInfoModal").modal("show");
-	$("#machineInfo_machineData").focus();
 }
 
 

@@ -256,9 +256,9 @@
 				<h4 class="modal-title" id="shellModalTitle">Shell</h4>
 			  </div>
 			  <div class="modal-body"> 
-				<div class="container">
+<!--			<div class="container">
 					<pre id="term" tabindex="1"></pre>
-				</div>
+				</div>	-->
 			  </div>
 				<div class="modal-footer">
 				  <button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
@@ -325,22 +325,23 @@
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 				<h3 class="modal-title" id="machineInfoModalTitle"></h3>
 			  </div>
-			  <div class="modal-body"> 
-			  <!-- Nav tabs -->
+			  <div class="modal-body tabbable" id="machineInfo"> <!-- tabbable -->
+			  	<!-- Nav tabs -->
 				<ul class="nav nav-tabs" role="tablist">
 					<li class="active"><a href="#machineInfo_machineData" role="tab" data-toggle="tab">マシン情報</a></li>
-					<li><a href="#machineInfo_network" role="tab" data-toggle="tab">ネットワーク</a></li>
+					<li class=""><a href="#machineInfo_network" role="tab" data-toggle="tab">ネットワーク</a></li>
 					<li><a href="#machineInfo_shell" role="tab" data-toggle="tab">コンソール</a></li>
 				</ul>
 
 				<!-- Tab panes -->
-				<div class="tab-content tab-content2">
-					<div class="tabbable tabs-left tabs-data" id="machineInfo_machineData">
+				<div class="tab-content">
+					<div class="tab-pane tabbable tabs-left active" id="machineInfo_machineData"><!-- tabbable -->
+						<!-- Nav tabs -->
 						<ul class="nav nav-tabs nav-tabs-left" role="tablist">
 							<li class="active"><a href="#machineData_property" role="tab" data-toggle="tab">基本情報</a></li>
 							<li><a href="#machineData_template" role="tab" data-toggle="tab">Template</a></li>
 						</ul>
-
+						<!-- Tab panes -->
 						<div class="tab-content tab-content2">
 							<div class="tab-pane active" id="machineData_property">
 								<div class="name">
@@ -363,15 +364,19 @@
 							<div class="tab-pane" id="machineData_template">未実装</div>
 
 						</div>
-					</div>
+					</div> 
 
-					<div class="tabs-data tab-pane" id="machineInfo_network">
+					<div class="tab-pane" id="machineInfo_network">
 						未実装
 					</div>
 
 
-					<div class="tab-pane" id="machineInfo_networkl">未実装</div>
-				</div>
+					<div class="tab-pane tabs-data" id="machineInfo_shell">
+						<div class="container">
+							<pre id="term" tabindex="1"></pre>
+						</div>
+					</div>
+				</div>	
 
 
 
@@ -385,6 +390,12 @@
 		</div><!-- /.modal -->
 
 
+<!-- タブの構成について
+	tabbableクラスのブロックの中にNav tabsとTab panes。
+	Tab panesエリアのブロックは全てtab-paneクラスが必須。
+
+	タブ表示時に見せたいペインの木構造に全てactiveをつけることを忘れずに。
+-->
 
 <!--	いい感じにできあがったタブ
 		<div class="modal" id="machineInfoModal" tabindex="-1" role="dialog" aria-labelledby="machineInfoModal" aria-hidden="true" data-keyboard="false" >
