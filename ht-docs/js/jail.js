@@ -84,7 +84,7 @@ function jail_createJail(){
                 machine : {
                             name : $("#newMachineForm [name=name]").val(),
                             machineType : $("#newMachineForm [name=machineType]").val(),
-                            templete : $("#newMachineForm [name=templete]").val(),
+                            template : $("#newMachineForm [name=template]").val(),
                             flavour : $("#newMachineForm [name=flavour]").val(),
                             comment : $("#newMachineForm [name=comment]").val()
                           }

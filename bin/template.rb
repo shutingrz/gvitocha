@@ -10,32 +10,32 @@ class Templete
 		
 		elsif(data["control"] == "select") then
 			tmpList = {}
-			templete = select(data["id"])
-			templete.each do |tmp|
+			template = select(data["id"])
+			template.each do |tmp|
 				tmpList["key#{tmp[0]}"] = {"id" => tmp[0].to_s, "name" => tmp[1], "pkg" => tmp[2] }
 			end
-			SendMsg.machine("templete","list",tmpList)
+			SendMsg.machine("template","list",tmpList)
 		end
 
 
 	end
 
 	def self.create(data)
-		SQL.insert("templete",data)
+		SQL.insert("template",data)
 		return true
 	end
 
 	def self.select(id)
-		templete = Array.new
+		template = Array.new
 		if(id == "all") then
 			maxid = 0
-			maxid = SQL.select("templete","maxid")
+			maxid = SQL.select("template","maxid")
 			num = 0
 			while (num <= maxid) do 
-				templete << SQL.select("templete",num)	
+				template << SQL.select("template",num)	
 				num += 1
 			end
-			return templete
+			return template
 		else
 
 		end

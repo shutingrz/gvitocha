@@ -11,7 +11,7 @@ def machine (data)
 		Pkg.main(data)
 
 
-	elsif (data["mode"] == "templete") then
+	elsif (data["mode"] == "template") then
 		Templete.main(data)
 	end 
 

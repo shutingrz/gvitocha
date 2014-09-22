@@ -13,7 +13,7 @@ require './sql.rb'
 require './jail.rb'
 require './pkg.rb'
 require './sendmsg.rb'
-require './templete.rb'
+require './template.rb'
 require './network.rb'
 
 

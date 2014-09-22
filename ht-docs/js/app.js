@@ -19,9 +19,9 @@ var sendMsg = {
   msgType : "",
   data : ""
 }
-//var machineDB = [{name:"_host_", type:"1", templete:"0", flavour:"0",comment:"host Machine",boot:"1"}];
+//var machineDB = [{name:"_host_", type:"1", template:"0", flavour:"0",comment:"host Machine",boot:"1"}];
 var machineDB = [];
-var templeteDB = [];
+var templateDB = [];
 var flavorDB = [];
 var linkDB = [];
 var l3DB = [];
@@ -75,8 +75,8 @@ function wsConnection(){
 		status(msg.data,'info');
 	  }
 	  else if (msg.msgType == MACHINE) {  //machine関数はpowerSwitch周りで不具合があるので封印 todo
-		if(msg.data.mode == "templete"){
-		  templete_main(msg.data);
+		if(msg.data.mode == "template"){
+		  template_main(msg.data);
 		}
 		else if(msg.data.mode == "pkg"){
 		  getPackageResult(msg.data);
@@ -161,8 +161,8 @@ function machine(msg){
   else if(msg.mode == "jail"){
 	jail(msg);
   }
-  else if(msg.mode == "templete"){
-	templete_main(msg);
+  else if(msg.mode == "template"){
+	template_main(msg);
   }
 }
 
@@ -232,7 +232,7 @@ function getMachineLog(machineLog){
 
 function reloadDB(){
   jail_getList();
-  templete_getList();
+  template_getList();
   setTimeout(function(){
 	diag_getDiag();
   },300);
@@ -380,13 +380,13 @@ $(document).ready(function(){
   });
 
   //テンプレート作成ボタン
-  $("#newTempleteModal .modal-dialog .modal-content .modal-body .templeteCreateForm").submit(function(){
+  $("#newTempleteModal .modal-dialog .modal-content .modal-body .templateCreateForm").submit(function(){
 	var pkglist = "";
 	$('[name="pkgCheckBox"]:checked').each(function(){
    //   console.log($(this).val())  
 	  pkglist += $(this).val() + ";";
 	})
-	var data = { mode : "templete",
+	var data = { mode : "template",
 				 control : "create",
 				 msg : {
 						name :  $("#newTempleteModal .modal-dialog .modal-content .modal-body .name").val(),
@@ -464,24 +464,24 @@ $(document).ready(function(){
 	$(".machineProperty .name .name").val(machine.name);
 	$(".machineProperty .machineType .machineType").val(machine.type);
 
-	$(".machineProperty .templete .templete").empty();
-	ftemplete = templete_list("all");
-	ftemplete.forEach(function(value,index){
-	  $(".machineProperty .templete .templete").append($("<option>").html(value).val(index));  
+	$(".machineProperty .template .template").empty();
+	ftemplate = template_list("all");
+	ftemplate.forEach(function(value,index){
+	  $(".machineProperty .template .template").append($("<option>").html(value).val(index));  
 	});
-	$(".machineProperty .templete .templete").val(machine.templete);  
-	$(".machineProperty .machineType .templete").val(ftemplete);
+	$(".machineProperty .template .template").val(machine.template);  
+	$(".machineProperty .machineType .template").val(ftemplate);
 	$(".machineProperty .flavour .flavour").val(machine.flavour);
 	$(".machineProperty .comment .comment").val(machine.comment);     
   });
 
 
-  //newMachineFormでtempleteを選択した時
-  $("#newMachineForm .templete").change(function(){
+  //newMachineFormでtemplateを選択した時
+  $("#newMachineForm .template").change(function(){
 	var pkg;
-	var name = ($("#newMachineForm .templete option:selected").text());
+	var name = ($("#newMachineForm .template option:selected").text());
 	$("#newMachineForm .package").empty();
-	pkg = (db_templete("select",name)).pkg;
+	pkg = (db_template("select",name)).pkg;
 	pkg = pkg.split(";");
 	pkg.forEach(function(pkg, index){
 	  $("#newMachineForm .package").append($("<option disabled>").html(pkg).val(0)); 
@@ -513,7 +513,7 @@ $(document).ready(function(){
 	$(".modal-content select option").remove();
 	$("#pkgCheckBox").empty();
 	$("#packageSearchForm .searchText").val("");
-	$("#templeteCreateForm .name").val("");
+	$("#templateCreateForm .name").val("");
 	reloadDB();
 	
   });
@@ -525,7 +525,7 @@ $(document).ready(function(){
   $('#newMachineModal').on('hidden.bs.modal', function () {
    $("#newMachineModal .modal-dialog .modal-content .modal-body .name").val("");
    $("#newMachineModal .modal-dialog .modal-content .modal-body .machineType").val("0");
-   $("#newMachineModal .modal-dialog .modal-content .modal-body .templete").val("0");
+   $("#newMachineModal .modal-dialog .modal-content .modal-body .template").val("0");
    $("#newMachineModal .modal-dialog .modal-content .modal-body .flavour").val("0");
    $("#newMachineModal .modal-dialog .modal-content .modal-body .comment").val("");
    $("#newMachineModal .modal-dialog .modal-content .modal-body .package option").remove();

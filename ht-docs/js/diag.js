@@ -216,12 +216,12 @@ function diag_showMachineInfoModal(d){
 			machine.type = "Server";
 			break;
 	}
-	machine.templete = templete_list("all")[machine.templete];
+	machine.template = template_list("all")[machine.template];
 
 	$("#machineInfoModal .modal-dialog .modal-content .modal-header .modal-title").text(machine.name);
 	$("#machineData_property .name .name").text(machine.name);
 	$("#machineData_property .machineType .machineType").text(machine.type);
-	$("#machineData_property .templete .templete").text(machine.templete);
+	$("#machineData_property .template .template").text(machine.template);
 	$("#machineData_property .comment .comment").text(machine.comment);
 	$("#machineInfo a:first").tab('show')
 	$("#machineInfo_machineData a:first").tab('show')

@@ -55,12 +55,12 @@ class Jail
 
 		SendMsg.status(MACHINE,"report","jail")
 	
-		templete = (SQL.select("templete",machine['templete']))[2]
-		templete = templete.split(";")
-		puts templete
-		templete.each do |pname|
+		template = (SQL.select("template",machine['template']))[2]
+		template = template.split(";")
+		puts template
+		template.each do |pname|
 			SendMsg.status(MACHINE,"log","#{pname} adding...")
-			Pkg.add(machine['name'], pname)		#templeteに入っている全てのpkgをインストール
+			Pkg.add(machine['name'], pname)		#templateに入っている全てのpkgをインストール
 			SendMsg.status(MACHINE,"log","ok<br>")			
 		end
 		SendMsg.status(MACHINE,"report","pkg")
@@ -185,10 +185,15 @@ class Jail
 		if (data["id"] == "all") then
 
 			machine = SQL.select("machine","all")
-			machine.delete_at(0)
-			machine.each do |value|
-				machineList["key#{value[0]}"] = {"id" => value[0].to_s, "name" => value[1], "type" => value[2].to_s, "templete" => value[3].to_s, "flavour" => value[4].to_s, "comment" => value[5]}
+			if(machine != false) then
+				machine.delete_at(0)
+				machine.each do |value|
+					machineList["key#{value[0]}"] = {"id" => value[0].to_s, "name" => value[1], "type" => value[2].to_s, "template" => value[3].to_s, "flavour" => value[4].to_s, "comment" => value[5]}
+				end
+			else
+				return false
 			end
+
 		end	
 		
 		state = { }
@@ -366,7 +371,7 @@ class Jail
 			name = "_Server#{id}"
 		end
 
-		machine = { "name" => name , "machineType" => type.to_s, "templete" => template.to_s, "flavour" => flavour.to_s, "comment" => "create by easyCreate" }
+		machine = { "name" => name , "machineType" => type.to_s, "template" => template.to_s, "flavour" => flavour.to_s, "comment" => "create by easyCreate" }
 	
 		cmdLog, cause = create(machine)
 

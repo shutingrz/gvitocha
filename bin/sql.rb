@@ -24,22 +24,22 @@ class SQL
 			@@db.execute("select * from machine;")
 		rescue SQLite3::SQLException	#machineテーブルがない場合、初期状態とみなし、各テーブルをcreateし、insertし、masterRouterを作成
 			SendMsg.status(STATUS,"report","初期起動です。初期設定を行います。")
-			@@db.execute("create table machine (id integer, name text, type integer, templete id, flavour id, comment text, jid integer);")
-			@@db.execute("create table templete(id integer, name text, pkg text);")
+			@@db.execute("create table machine (id integer, name text, type integer, template id, flavour id, comment text, jid integer);")
+			@@db.execute("create table template(id integer, name text, pkg text);")
 			@@db.execute("create table flavour (id integer, name text);")
 			@@db.execute("create table pkg(id integer, name text);")
 			@@db.execute("create table easyConf(type integer, id integer, template integer, flavour integer);")
-			@@db.execute("insert into templete (id, name, pkg) values (0, 'default', '');")
-			@@db.execute("insert into templete (id, name, pkg) values (1, 'router', 'quagga-0.99.22.4_1');")
+			@@db.execute("insert into template (id, name, pkg) values (0, 'default', '');")
+			@@db.execute("insert into template (id, name, pkg) values (1, 'router', 'quagga-0.99.22.4_3');")
 			@@db.execute("insert into flavour (id, name) values (0, 'default');")
-			@@db.execute("insert into pkg(id, name) values (1, 'quagga-0.99.22.4_1');")
+			@@db.execute("insert into pkg(id, name) values (1, 'quagga-0.99.22.4_3');")
 			@@db.execute("insert into easyConf(type, id, template, flavour) values (#{SERVER.to_s}, 0, 0, 0);")
 			@@db.execute("insert into easyConf(type, id, template, flavour) values (#{ROUTER.to_s}, 0, 0, 0);")
 			@@db.execute("insert into easyConf(type, id, template, flavour) values (#{SWITCH.to_s}, 0, 0, 0);")
 
-			@@db.execute("insert into machine (id, name, type, templete, flavour, comment) values ( -1, 'dummy', 0, 0, 0, 'dummy');")
+			@@db.execute("insert into machine (id, name, type, template, flavour, comment) values ( -1, 'dummy', 0, 0, 0, 'dummy');")
 		
-			machine = {"name" => "masterRouter", "machineType" => ROUTER.to_s, "templete" => "1", "flavour" => "0","comment" => "masterRouter" }
+			machine = {"name" => "masterRouter", "machineType" => ROUTER.to_s, "template" => "1", "flavour" => "0","comment" => "masterRouter" }
 	
 	#		s,e = Open3.capture3("mkdir #{$jails}/basejail/pkg")
 	#		s,e = Open3.capture3("mkdir #{$jails}/flavours/default")
@@ -49,7 +49,7 @@ class SQL
 	#		s,e = Open3.capture3("qjail create -f default -4 0.0.0.0 masterRouter")
 
 			puts "quagga download..."
-			Pkg.download("quagga-0.99.22.4_1")
+	#		Pkg.download("quagga-0.99.22.4_1")
 
 			Jail.create(machine)
 			Jail.start("masterRouter")
@@ -87,22 +87,22 @@ class SQL
 				return @@db.execute("select id, name from pkg where id=" + id.to_s + ";")[0]
 			end
 
-		elsif (mode =="templete") then 
+		elsif (mode =="template") then 
 			if (id == "maxid") then
-				return @@db.execute("select max(id) from templete")[0][0]		#maxid
+				return @@db.execute("select max(id) from template")[0][0]		#maxid
 			else
-				return @@db.execute("select id, name, pkg from templete where id=#{id};")[0]
+				return @@db.execute("select id, name, pkg from template where id=#{id};")[0]
 			end
 
 		elsif (mode == "machine") then
 			if (id == "all")
-				return @@db.execute("select id, name, type, templete, flavour, comment from machine")
+				return @@db.execute("select id, name, type, template, flavour, comment from machine")
 			elsif (id == "maxid")
 				return @@db.execute("select max(id) from machine")[0][0]		#maxid
 			elsif (id == "name")
-				return @@db.execute("select id, name, type, templete, flavour, comment from machine where name='" + name + "';")[0]
+				return @@db.execute("select id, name, type, template, flavour, comment from machine where name='" + name + "';")[0]
 			else
-				machine = @@db.execute("select id, name, type, templete, flavour, comment from machine where id=" + id.to_s + ";")[0]
+				machine = @@db.execute("select id, name, type, template, flavour, comment from machine where id=" + id.to_s + ";")[0]
 				yield machine[0],machine[1],machine[2],machine[3],machine[4],machine[5]	#machineのデータ返却
 			end
 		elsif (mode == "flavour") then
@@ -120,11 +120,11 @@ class SQL
 		maxid = @@db.execute("select max(id) from #{table}")[0][0]		#maxid
 
 		if(table == "machine") then
-			sql = "insert into machine (id, name, type, templete, flavour, comment) values ('" + (maxid+1).to_s + "','" + data['name'] + "','" + data['machineType'] + "','" + data['templete'] + "','" + data['flavour'] + "','" + data['comment'] + "');"
+			sql = "insert into machine (id, name, type, template, flavour, comment) values ('" + (maxid+1).to_s + "','" + data['name'] + "','" + data['machineType'] + "','" + data['template'] + "','" + data['flavour'] + "','" + data['comment'] + "');"
 		elsif(table == "pkg") then
 			sql = "insert into pkg (id,name) values ('" + (maxid+1).to_s + "','" + data + "');"
-		elsif(table == "templete") then
-			sql = "insert into templete(id,name,pkg) values('" + (maxid+1).to_s + "','" + data["name"] + "','" + data["pkglist"] + "');"
+		elsif(table == "template") then
+			sql = "insert into template(id,name,pkg) values('" + (maxid+1).to_s + "','" + data["name"] + "','" + data["pkglist"] + "');"
 		end
 
 		return @@db.execute(sql)
@@ -155,15 +155,15 @@ end
 =begin
 
 #テーブル追加
-#create table machine (id integer, name text, type integer, templete text, comment text);
+#create table machine (id integer, name text, type integer, template text, comment text);
 
 #カラム追加
-#insert into machine (id, name, type, templete, comment) values (0, "testmachine", 0,  "minimum", "testMachineだよ");
+#insert into machine (id, name, type, template, comment) values (0, "testmachine", 0,  "minimum", "testMachineだよ");
 
 #カラムの内容を変更する際、カラムの削除ができないため、元のテーブルをtmpなり変更し、新しいテーブルを作成し、from で移行する必要がある。
 sqlite> alter table machine rename to table_tmp;
-sqlite> create table machine (id integer, name text, type integer, templete text, comment text) ;
-sqlite> insert into machine select id, name, type, templete, comment from table_tmp;
+sqlite> create table machine (id integer, name text, type integer, template text, comment text) ;
+sqlite> insert into machine select id, name, type, template, comment from table_tmp;
 sqlite> drop table table_tmp;
 
 
