@@ -18,14 +18,16 @@ class Network
 			retry
 		end
 		if(@@daicho != Hash.new) then
-			puts "start resume."
+		#	puts "start resume."
 		#	Network.resume(@@daicho)
 		end
 	end
 
 	def self.main(data)
-		@@tomocha.load(@@daicho)	#毎回ファイルからdaichoを読み込む
-		@@daicho = @@tomocha.getDaicho()
+		if(@@daicho != "") then
+			@@tomocha.load(@@daicho)	#毎回ファイルからdaichoを読み込む
+		end
+	#	@@daicho = @@tomocha.getDaicho()
 #		puts "Network.mainの最初"
 #		puts @@tomocha.getDaicho()
 
@@ -187,9 +189,13 @@ class Network
 		end
 		epaira, epairb = @@tomocha.createpair
 
+		puts "#{source}(#{epaira}) connect"
 		@@tomocha.connect(source,epaira)
+		puts "#{source}(#{epaira}) up"
 		@@tomocha.up(source,epaira)
+		puts "#{target}(#{epairb}) connect"
 		@@tomocha.connect(target,epairb)
+		puts "#{target}(#{epairb}) up"
 		@@tomocha.up(target,epairb)
 
 		@@tomocha.save($daichoPath)
