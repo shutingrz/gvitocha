@@ -134,10 +134,15 @@ function link_mouseout() {
 }
 
 function clickcircle(d){
-	diag_displayInfo(d.name);
+	if($('.noclick').length){	//noclick属性がついていたらドラッグしているのでモーダルを表示させない
+		d3.select(".noclick").classed("noclick", false);
+	}else{
+		diag_showMachineInfoModal(d);
+	}
 }
 
 function clicklink(d){
+  if (d3.event.defaultPrevented) return; // click suppressed
 	diag_displayLink(d.epair);
 }
 
@@ -150,7 +155,6 @@ function addNode(){
 		links.push(linkAE);
 		update();
 }
-
 
 function update() {
 	d3linkDB = [];
@@ -250,6 +254,12 @@ function update() {
 	})
 	.call(force.drag);
 
+	var drag = force.drag();
+	drag.origin(function(d) { return d; })
+	.on("drag", function(d){	//ドラッグしたら
+		d3.select(this).classed("noclick", true);	//noclick属性をつける
+	});
+
 	if(nodeStyle == CIRCLE){
 		node.append("circle")
 		.attr("r", CIRCLESIZE)
@@ -264,8 +274,8 @@ function update() {
 			}
 		})
 		.on("click", function(d) {
-			//	 return clickcircle(d);   
-				return diag_showMachineInfoModal(d);    
+				 return clickcircle(d);   
+			//	return diag_showMachineInfoModal(d);    
 		})
 		.on('contextmenu',function(d,i){
 			diag_showNodeContextMenu(d);
@@ -288,9 +298,7 @@ function update() {
 		.attr("y", "-16px")
 		.attr("width", "32px")
 		.attr("height", "32px")
-		.on("click", function(d) {
-				 return clickcircle(d);       
-		})
+		.on("click", clickcircle)
 		.on('contextmenu',function(d,i){
 			diag_showNodeContextMenu(d);
 		});
