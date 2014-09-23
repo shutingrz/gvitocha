@@ -260,28 +260,27 @@ var l3str = '\
 				IP6Plefixlen:<br>\
 				ASNum:<br>\
 			</div>\
-			<div class="l3inputData">\
-				<input class="ipaddr1" type="text" style="width: 36px" maxlength=3>.\
-				<input class="ipaddr2" type="text" style="width: 36px" maxlength=3>.\
-				<input class="ipaddr3" type="text" style="width: 36px" maxlength=3>.\
-				<input class="ipaddr4" type="text" style="width: 36px" maxlength=3><br>\
-				<input class="ipmask1" type="text" style="width: 36px" maxlength=3>.\
-				<input class="ipmask2" type="text" style="width: 36px" maxlength=3>.\
-				<input class="ipmask3" type="text" style="width: 36px" maxlength=3>.\
-				<input class="ipmask4" type="text" style="width: 36px" maxlength=3><br>\
-				<input class="ip6addr" type="text" style="width: 180px"><br>\
-				<input class="ip6mask" type="text" style="width: 36px" maxlength=3><br>\
-				<input class="as" type="text" style="width: 72px" maxlength=5><br>\
+			<div class="l3inputData" id="l3inputData">\
+				<input class="ipaddr1" type="text" style="width: 36px" maxlength=3 pattern="[0-9]{1,3}">.\
+				<input class="ipaddr2" type="text" style="width: 36px" maxlength=3 pattern="[0-9]{1,3}">.\
+				<input class="ipaddr3" type="text" style="width: 36px" maxlength=3 pattern="[0-9]{1,3}">.\
+				<input class="ipaddr4" type="text" style="width: 36px" maxlength=3 pattern="[0-9]{1,3}"><br>\
+				<input class="ipmask1" type="text" style="width: 36px" maxlength=3 pattern="[0-9]{1,3}">.\
+				<input class="ipmask2" type="text" style="width: 36px" maxlength=3 pattern="[0-9]{1,3}">.\
+				<input class="ipmask3" type="text" style="width: 36px" maxlength=3 pattern="[0-9]{1,3}">.\
+				<input class="ipmask4" type="text" style="width: 36px" maxlength=3 pattern="[0-9]{1,3}"><br>\
+				<input class="ip6addr" type="text" style="width: 360px" pattern="[0-9A-Fa-f:]{1,128}"><br>\
+				<input class="ip6mask" type="text" style="width: 36px" maxlength=3 pattern="[0-9]{1,3}"><br>\
+				<input class="as" type="text" style="width: 48px" maxlength=5 pattern="[0-9]{1,5}"><br>\
+				<input class="param" type="hidden">\
 			</div>\
 		</div>\
 		';
 
 function diag_getepairList(name){
 	var epairList = [];
-	var epair;
 	diag_selectNode(name).forEach(function(value,index){
 		epairList.push({"caption": l3DB[value].epair, "epair" : l3DB[value].epair });
-//	$("#jIP").append("link: " + l3DB[value].epair + "(<=> " + diag_selectTargetNode(l3DB[value].epair) + "), IPAddr: " + l3DB[value].ipaddr + ", IPMask: " + l3DB[value].ipmask + "<br>");
 	});
 	return epairList;
 }
