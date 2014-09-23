@@ -556,10 +556,10 @@ $(document).ready(function(){
 	//タブイベント
 	//shellタブが開いたら
   $("a[href='#machineInfo_shell']").click(function(){
-  	console.log("shell shown!");
 	$("#term").html("<span class=\"ff be\">Now loading...</span>");
 	jname = $("#machineInfoModalTitle").text();
 	console_register(jname);
+	setTimeout(function(){$("#term").focus()},500);	//focus
   });
 
 	//その他
