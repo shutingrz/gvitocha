@@ -171,3 +171,12 @@ img.minimumNowloadingIcon{
 
 .align-right{text-align: right;}
 .align-center{text-align: center;}
+
+.l3inputName{
+	line-height: 1.5em;
+}
+
+input { 
+     height: 1.5em; 
+     line-height: 1.5em; 
+}

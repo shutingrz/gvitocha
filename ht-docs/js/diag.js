@@ -164,7 +164,7 @@ function diag_showNodeContextMenu(d){
 	return false;
 }
 
-function diag_getepairList(name){
+function diag_getepairList2(name){
 	var epairList = [];
 	var epair;
 	diag_selectNode(name).forEach(function(value,index){
@@ -225,14 +225,74 @@ function diag_showMachineInfoModal(d){
 	$("#machineData_property .machineType .machineType").text(machineType);
 	$("#machineData_property .template .template").text(machine.template);
 	$("#machineData_property .comment .comment").text(machine.comment);
+
+	$("#machineNetwork_list").empty();
+	$("#machineNetwork_pane").empty();
+	epairList = diag_getepairList(machine.name);
+	if(epairList == ""){
+		tabs_addPane("#machineNetwork_pane","利用可能なネットワークはありません");
+	}else{
+		var str = "";
+		str = '<div class="tab-pane active" id="machineNetwork_dummy">左のタブから選んでください。</div>'
+		tabs_addPane("#machineNetwork_pane",str);
+		epairList.forEach(function(value,index){
+			tabs_addList("#machineNetwork_list", value.caption, "machineNetwork_" + value.epair);
+	
+			str = '<div class="tab-pane" id="machineNetwork_' + value.epair + '">\
+					<h4>相手側:' + diag_selectTargetNode(value.epair) + '</h4>\
+					' + l3str + '\
+					</div>';
+			tabs_addPane("#machineNetwork_pane",str);
+		});
+	}
+
 	$("#machineInfo a:first").tab('show')
 	$("#machineInfo_machineData a:first").tab('show')
 	$("#machineInfoModal").modal("show");
 }
 
+var l3str = '\
+		<div class="l3input">\
+			<div class="l3inputName">\
+				IPAddr:<br>\
+				IPMask:<br>\
+				IP6Addr:<br>\
+				IP6Plefixlen:<br>\
+				ASNum:<br>\
+			</div>\
+			<div class="l3inputData">\
+				<input class="ipaddr1" type="text" style="width: 36px" maxlength=3>.\
+				<input class="ipaddr2" type="text" style="width: 36px" maxlength=3>.\
+				<input class="ipaddr3" type="text" style="width: 36px" maxlength=3>.\
+				<input class="ipaddr4" type="text" style="width: 36px" maxlength=3><br>\
+				<input class="ipmask1" type="text" style="width: 36px" maxlength=3>.\
+				<input class="ipmask2" type="text" style="width: 36px" maxlength=3>.\
+				<input class="ipmask3" type="text" style="width: 36px" maxlength=3>.\
+				<input class="ipmask4" type="text" style="width: 36px" maxlength=3><br>\
+				<input class="ip6addr" type="text" style="width: 180px"><br>\
+				<input class="ip6mask" type="text" style="width: 36px" maxlength=3><br>\
+				<input class="as" type="text" style="width: 72px" maxlength=5><br>\
+			</div>\
+		</div>\
+		';
 
+function diag_getepairList(name){
+	var epairList = [];
+	var epair;
+	diag_selectNode(name).forEach(function(value,index){
+		epairList.push({"caption": l3DB[value].epair, "epair" : l3DB[value].epair });
+//	$("#jIP").append("link: " + l3DB[value].epair + "(<=> " + diag_selectTargetNode(l3DB[value].epair) + "), IPAddr: " + l3DB[value].ipaddr + ", IPMask: " + l3DB[value].ipmask + "<br>");
+	});
+	return epairList;
+}
 
+function tabs_addList(list,caption,link){
+	$(list).append("<li><a href='#" + link + "' role='tab' data-toggle='tab'>" + caption + "</a></li>");
+}
 
+function tabs_addPane(content,str){
+	$(content).append(str);
+}
 
 
 
