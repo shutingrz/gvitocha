@@ -293,6 +293,7 @@ $(document).ready(function(){
   });
 
 
+
   //machinePropertyのPowerSwitchボタン
   $(".plabel").click(function(){
 	if(($("#powerSwitch").bootstrapSwitch('disabled')) == true){
@@ -448,6 +449,12 @@ $(document).ready(function(){
 	jail_easyCreate(SWITCH);
   });
 
+  $("#l3inputData").submit(function(e){
+  	console.log("aaa");
+  	e.preventDefault();
+	//e.preventDefault();
+  });
+
 
   //フォーカスイベント
   //MachineListでmachineを選択した時
@@ -566,25 +573,9 @@ $(document).ready(function(){
 	//l3inputData
 	//カーソル、Tab、Shift以外のkeyupを認める
 	$("body").on('keyup', "#l3inputData input", function(e){
-		if ($(this).val().length == 3 && e.keyCode != 9 && e.keyCode != 16 && (37 < e.keyCode && e.keyCode > 40) ) { // 次入力欄にフォーカス移動 
+		if ($(this).val().length == 3 && e.keyCode != 9 && e.keyCode != 16 && !(37 <= e.keyCode && e.keyCode <= 40) ) { // 次入力欄にフォーカス移動 
 		//	$('#l3inputData .ipaddr2').focus(); 
 			if( $(this).hasClass("ipaddr4") ){
-				if($("#l3inputData .ipaddr1").val() == "10"){
-					$("#l3inputData .ipmask1").val("255");
-					$("#l3inputData .ipmask2").val("0");
-					$("#l3inputData .ipmask3").val("0");
-					$("#l3inputData .ipmask4").val("0");
-				}else if($("#l3inputData .ipaddr1").val() == "172" && $("#l3inputData .ipaddr2").val() == "16"){
-					$("#l3inputData .ipmask1").val("255");
-					$("#l3inputData .ipmask2").val("255");
-					$("#l3inputData .ipmask3").val("0");
-					$("#l3inputData .ipmask4").val("0");
-				}else if($("#l3inputData .ipaddr1").val() == "192" && $("#l3inputData .ipaddr2").val() == "168"){
-					$("#l3inputData .ipmask1").val("255");
-					$("#l3inputData .ipmask2").val("255");
-					$("#l3inputData .ipmask3").val("255");
-					$("#l3inputData .ipmask4").val("0");
-				}
 				$("#l3inputData .ipmask1").focus();
 			}else{
 				$(this).next().focus();
@@ -615,47 +606,6 @@ $(document).ready(function(){
 		$("#l3inputData .param").addClass("mask");
 		}
 	});
-
-
-	/*
-	$("body").on('keyup', "#l3inputData .ipaddr2", function(e){
-		if ($(this).val().length == 3 && e.keyCode != 9 && e.keyCode != 16 && (37 < e.keyCode && e.keyCode > 40) ) { // 次入力欄にフォーカス移動 
-			$('#l3inputData .ipaddr3').focus(); 
-		} 
-	});
-	$("body").on('keyup', "#l3inputData .ipaddr3", function(){
-		if ($(this).val().length == 3 && e.keyCode != 9 && e.keyCode != 16 && (37 < e.keyCode && e.keyCode > 40) ) { // 次入力欄にフォーカス移動 
-			$('#l3inputData .ipaddr4').focus(); 
-		} 
-	});
-	$("body").on('keyup', "#l3inputData .ipaddr4", function(){
-		if ($(this).val().length == 3 && e.keyCode != 9 && e.keyCode != 16 && (37 < e.keyCode && e.keyCode > 40) ) { // 次入力欄にフォーカス移動 
-			if($("#l3inputData .ipaddr1").val() == "10"){
-				console.log("private");
-			}
-			$('#l3inputData .ipmask1').focus(); 
-		} 
-	});
-	$("body").on('keyup', "#l3inputData .ipmask1", function(){
-		if ($(this).val().length == 3 && e.keyCode != 9 && e.keyCode != 16 && (37 < e.keyCode && e.keyCode > 40) ) { // 次入力欄にフォーカス移動 
-			$('#l3inputData .ipmask2').focus(); 
-		} 
-	});
-	$("body").on('keyup', "#l3inputData .ipmask2", function(){
-		if ($(this).val().length == 3 && e.keyCode != 9 && e.keyCode != 16 && (37 < e.keyCode && e.keyCode > 40) ) { // 次入力欄にフォーカス移動 
-			$('#l3inputData .ipmask3').focus(); 
-		} 
-	});
-	$("body").on('keyup', "#l3inputData .ipmask3", function(){
-		if ($(this).val().length == 3 && e.keyCode != 9 && e.keyCode != 16 && (37 < e.keyCode && e.keyCode > 40) ) { // 次入力欄にフォーカス移動 
-			$('#l3inputData .ipmask4').focus(); 
-		} 
-	});
-	$("body").on('keyup', "#l3inputData .ipmask4", function(){
-		if ($(this).val().length == 3 && e.keyCode != 9 && e.keyCode != 16 && (37 < e.keyCode && e.keyCode > 40) ) { // 次入力欄にフォーカス移動 
-			$('#l3inputData .ip6addr').focus(); 
-		} 
-	});*/
 
 
 	//その他

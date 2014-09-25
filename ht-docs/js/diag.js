@@ -136,9 +136,9 @@ function diag_getNetworkLog(networkLog){
 	}
 }
 
-function diag_createL3(){
-	data = {"epair" : $("#createL3 .epair").val(), "ipaddr" : $("#createL3 .ipaddr").val(), "ipmask" : $("#createL3 .ipmask").val(), "ip6addr" : $("#createL3 .ip6addr").val(), "ip6mask" : $("#createL3 .ip6mask").val(), "as" : $("#createL3 .as").val()};
-	
+function diag_createL3(epair,ipaddr,ipmask,ip6addr,ip6mask,as){
+	//data = {"epair" : $("#createL3 .epair").val(), "ipaddr" : $("#createL3 .ipaddr").val(), "ipmask" : $("#createL3 .ipmask").val(), "ip6addr" : $("#createL3 .ip6addr").val(), "ip6mask" : $("#createL3 .ip6mask").val(), "as" : $("#createL3 .as").val()};
+	data = {"epair" : epair, "ipaddr" : ipaddr, "ipmask" : ipmask, "ip6addr" : ip6addr, "ip6mask" : ip6mask, "as" : as};
 	send(NETWORK, {mode: "l3", control: "create", msg : data});
 }
 
@@ -162,16 +162,6 @@ function diag_showNodeContextMenu(d){
 		openContext = true;
 	},200);
 	return false;
-}
-
-function diag_getepairList2(name){
-	var epairList = [];
-	var epair;
-	diag_selectNode(name).forEach(function(value,index){
-		epairList.push({"caption": l3DB[value].epair + "(<=> " + diag_selectTargetNode(l3DB[value].epair) + ")", "func" : "l3Modal_show('" + name + "','" + l3DB[value].epair + "')"});
-//	$("#jIP").append("link: " + l3DB[value].epair + "(<=> " + diag_selectTargetNode(l3DB[value].epair) + "), IPAddr: " + l3DB[value].ipaddr + ", IPMask: " + l3DB[value].ipmask + "<br>");
-	});
-	return epairList;
 }
 
 function diag_showLinkContextMenu(d){
@@ -227,22 +217,16 @@ function diag_showMachineInfoModal(d){
 	$("#machineData_property .comment .comment").text(machine.comment);
 
 	$("#machineNetwork_list").empty();
-	$("#machineNetwork_pane").empty();
+//	$("#machineNetwork_pane").empty();
 	epairList = diag_getepairList(machine.name);
 	if(epairList == ""){
-		tabs_addPane("#machineNetwork_pane","利用可能なネットワークはありません");
+		$("#machineNetwork_data").html("利用可能なネットワークはありません");
 	}else{
 		var str = "";
-		str = '<div class="tab-pane active" id="machineNetwork_dummy">左のタブから選んでください。</div>'
-		tabs_addPane("#machineNetwork_pane",str);
+		$("#machineNetwork_data").html("左のタブから選んでください。");
 		epairList.forEach(function(value,index){
-			tabs_addList("#machineNetwork_list", value.caption, "machineNetwork_" + value.epair);
-	
-			str = '<div class="tab-pane" id="machineNetwork_' + value.epair + '">\
-					<h4>相手側:' + diag_selectTargetNode(value.epair) + '</h4>\
-					' + l3str + '\
-					</div>';
-			tabs_addPane("#machineNetwork_pane",str);
+			var func = "diag_showNetwork('" + value.epair + "')";
+			tabs_addList("#machineNetwork_list", value.caption, func );
 		});
 	}
 
@@ -260,7 +244,7 @@ var l3str = '\
 				IP6Plefixlen:<br>\
 				ASNum:<br>\
 			</div>\
-			<div class="l3inputData" id="l3inputData">\
+				<form id="l3inputData" action="javascript:diag_l3DataConstract()">\
 				<input class="ipaddr1" type="text" style="width: 36px" maxlength=3 pattern="[0-9]{1,3}">.\
 				<input class="ipaddr2" type="text" style="width: 36px" maxlength=3 pattern="[0-9]{1,3}">.\
 				<input class="ipaddr3" type="text" style="width: 36px" maxlength=3 pattern="[0-9]{1,3}">.\
@@ -272,8 +256,20 @@ var l3str = '\
 				<input class="ip6addr" type="text" style="width: 360px" pattern="[0-9A-Fa-f:]{1,128}"><br>\
 				<input class="ip6mask" type="text" style="width: 36px" maxlength=3 pattern="[0-9]{1,3}"><br>\
 				<input class="as" type="text" style="width: 48px" maxlength=5 pattern="[0-9]{1,5}"><br>\
+				<input class="epair" type="hidden">\
 				<input class="param" type="hidden">\
-			</div>\
+				<input class="ipaddr1_b" type="hidden" value="" >\
+				<input class="ipaddr2_b" type="hidden" value="" >\
+				<input class="ipaddr3_b" type="hidden" value="" >\
+				<input class="ipaddr4_b" type="hidden" value="" >\
+				<input class="ipmask1_b" type="hidden" value="" >\
+				<input class="ipmask2_b" type="hidden" value="" >\
+				<input class="ipmask3_b" type="hidden" value="" >\
+				<input class="ipmask4_b" type="hidden" value="" >\
+				<input class="ip6addr_b" type="hidden" value="" >\
+				<input class="ip6mask_b" type="hidden" value="" >\
+				<input class="as_b" type="hidden" value="" >\
+				</form>\
 		</div>\
 		';
 
@@ -285,16 +281,67 @@ function diag_getepairList(name){
 	return epairList;
 }
 
-function tabs_addList(list,caption,link){
-	$(list).append("<li><a href='#" + link + "' role='tab' data-toggle='tab'>" + caption + "</a></li>");
+function tabs_addList(list,caption,func){
+	$(list).append('<li><a href="#" onclick="javascript:' + func + ';" role="tab" data-toggle="tab">' + caption + '</a></li>');
 }
 
 function tabs_addPane(content,str){
 	$(content).append(str);
 }
 
+function diag_showNetwork(epair){
+	var index = db_selectDB("l3",epair);
+	var db = l3DB[index];
+	var str = '<h4>相手側:' + diag_selectTargetNode(epair) + '</h4>' + l3str;
 
+	$("#machineNetwork_data").html(str);
+	$("#l3inputData .epair").val(epair);
+	if(db.ipaddr != ""){
+		ipaddr = db.ipaddr.split(".");
+		$("#l3inputData .ipaddr1").val(ipaddr[0]);
+		$("#l3inputData .ipaddr2").val(ipaddr[1]);
+		$("#l3inputData .ipaddr3").val(ipaddr[2]);
+		$("#l3inputData .ipaddr4").val(ipaddr[3]);
+		$("#l3inputData .ipaddr1_b").val(ipaddr[0]);
+		$("#l3inputData .ipaddr2_b").val(ipaddr[1]);
+		$("#l3inputData .ipaddr3_b").val(ipaddr[2]);
+		$("#l3inputData .ipaddr4_b").val(ipaddr[3]);
+		ipmask = db.ipmask.split(".");
+		$("#l3inputData .ipmask1").val(ipmask[0]);
+		$("#l3inputData .ipmask2").val(ipmask[1]);
+		$("#l3inputData .ipmask3").val(ipmask[2]);
+		$("#l3inputData .ipmask4").val(ipmask[3]);
+		$("#l3inputData .ipmask1_b").val(ipmask[0]);
+		$("#l3inputData .ipmask2_b").val(ipmask[1]);
+		$("#l3inputData .ipmask3_b").val(ipmask[2]);
+		$("#l3inputData .ipmask4_b").val(ipmask[3]);
+	}
+	if(db.ip6addr != ""){
+		$("#l3inputData .ip6addr").val(db.ip6addr);
+		$("#l3inputData .ip6mask").val(db.ip6mask);
+		$("#l3inputData .ip6addr_b").val(db.ip6addr);
+		$("#l3inputData .ip6mask_b").val(db.ip6mask);
+	}
+	if(db.as != ""){
+		$("#l3inputData .as").val(db.as);
+		$("#l3inputData .as_b").val(db.as);
+	}
 
+	$("#machineInfo_submit").attr('onclick', 'javascript:$("#l3inputData").trigger("submit")');
+	$("#machineInfo_submit").removeAttr("disabled");
+}
+
+function diag_l3DataConstract(){
+	console.log("l3DataConstract");
+//	$("#l3inputData").trigger('submit');
+	ipaddr = $("#l3inputData .ipaddr1").val() + "." + $("#l3inputData .ipaddr2").val() + "." + $("#l3inputData .ipaddr3").val() + "." + $("#l3inputData .ipaddr4").val();
+	ipmask = $("#l3inputData .ipmask1").val() + "." + $("#l3inputData .ipmask2").val() + "." + $("#l3inputData .ipmask3").val() + "." + $("#l3inputData .ipmask4").val();
+	ip6addr = $("#l3inputData .ip6addr").val();
+	ip6mask = $("#l3inputData .ip6mask").val();
+	as = $("#l3inputData .as").val();
+	epair = $("#l3inputData .epair").val();
+	diag_createL3(epair,ipaddr,ipmask,ip6addr,ip6mask,as);
+}
 
 
 

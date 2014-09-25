@@ -85,8 +85,13 @@ function db_selectDB(control,name){
         idx = index;    //ここでreturnしても恐らくスコープの関係で値返せないので外の変数に渡す
       }
     });
+  }else if(control == "l3"){
+    l3DB.forEach(function(values,index){
+      if(name == values.epair){
+        idx = index;
+      }
+    });
   }
-
   return idx;
 }
 
