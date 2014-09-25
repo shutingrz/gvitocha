@@ -13,6 +13,7 @@ class SendMsg
 	end
 
 	def self.console(data)
+		data = data.force_encoding("UTF-8")
 		self.asend(CONSOLE,data)
 	end
 
