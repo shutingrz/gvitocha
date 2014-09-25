@@ -18,7 +18,7 @@ position:absolute;
 margin:0;
 padding:0;
 minimum-height:264px;
-font:10px Andale Mono, monospace;
+font:14px Andale Mono, monospace;
 white-space:pre;
 background:#000 url('./img/webshell/background.jpg');
 }

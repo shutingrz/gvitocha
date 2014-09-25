@@ -129,7 +129,9 @@ class Pkg
 		apkg = Array.new
 		column = Array.new
 		flag = false
+		puts "cd #{ports}/;make search name=#{pname}"
 		s,e = Open3.capture3("cd #{ports}/;make search name=#{pname}")
+		puts s
 		s = s.split("\n")
 		s.each do |line|	#念のため出現するパッケージが2つ以上と仮定しているが、実際に返すのは１つのみ。デバッグ用に複数入れるためのapkgを残している
 			if(line.index("Port:") != nil) then
