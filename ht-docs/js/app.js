@@ -224,7 +224,7 @@ function getMachineLog(machineLog){
 	$("#state"+Number($("#state").text())).css("font-weight","bolder");
   }
   else if(machineLog.msgType== "log"){  //logボックスに表示
-	$("#nowLoadingLog").append("<span>" + machineLog.msg + "</span>");
+	$("#nowLoadingLog").append("<span class='br'>" + machineLog.msg + "</span>");
 	go_bottom("nowLoadingLog");
 	
   }

@@ -1,30 +1,29 @@
-require '../bin/pkg.rb'
+require 'em-websocket'
 require 'open3'
-pname = "vim"
+pname = "vim-7.4.430_2"
+s = ""
+output = ""
+
+if __FILE__ == $0 then
+	out = StringIO.new
+#	$stdout = out
+#	$stdout = File.open("x.txt", "w") 
+#	EventMachine::defer do
+    #	Open3.pipeline("echo y|pkg-static fetch #{pname}")
+IO.popen("echo aaa ;sleep 1 ; echo bbb") do |pipe|
+    pipe.each do | line |
+         print line
+    end
+end
+puts "aaaaa"
+	#	s,e = Open3.capture3("echo aaaa")
+#	end
+#	puts "out = #{out.string}"
 =begin
-dePkg = Pkg.recursiveList(pname)		#depends Pkg
-		dePkg += pname
-
-path = "/usr/ports/editors/vim"
-
-db = Array.new
-		Pkg.recPkg(db,path)
-		db.sort!
-		puts db
+	while(1) do
+		puts output
+		sleep 1
+	end
 =end
-column = Array.new
-apkg = Array.new
-ports = "/usr/ports"
-s,e = Open3.capture3("cd #{ports}/;make search name=#{pname}")
-	#	puts s
-		s = s.split("\n")
-		s.each do |line|	#念のため出現するパッケージが2つ以上と仮定しているが、実際に返すのは１つのみ。デバッグ用に複数入れるためのapkgを残している
-				if(line.index("Path:") != nil) then
-					line = line.gsub("Path:	","")
-					column << line.gsub("#{ports}/","")
-					apkg << column
-					column = []
-					flag = false
-				end
-		end
-		puts apkg
+	
+end
