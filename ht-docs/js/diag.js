@@ -149,11 +149,8 @@ function diag_showNodeContextMenu(d){
 		if(d.name != "masterRouter"){	//基本的にmasterRouterは停止させない
 			context_addList("停止", "jail_stop('" + d.name + "')");
 		}
-		context_addConsole(d.name);
 		context_addList("他のマシンに接続","diag_connectMode('" + d.name + "')");	
 
-		epairList = diag_getepairList(d.name);
-		context_nest("IPアドレス設定", epairList);
 	}else{
 		context_addList("起動","jail_start('" + d.name + "')");
 	}

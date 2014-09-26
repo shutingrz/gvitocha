@@ -689,10 +689,6 @@ function context_addList(caption,func){
 	$("#contextMenu .dropdown-menu").append('<li><a "tabindex="-1" href="javascript:' + func + ';context_hide();">' + caption + '</a></li>');
 }
 
-function context_addConsole(name){
-	$("#contextMenu .dropdown-menu").append('<li><a "tabindex="-1" data-toggle="modal" data-target="#shellModal" href="javascript:context_hide();">コンソール</a></li>');
-}
-
 function context_show(){
 	$("#contextMenu").css({
 		display: "block",
