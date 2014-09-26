@@ -7,7 +7,8 @@ div.top{
 
 div.top div.header{
 	width : 100%;
-	height: 3%;
+	height: 7%;
+	background-color: #120A2A;
 }
 
 div.top div.header div.left{
@@ -41,7 +42,6 @@ div.machine{
 }
 
 .machine .machineList{
-	float : left;
 	width : 50%;
 	height : 80%;
 	overflow : scroll;
