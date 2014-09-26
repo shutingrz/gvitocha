@@ -295,22 +295,6 @@ $(document).ready(function(){
 
 
 
-  //machinePropertyのPowerSwitchボタン
-  $(".plabel").click(function(){
-	if(($("#powerSwitch").bootstrapSwitch('disabled')) == true){
-
-	}else{
-	  $("#powerSwitch").bootstrapSwitch('toggleDisabled');
-	  $('#machineList').attr('disabled', 'disabled');
-	  if(($("#powerSwitch").bootstrapSwitch('state')) == true){  //falseだったものがクリックされたらtrueになるため
-		jail_start($("#machineProperty .name .name").val());
-	  }
-	  else{
-		jail_stop($("#machineProperty .name .name").val());
-	  }
-	}
-  });
-
   //ciscoSwitchボタン
   $(".ciscolabel").click(function(){
 	  if(($("#ciscoSwitch").bootstrapSwitch('state')) == true){  //falseだったものがクリックされたらtrueになるため
@@ -382,7 +366,7 @@ $(document).ready(function(){
   });
 
   //テンプレート作成ボタン
-  $("#newTempleteModal .modal-dialog .modal-content .modal-body .templateCreateForm").submit(function(){
+  $("#newTemplateModal .modal-dialog .modal-content .modal-body .templateCreateForm").submit(function(){
 	var pkglist = "";
 	$('[name="pkgCheckBox"]:checked').each(function(){
    //   console.log($(this).val())  
@@ -391,14 +375,14 @@ $(document).ready(function(){
 	var data = { mode : "template",
 				 control : "create",
 				 msg : {
-						name :  $("#newTempleteModal .modal-dialog .modal-content .modal-body .name").val(),
+						name :  $("#newTemplateModal .modal-dialog .modal-content .modal-body .name").val(),
 						pkglist : pkglist
 						}
 				}
 	mkNowLoading.addHead(1,"新しいパッケージを追加中...");
 	mkNowLoading.addBody("state1","・データベースへ登録");
 
-	$("#newTempleteModal").modal("hide");
+	$("#newTemplateModal").modal("hide");
 	mkNowLoading.show();
 	send(MACHINE,data);
 
@@ -458,30 +442,6 @@ $(document).ready(function(){
 
 
   //フォーカスイベント
-  //MachineListでmachineを選択した時
-  $("#machineList").change(function(){    //プロパティにフォーカスした項目のname,machineType,commentを表示する
-	var name = $("#machineList option:selected").text();
-	machine = db_machine("select",name);
-
-	if (machine.boot == "1"){
-	  $('#powerSwitch').bootstrapSwitch('state', true, true);
-	}else{
-	  $('#powerSwitch').bootstrapSwitch('state', false,false);
-	}    
-
-	$(".machineProperty .name .name").val(machine.name);
-	$(".machineProperty .machineType .machineType").val(machine.type);
-
-	$(".machineProperty .template .template").empty();
-	ftemplate = template_list("all");
-	ftemplate.forEach(function(value,index){
-	  $(".machineProperty .template .template").append($("<option>").html(value).val(index));  
-	});
-	$(".machineProperty .template .template").val(machine.template);  
-	$(".machineProperty .machineType .template").val(ftemplate);
-	$(".machineProperty .flavour .flavour").val(machine.flavour);
-	$(".machineProperty .comment .comment").val(machine.comment);     
-  });
 
 
   //newMachineFormでtemplateを選択した時
@@ -499,7 +459,7 @@ $(document).ready(function(){
   });
 
   //モーダルが開いた時のイベント
-  $('#newPackageModal, #newTempleteModal').on('shown.bs.modal', function() {
+  $('#newPackageModal, #newTemplateModal').on('shown.bs.modal', function() {
 	$(".installedPkgLoading").attr("src","./img/loading.gif").addClass("minimumNowloadingIcon");
 	$(".installedPkgLoading").attr("src","./img/loading.gif").addClass("minimumNowloadingIcon");
 	var data = { mode : "pkg",
@@ -517,8 +477,9 @@ $(document).ready(function(){
 
 
   //モーダルが消えた場合のイベント
-  $('#newPackageModal, #newTempleteModal').on('hidden.bs.modal', function () {      //newTempleteとnewPackageは構造が似ているので同じ関数に
-	$(".modal-content select option").remove();
+  $('#newPackageModal, #newTemplateModal').on('hidden.bs.modal', function () {      //newTemplateとnewPackageは構造が似ているので同じ関数に
+	$("#newPackageModal .modal-dialog .modal-content select option").remove();
+	$("#newTemplateModal .modal-dialog .modal-content select option").remove();
 	$("#pkgCheckBox").empty();
 	$("#packageSearchForm .searchText").val("");
 	$("#templateCreateForm .name").val("");
@@ -550,16 +511,6 @@ $(document).ready(function(){
 	jname = "masterRouter";
   });
 
-  //l3モーダルが消えたら
-  $("#l3Modal").on("hidden.bs.modal", function(){
-  	$("#l3Form .name").val("");
-	$("#l3Form .epair").val("");
-	$("#l3Form .ipaddr").val("");
-	$("#l3Form .ipmask").val("");
-	$("#l3Form .ip6addr").val("");
-	$("#l3Form .ip6mask").val("");
-	$("#l3Form .as").val("");
-  });
 	
 	//machineInfoモーダルが消えたら
   $("#machineInfoModal").on("hidden.bs.modal", function(){
@@ -732,3 +683,60 @@ function context_nest(caption, array){
 
 
 //########test
+
+
+
+
+
+//廃棄
+
+
+/*
+
+//MachineListでmachineを選択した時
+  $("#machineList").change(function(){    //プロパティにフォーカスした項目のname,machineType,commentを表示する
+	var name = $("#machineList option:selected").text();
+	machine = db_machine("select",name);
+
+	if (machine.boot == "1"){
+	  $('#powerSwitch').bootstrapSwitch('state', true, true);
+	}else{
+	  $('#powerSwitch').bootstrapSwitch('state', false,false);
+	}    
+
+	$(".machineProperty .name .name").val(machine.name);
+	$(".machineProperty .machineType .machineType").val(machine.type);
+
+	$(".machineProperty .template .template").empty();
+	ftemplate = template_list("all");
+	ftemplate.forEach(function(value,index){
+	  $(".machineProperty .template .template").append($("<option>").html(value).val(index));  
+	});
+	$(".machineProperty .template .template").val(machine.template);  
+	$(".machineProperty .machineType .template").val(ftemplate);
+	$(".machineProperty .flavour .flavour").val(machine.flavour);
+	$(".machineProperty .comment .comment").val(machine.comment);     
+  });
+
+ */
+
+ /*
+
+
+  //machinePropertyのPowerSwitchボタン
+  $(".plabel").click(function(){
+	if(($("#powerSwitch").bootstrapSwitch('disabled')) == true){
+
+	}else{
+	  $("#powerSwitch").bootstrapSwitch('toggleDisabled');
+	  $('#machineList').attr('disabled', 'disabled');
+	  if(($("#powerSwitch").bootstrapSwitch('state')) == true){  //falseだったものがクリックされたらtrueになるため
+		jail_start($("#machineProperty .name .name").val());
+	  }
+	  else{
+		jail_stop($("#machineProperty .name .name").val());
+	  }
+	}
+  });
+
+  */

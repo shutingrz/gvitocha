@@ -53,56 +53,9 @@
 			<div class="util">
 			<button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newMachineModal">新しいマシンを作成</button>
 			<button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newPackageModal" >パッケージの追加</button>
-			<button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newTempleteModal">テンプレートの作成</button>
+			<button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newTemplateModal">テンプレートの作成</button>
 			<button class="btn btn-primary btn-xs" id="deleteAllMachine" >全マシンの削除</button>
 
-			</div>
-		</div>
-		<div id="machineProperty" class="machineProperty" >
-			PowerSwitch
-			<div class="make-switch powerSwitch">
-				<label class="plabel" >
-					<input id="powerSwitch" class="pswitch" type="checkbox">
-				</label>
-			</div>
-			<hr>
-			id:<span class="id"></span>
-			<div class="name">
-				Name<br>
-				<input type="text" class="name">
-			</div>
-			<div class="machineType">
-				<hr>MachineType<br>
-				<select class="machineType">
-					<option value="0">Server</option>
-					<option value="1">Router</option>
-					<option value="2">Switch</option>
-				</select>
-			</div>
-			<div class="template">
-				<hr>Templete<br>
-				<select class="template"></select>
-			</div>
-			<div class="flavour">
-				<hr>flavour<br>
-				<select class="flavour">
-					<option value="0">default</option>
-				</select>
-			</div>
-			<div class="ip">
-			</div>
-			<div class="package">
-				<hr>Package<br>
-				<select class="package" size="4"></select>
-			</div>
-			<div class="comment">
-				<hr>コメント<br>
-				<input class="comment" type="text">
-			</div>
-			<div class="submitType">
-				<hr>
-				<input type="button" id="machineModify" class="modify" value="modify">
-				<input type="button" id="machineDelete" class="delete" value="delete">
 			</div>
 		</div>
 	</div>
@@ -125,7 +78,7 @@
 					  <option value="1">Router</option>
 					  <option value="2">Switch</option>
 					</select>
-					<hr>Templete<br>
+					<hr>Template<br>
 					<select class="template" name="template">
 					  
 					</select>
@@ -177,12 +130,12 @@
 		</div><!-- /.modal -->
 
 		<!-- テンプレート作成モーダル -->
-		<div class="modal fade" id="newTempleteModal" tabindex="-1" role="dialog" aria-labelledby="newTempleteModal" aria-hidden="true">
+		<div class="modal fade" id="newTemplateModal" tabindex="-1" role="dialog" aria-labelledby="newTemplateModal" aria-hidden="true">
 		  <div class="modal-dialog">
 			<div class="modal-content">
 			  <div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-				<h4 class="modal-title" id="newTempleteModalTitle">テンプレートの作成</h4>
+				<h4 class="modal-title" id="newTemplateModalTitle">テンプレートの作成</h4>
 			  </div>
 			  <div class="modal-body">
 				テンプレートの名前を入力し、<br>
@@ -190,7 +143,7 @@
 				<hr>
 
 				<form method="post" id="templateCreateForm" class="templateCreateForm" action="javascript:void(0);">
-					Templete name<br>
+					Template name<br>
 					<input type="text" class="name" required></input>
 				<br><br>
 				パッケージ一覧<img class="installedPkgLoading" />
@@ -256,63 +209,11 @@
 				<h4 class="modal-title" id="shellModalTitle">Shell</h4>
 			  </div>
 			  <div class="modal-body"> 
-<!--			<div class="container">
-					<pre id="term" tabindex="1"></pre>
-				</div>	-->
 			  </div>
 				<div class="modal-footer">
 				  <button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
 				</form>
 				</div>
-			</div><!-- /.modal-content -->
-		  </div><!-- /.modal-dialog -->
-		</div><!-- /.modal -->
-
-
-		<!-- IPアドレスモーダル -->
-		<div class="modal" id="l3Modal" tabindex="-1" role="dialog" aria-labelledby="l3Modal" aria-hidden="true">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-						<h4 class="modal-title" id="l3ModalTitle">IPアドレスの設定</h4>
-					</div>
-					<div class="modal-body">  
-						<form method="post" id="l3Form" action="javascript:void(0);">
-							Name:<span class="name"></span><br>
-							link:<span class="link"></span><br>
-							<hr>
-							<div class="l3input">
-								<div class="l3inputName">
-									IPAddr:<br>
-									IPMask:<br>
-									IP6Addr:<br>
-									IP6Plefixlen:<br>
-									ASNum:<br>
-								</div>
-								<div class="l3inputData">
-									<input class="ipaddr1" type="text" style="width: 36px" maxlength=3>.
-									<input class="ipaddr2" type="text" style="width: 36px" maxlength=3>.
-									<input class="ipaddr3" type="text" style="width: 36px" maxlength=3>.
-									<input class="ipaddr4" type="text" style="width: 36px" maxlength=3><br>
-									<input class="ipmask1" type="text" style="width: 36px" maxlength=3>.
-									<input class="ipmask2" type="text" style="width: 36px" maxlength=3>.
-									<input class="ipmask3" type="text" style="width: 36px" maxlength=3>.
-									<input class="ipmask4" type="text" style="width: 36px" maxlength=3><br>
-								</div>
-							</div>
-							<!--
-							IPaddr:		<input class="ipaddr" type="text" value=""><br>
-							IPMask:		<input class="ipmask" type="text" value=""><br>
-							IP6Addr:	<input class="ip6addr" type="text" value=""><br>
-							IP6Plefixlen:<input class="ip6mask" type="text" value=""><br>
-							ASNum:<input class="as" type="text" value=""><br>-->
-					</div>
-					<div class="modal-footer">
-				  		<button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
-				  		<button type="submit" class="btn btn-primary" id="l3SubmitButton">送信</button>
-				</div>
-			  			</form>
 			</div><!-- /.modal-content -->
 		  </div><!-- /.modal-dialog -->
 		</div><!-- /.modal -->
@@ -353,7 +254,7 @@
 									<span class="machineType align-right br"></span>
 								</div>
 								<div class="template">
-									<h4>Templete</h4>
+									<h4>Template</h4>
 									<span class="template align-right br"></span>
 								</div>
 								<div class="comment">
@@ -405,67 +306,6 @@
 	タブ表示時に見せたいペインの木構造に全てactiveをつけることを忘れずに。
 -->
 
-<!--	いい感じにできあがったタブ
-		<div class="modal" id="machineInfoModal" tabindex="-1" role="dialog" aria-labelledby="machineInfoModal" aria-hidden="true" data-keyboard="false" >
-		  <div class="modal-dialog">
-			<div class="modal-content">
-			  <div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-				<h4 class="modal-title" id="machineInfoModalTitle"></h4>
-			  </div>
-			  <div class="modal-body"> 
-				<ul class="nav nav-tabs" role="tablist">
-					<li class="active"><a href="#home" role="tab" data-toggle="tab">Home</a></li>
-					<li><a href="#profile" role="tab" data-toggle="tab">Profile</a></li>
-					<li><a href="#messages" role="tab" data-toggle="tab">Messages</a></li>
-					<li><a href="#settings" role="tab" data-toggle="tab">Settings</a></li>
-				</ul>
-
-				<div class="tab-content">
-					<div class="tabbable tabs-left tabs-data" id="home">
-						<ul class="nav nav-tabs nav-tabs-left" role="tablist">
-							<li class="active"><a href="#home2" role="tab" data-toggle="tab">Home</a></li>
-							<li><a href="#profile2" role="tab" data-toggle="tab">Profile</a></li>
-							<li><a href="#messages2" role="tab" data-toggle="tab">Messages</a></li>
-							<li><a href="#settings2"role="tab" data-toggle="tab">Settings2</a></li>
-							<li><a href="#settings3"role="tab" data-toggle="tab">Settings3</a></li>
-							<li><a href="#settings4"role="tab" data-toggle="tab">Settings4</a></li>
-							<li><a href="#settings5"role="tab" data-toggle="tab">Settings5</a></li>
-							<li><a href="#settings6"role="tab" data-toggle="tab">Settings6</a></li>
-							<li><a href="#settings7"role="tab" data-toggle="tab">Settings7</a></li>
-						</ul>
-
-						<div class="tab-content tab-content2">
-							<div class="tab-pane active" id="home2">aaa<br>1<br>2<br>3<br>4<br>5<br>6<br>7<br>73<br>4<br>5<br>6<br>7<br>7<br>7<br>7<br>7<br>7<br>8<br>8<br>8<br>7</div>
-							<div class="tab-pane" id="profile2">bbb<br><br><br><br><br><br><br><br><br></div>
-							<div class="tab-pane" id="messages2">ccc<br><br><br><br><br><br><br><br><br><br></div>
-							<div class="tab-pane" id="settings2">Settings2</div>
-							<div class="tab-pane" id="settings3">Settings3</div>
-							<div class="tab-pane" id="settings4">Settings4</div>
-							<div class="tab-pane" id="settings5">Settings5</div>
-							<div class="tab-pane" id="settings6">Settings6</div>
-							<div class="tab-pane" id="settings7">Settings7</div>
-
-						</div>
-					</div>
-
-					<div class="tab-pane" id="profile">
-					</div>
-					<div class="tab-pane" id="messages">...</div>
-					<div class="tab-pane" id="settings">...</div>
-				</div>
-
-
-
-			  </div>
-				<div class="modal-footer">
-				  <button type="button" class="btn btn-default">適用</button>
-				  <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
-				</form>
-				</div>
-			</div>
-		  </div>
-		</div>-->
 	  </div>
 	  </div>
 
@@ -499,3 +339,57 @@
   
   </body>
 </html>
+
+
+<!--
+	machineProperty
+
+			<div id="machineProperty" class="machineProperty" >
+			PowerSwitch
+			<div class="make-switch powerSwitch">
+				<label class="plabel" >
+					<input id="powerSwitch" class="pswitch" type="checkbox">
+				</label>
+			</div>
+			<hr>
+			id:<span class="id"></span>
+			<div class="name">
+				Name<br>
+				<input type="text" class="name">
+			</div>
+			<div class="machineType">
+				<hr>MachineType<br>
+				<select class="machineType">
+					<option value="0">Server</option>
+					<option value="1">Router</option>
+					<option value="2">Switch</option>
+				</select>
+			</div>
+			<div class="template">
+				<hr>Template<br>
+				<select class="template"></select>
+			</div>
+			<div class="flavour">
+				<hr>flavour<br>
+				<select class="flavour">
+					<option value="0">default</option>
+				</select>
+			</div>
+			<div class="ip">
+			</div>
+			<div class="package">
+				<hr>Package<br>
+				<select class="package" size="4"></select>
+			</div>
+			<div class="comment">
+				<hr>コメント<br>
+				<input class="comment" type="text">
+			</div>
+			<div class="submitType">
+				<hr>
+				<input type="button" id="machineModify" class="modify" value="modify">
+				<input type="button" id="machineDelete" class="delete" value="delete">
+			</div>
+		</div>
+
+		-->
