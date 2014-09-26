@@ -100,6 +100,14 @@ function jail_delete(name){
 	send(MACHINE,data);
 }
 
+function jail_showDeleteModal(name){
+  confirm_addHead("マシンの削除");
+  confirm_addBody("以下のマシンを削除します。よろしいですか？");
+  confirm_addBody("・" + name);
+  confirm_addCmd('jail_delete("' + name + '");');
+  confirm_show();
+}
+
 
 function jail_getList(){
   send(MACHINE,{mode:"jail", control:"select", id:"all"});
