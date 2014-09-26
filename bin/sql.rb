@@ -30,9 +30,9 @@ class SQL
 			@@db.execute("create table pkg(id integer, name text);")
 			@@db.execute("create table easyConf(type integer, id integer, template integer, flavour integer);")
 			@@db.execute("insert into template (id, name, pkg) values (0, 'default', '');")
-			@@db.execute("insert into template (id, name, pkg) values (1, 'router', 'quagga-0.99.22.4_3');")
+		#	@@db.execute("insert into template (id, name, pkg) values (1, 'router', 'quagga-0.99.22.4_3');")
 			@@db.execute("insert into flavour (id, name) values (0, 'default');")
-			@@db.execute("insert into pkg(id, name) values (1, 'quagga-0.99.22.4_3');")
+		#	@@db.execute("insert into pkg(id, name) values (1, 'quagga-0.99.22.4_3');")
 			@@db.execute("insert into easyConf(type, id, template, flavour) values (#{SERVER.to_s}, 0, 0, 0);")
 			@@db.execute("insert into easyConf(type, id, template, flavour) values (#{ROUTER.to_s}, 0, 0, 0);")
 			@@db.execute("insert into easyConf(type, id, template, flavour) values (#{SWITCH.to_s}, 0, 0, 0);")
@@ -48,8 +48,19 @@ class SQL
 
 	#		s,e = Open3.capture3("qjail create -f default -4 0.0.0.0 masterRouter")
 
-			puts "quagga download..."
+	#		puts "quagga download..."
 	#		Pkg.download("quagga-0.99.22.4_1")
+			res = ""
+			result = Pkg.search("quagga")
+			result.each_line do |r|
+				res = r.chomp
+				break;
+			end
+			cmdLog = Pkg.install(res)
+			if(cmdLog) then
+				@@db.execute("insert into template (id, name, pkg) values (1, 'Router', '" + res + "');")
+			end
+
 
 			Jail.create(machine)
 			Jail.start("masterRouter")
@@ -82,13 +93,22 @@ class SQL
 		begin
 		if (mode == "pkg") then
 			if (id == "maxid")
-				return @@db.execute("select max(id) from pkg")[0][0]		#maxid
+				res = @@db.execute("select max(id) from pkg")[0][0]		#maxid
+				puts "res = #{res}"
+				if (!res.is_a?Integer) then
+					return 0
+				end
+				return res
 			else
 				return @@db.execute("select id, name from pkg where id=" + id.to_s + ";")[0]
 			end
 
 		elsif (mode =="template") then 
 			if (id == "maxid") then
+				res = @@db.execute("select max(id) from template")[0][0]
+				if (!res) then
+					return 0
+				end
 				return @@db.execute("select max(id) from template")[0][0]		#maxid
 			else
 				return @@db.execute("select id, name, pkg from template where id=#{id};")[0]
@@ -118,6 +138,9 @@ class SQL
 
 	def self.insert(table,data)
 		maxid = @@db.execute("select max(id) from #{table}")[0][0]		#maxid
+		if (!maxid.is_a?Integer) then
+			maxid = 0
+		end
 
 		if(table == "machine") then
 			sql = "insert into machine (id, name, type, template, flavour, comment) values ('" + (maxid+1).to_s + "','" + data['name'] + "','" + data['machineType'] + "','" + data['template'] + "','" + data['flavour'] + "','" + data['comment'] + "');"

@@ -154,8 +154,10 @@ function diag_showNodeContextMenu(d){
 	}else{
 		context_addList("起動","jail_start('" + d.name + "')");
 	}
-	context_divider();
-	context_addList("削除","jail_showDeleteModal('" + d.name + "')");
+	if(d.name != "masterRouter"){
+		context_divider();
+		context_addList("削除","jail_showDeleteModal('" + d.name + "')");
+	}
 	context_show();
 	setTimeout(function(){		//タイミングの関係でcontextmenuが開いてすぐに閉じるのを防ぐ
 		openContext = true;

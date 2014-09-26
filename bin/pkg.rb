@@ -76,12 +76,12 @@ class Pkg
 		cmdLog,e = Open3.capture3("ls #{$jails}/sharedfs/pkg")
 		s,e = Open3.capture3("cp -pn #{PKGDIR}/* #{$jails}/sharedfs/pkg/")	#sharedfsにコピー(qjail)
 		cmdLog2,e = Open3.capture3("ls #{$jails}/sharedfs/pkg")
-
+=begin
 		if(cmdLog == cmdLog2)		#ダウンロード前後にlsの結果を取って、要素が同じならばダウンロードに失敗しているとわかる（ファイルが増えていない）
 			puts ("pkgcopyerror")
 			return false,"pkgcopy"
 		end
-
+=end
 	end
 
 	def self.install(pname)	#host側でやらせる
