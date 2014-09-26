@@ -34,7 +34,7 @@ class SQL
 			@@db.execute("insert into flavour (id, name) values (0, 'default');")
 		#	@@db.execute("insert into pkg(id, name) values (1, 'quagga-0.99.22.4_3');")
 			@@db.execute("insert into easyConf(type, id, template, flavour) values (#{SERVER.to_s}, 0, 0, 0);")
-			@@db.execute("insert into easyConf(type, id, template, flavour) values (#{ROUTER.to_s}, 0, 0, 0);")
+			@@db.execute("insert into easyConf(type, id, template, flavour) values (#{ROUTER.to_s}, 0, 1, 0);")
 			@@db.execute("insert into easyConf(type, id, template, flavour) values (#{SWITCH.to_s}, 0, 0, 0);")
 
 			@@db.execute("insert into machine (id, name, type, template, flavour, comment) values ( -1, 'dummy', 0, 0, 0, 'dummy');")

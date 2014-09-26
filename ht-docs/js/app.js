@@ -29,6 +29,7 @@ var t;
 var jname = "masterRouter";
 var initok = false;		//初期化が済んだか
 var openContext = false;	//contextmenuが開いているかどうか
+var openConsole = false;	//shellが開いたかどうか
 var consoleName = ""
 
 function init(){
@@ -559,13 +560,23 @@ $(document).ready(function(){
 	$("#l3Form .ip6mask").val("");
 	$("#l3Form .as").val("");
   });
+	
+	//machineInfoモーダルが消えたら
+  $("#machineInfoModal").on("hidden.bs.modal", function(){
+  		if(consoleName != ""){
+  			console_unregister(consoleName);
+  			consoleName = ""
+  		}
+  	});
 
 	//タブイベント
 	//shellタブが開いたら
   $("a[href='#machineInfo_shell']").click(function(){
-	$("#term").html("<span class=\"ff be\">Now loading...</span>");
-	jname = $("#machineInfoModalTitle").text();
-	console_register(jname);
+  	if(consoleName == ""){
+		$("#term").html("<span class=\"ff be\">Now loading...</span>");
+		consoleName = $("#machineInfoModalTitle").text();
+		console_register(consoleName);
+	}
 	setTimeout(function(){$("#term").focus()},500);	//focus
   });
 
