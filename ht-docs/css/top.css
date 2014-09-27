@@ -5,6 +5,10 @@ div.top{
 	width : 100%;
 }
 
+body{
+	background-color: #F5D0A9;
+}
+
 div.top div.header{
 	width : 100%;
 	height: 7%;
@@ -18,6 +22,15 @@ div.top div.header div.left{
 div.top div.header div.right{
 	float : right;
 	text-align : right;
+}
+
+#mainArea{
+	background-color: #505d66;
+}
+
+#mainArea .tab-content{
+	height: 90%;
+	background-color: #ececec;
 }
 
 .header .right div{
