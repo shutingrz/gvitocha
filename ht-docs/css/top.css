@@ -20,6 +20,13 @@ div.top div.header div.right{
 	text-align : right;
 }
 
+.header .right div{
+	color: white;
+	font-size: 1.2em;
+	padding-top: 30%;
+	padding-bottom: 30%;
+}
+
 
 #nowLoadingLog{
 	overflow-y : scroll;
@@ -42,8 +49,8 @@ div.machine{
 }
 
 .machine .machineList{
-	width : 50%;
-	height : 80%;
+	width : 99%;
+	height : 90%;
 	overflow : scroll;
 	border : 1px solid;
 	margin-left : 4px;
@@ -53,7 +60,7 @@ div.machine{
 .machine .machineList .list{
 	font-size : 1.5em;
 	width : 98%;
-	height : 80%;
+	height : 70%;
 	border : 1px solid;
 	margin : 1%;
 	overflow : scroll;
@@ -67,7 +74,7 @@ div.machine{
 .make-switch {
 	height : 30px;
 }
-
+/*
 #machineProperty{
 	float : right;
 	overflow : scroll;
@@ -75,10 +82,8 @@ div.machine{
 	height : 80%;
 	border : 1px solid;
 	padding : 1%;
-
-
 }
-
+*/
 #machineProperty .package{
 	width : 100%;
 }

@@ -32,24 +32,35 @@
 	<div class="top">
 		<div class="header">
 			<div class="left">
-				<div>
-					<img src="./img/logo_white.png" height="95%"/>
-				</div>  
+				<img src="./img/logo_white.png" height="95%"/>
 			</div>
-		<div class="right">
-			<div>
-			<!--	<input type="button" class="connect" value="接続">
-				<input type="button" class="disconnect" value="切断">	-->
+			<div class="right">
+				<div>設定</div>
 			</div>
 		</div>
 	</div>
+	<div class="tabbable" id="bigTabs"> <!-- tabbable -->
+		<!-- Nav tabs -->
+		<ul class="nav nav-pills " role="tablist">
+			<li class="active"><a href="#machinePane" role="tab" data-toggle="tab">マシン</a></li>
+			<li class=""><a href="#networkPane" role="tab" data-toggle="tab">ネットワーク</a></li>
+		</ul>
+
+		<!-- Tab panes -->
+		<div class="tab-content">
+			<div class="tab-pane active" id="machinePane"></div>
+			<div class="tab-pane" id="networkPane"></div>
+		</div>
+	</div>
+
+
+
+
 	<div class="machine">
 		Machine<br>
 
 		<div class="machineList">
 			<select id="machineList" class="list" size="16"></select>
-
-			<br>
 			<div class="util">
 			<button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newMachineModal">新しいマシンを作成</button>
 			<button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newPackageModal" >パッケージの追加</button>
@@ -393,3 +404,11 @@
 		</div>
 
 		-->
+
+
+		<ul class="nav nav-tabs nav-justified" role="tablist">
+  ...
+</ul>
+<ul class="nav nav-pills nav-justified">
+  ...
+</ul>
