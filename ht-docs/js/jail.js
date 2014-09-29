@@ -126,7 +126,7 @@ function jail_list(id){
     tmp.forEach(function(value,index){ 
       jails.push(value);
     })
-    jails.splice(0,1);    //_host_を除く
+  //  jails.splice(0,1);    //masterRouterを除く
     return jails;
   }
 }

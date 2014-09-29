@@ -67,6 +67,9 @@
 				
 				<div class="tab-content">
 					<div class="tab-pane active" id="machinePane_list">
+						<button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newPackageModal" >パッケージの追加</button>
+						<button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newTemplateModal">テンプレートの作成</button>
+						<button class="btn btn-primary btn-xs" id="deleteAllMachine" >全マシンの削除</button>
   						<!-- Table -->
   						<table class="table table-bordered table-hover" id="machineTable">
   							<thead>
@@ -87,24 +90,6 @@
 				
 			</div>
 			<div class="tab-pane" id="networkPane"></div>
-		</div>
-	</div>
-
-
-
-
-	<div class="machine">
-		Machine<br>
-
-		<div class="machineList">
-			<select id="machineList" class="list" size="16"></select>
-			<div class="util">
-			<button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newMachineModal">新しいマシンを作成</button>
-			<button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newPackageModal" >パッケージの追加</button>
-			<button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newTemplateModal">テンプレートの作成</button>
-			<button class="btn btn-primary btn-xs" id="deleteAllMachine" >全マシンの削除</button>
-
-			</div>
 		</div>
 	</div>
 
