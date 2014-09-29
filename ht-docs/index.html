@@ -57,21 +57,17 @@
 				
 				<ul class="nav nav-tabs nav-tabs-left">
 					<li class="active"><a href="#machinePane_list" role="tab" data-toggle="tab">マシンリスト</a></li>
-					<li ><a href="#" data-toggle="modal" data-target="#newMachineModal"><i class="fa fa-plus"></i>
-新規マシン</a></li>
+					<li ><a href="#" data-toggle="modal" data-target="#newMachineModal"><i class="fa fa-plus"></i>新規マシン</a></li>
+					<li ><a href="#" data-toggle="modal" data-target="#newPackageModal"><i class="fa fa-plus"></i>新規パッケージ</a></li>
+					<li ><a href="#" data-toggle="modal" data-target="#newTemplateModal"><i class="fa fa-plus"></i>新規テンプレート</a></li>
+					<li id="deleteAllMachine"><a href="#">全マシンの削除</a></li>
 					<li><hr style="background-color:black;color:black;"></li>
-					<li class="machine"><a href="#">masterRouter</a></li>
 				</ul>
 				
 				<!-- Tab panes -->
 				
 				<div class="tab-content">
 					<div class="tab-pane active" id="machinePane_list">
-						<div align="right">
-							<button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newPackageModal" >パッケージの追加</button>
-							<button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newTemplateModal">テンプレートの作成</button>
-							<button class="btn btn-primary btn-xs" id="deleteAllMachine" >全マシンの削除</button>
-						</div>
   						<!-- Table -->
   						<table class="table table-bordered table-hover" id="machineTable">
   							<thead>

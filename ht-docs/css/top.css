@@ -30,21 +30,6 @@ div.top div.header div.right{
 	text-align : right;
 }
 
-#mainArea{
-	height: 91.5%;
-	background-color: #434343;
-}
-
-#mainArea .tab-content{
-	height: 96%;
-	background-color: #ececec;
-	overflow-x: scroll;
-	overflow-y: scroll;
-}
-
-#machineTable tbody tr{
-	background-color: white;
-}
 .header .left .sub{
 	color: gray;
 	font-size: 1em;
@@ -60,6 +45,22 @@ div.top div.header div.right{
 	padding-bottom: 30%;
 }
 
+#mainArea{
+	height: 91.5%;
+	background-color: #434343;
+}
+
+#mainArea .tab-content{
+	height: 96%;
+	background-color: #ececec;
+	overflow-x: scroll;
+	overflow-y: scroll;
+}
+
+#machineTable tbody tr{
+	background-color: white;
+}
+
 
 #nowLoadingLog{
 	overflow-y : scroll;
@@ -70,39 +71,6 @@ div.top div.header div.right{
 	margin-right : auto;
 }
 
-div.network{
-	clear : both;
-	height : 50%;
-}
-
-div.machine{
-	clear : both;
-	border : 1px solid;
-	height : 30%;
-}
-
-.machine .machineList{
-	width : 99%;
-	height : 90%;
-	overflow : scroll;
-	border : 1px solid;
-	margin-left : 4px;
-}
-
-
-.machine .machineList .list{
-	font-size : 1.5em;
-	width : 98%;
-	height : 70%;
-	border : 1px solid;
-	margin : 1%;
-	overflow : scroll;
-}
-
-.machine .machineList .util{
-	padding-left : 1%;
-
-}
 
 .make-switch {
 	height : 30px;
@@ -127,7 +95,7 @@ div.machine{
 
 
 
-span.br{
+span .br{
 	display:block;
 }
 
@@ -150,21 +118,12 @@ img.minimumNowloadingIcon{
 
 }
 
-#network{
-	clear: both;
-	height : 100%;
-
-}
 #diagram{
 	float: left;
 	width : 950px;
-	height : 100%;
+	height : 94%;
 }
 
-#netInfo{
-	floar: right;
-
-}
 
 #shellModal .modal-dialog .modal-content .modal-body{
 	height : 340px;
