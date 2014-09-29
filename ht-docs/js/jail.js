@@ -13,12 +13,12 @@ function jail(msg){
           db("machine","insert",msg.msg[i]);
         }
       }
-      jail_show("all")//全マシン表示
   }
   else if(msg.control == "boot"){
   	for(var i in msg.msg){//サーバから送られたMachineのbootstateデータを全てローカルsqlに保存
           db("machine","boot",msg.msg[i]);
     }
+    jail_show("all")//全マシン表示
   }
 
 }
@@ -26,7 +26,7 @@ function jail(msg){
 
 //db内の指定されたidのmachineを表示する
 function jail_show(name){
-
+/*
   if(name == "all"){//db内の全てのmachineを表示する
     $("#machineList").empty();
     jails = jail_list("all")
@@ -37,6 +37,60 @@ function jail_show(name){
   else{
     res = db_machine("select",name);
     $("#machineList").append($("<option>").html(res.name).val(res.name)); 
+  }
+  */
+  if(name == "all"){//db内の全てのmachineを表示する
+    $("#machineTable tbody").empty();
+    var tableSub = '\
+            <tr>\
+              <th>Name</th>\
+              <th>Type</th>\
+              <th>Template</th>\
+              <th>コメント</th>\
+              <th>作成日時</th>\
+              <th>最終更新日時</th>\
+            </tr>\
+            '
+    var tableData = ""
+    var machineType = ""
+    var machineTemplate = ""
+    var machineStatus = ""
+  //  $("#machineTable thead").append(tableSub);
+    jails = jail_list("all")
+    jails.forEach(function(jail,index){
+      switch(jail.type){
+        case ROUTER.toString():
+          machineType = "Router";
+          break;
+        case SWITCH.toString():
+          machineType = "Switch";
+          break;
+        default:
+          machineType = "Server";
+          break;
+      }
+      console.log(jail);
+      if(jail.boot == "1"){
+        machineStatus = '<i class="fa fa-toggle-on">UP';
+      }else{
+        machineStatus = '<i class="fa fa-toggle-off">DOWN';
+      }
+      machineTemplate = template_list("all")[jail.template];
+      tableData = '\
+            <tr>\
+              <td>\
+                <a href="javascript:diag_showMachineInfoModal(\''+ jail.name + '\')">' + jail.name + '</a>\
+              </td>\
+              <td>' + machineType + '</td>\
+              <td>' + machineTemplate + '</td>\
+              <td>' + jail.comment + '</td>\
+              <td bgcolor="#BDC0BA">' + machineStatus + '</td>\
+              <td>2014/01/01 00:00:00</td>\
+              <td>2014/01/01 00:00:00</td>\
+            </tr>\
+            '
+      $("#machineTable tbody").append(tableData); 
+    })
   }
 }
 

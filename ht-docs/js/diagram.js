@@ -137,7 +137,7 @@ function clickcircle(d){
 	if($('.noclick').length){	//noclick属性がついていたらドラッグしているのでモーダルを表示させない
 		d3.select(".noclick").classed("noclick", false);
 	}else if(d.boot == "1"){
-		diag_showMachineInfoModal(d);
+		diag_showMachineInfoModal(d.name);
 	}
 }
 

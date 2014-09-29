@@ -1,5 +1,14 @@
 p { margin:0px; padding:0px }
 
+br {
+	line-height: 1.5em;
+	height: 1.5em;
+}
+
+input { 
+     height: 1.5em; 
+     line-height: 1.5em; 
+}
 
 div.top{
 	width : 100%;
@@ -8,7 +17,7 @@ div.top{
 div.top div.header{
 	width : 100%;
 	height: 7%;
-	background-color: #120A2A;
+	background-color: #08192D;
 }
 
 div.top div.header div.left{
@@ -22,14 +31,19 @@ div.top div.header div.right{
 }
 
 #mainArea{
-	background-color: #505d66;
+	background-color: #434343;
 }
 
 #mainArea .tab-content{
-	height: 90%;
+	height: 94%;
 	background-color: #ececec;
+	overflow-x: scroll;
+	overflow-y: scroll;
 }
 
+#machineTable tbody tr{
+	background-color: white;
+}
 .header .left .sub{
 	color: gray;
 	font-size: 1em;
@@ -182,14 +196,19 @@ img.minimumNowloadingIcon{
 
 
 .nav-tabs-left{
-	height: 95%;
+	height: 99%;
 	overflow-y: scroll;
 }
 
+/* bootstrap上書き*/
+.tabs-left > .nav-tabs{
+	margin-right: 0px;
+}
+
 .tab-content2{
-	height: 95%;
+	padding-left: 10px;
+	height: 99%;
 	overflow-y: scroll;
-	padding-left: 3px;
 }
 
 .align-right{text-align: right;}
@@ -197,14 +216,4 @@ img.minimumNowloadingIcon{
 
 .l3inputName{
 	line-height: 1.5em;
-}
-
-br {
-	line-height: 1.5em;
-	height: 1.5em;
-}
-
-input { 
-     height: 1.5em; 
-     line-height: 1.5em; 
 }

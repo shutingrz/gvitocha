@@ -194,10 +194,10 @@ function diag_nowloading(){
 	.attr("height", height/5);
 }
 
-function diag_showMachineInfoModal(d){
-	machine = db_machine("select",d.name);
+function diag_showMachineInfoModal(name){
+	machine = db_machine("select",name);
 //	console.log("machine.type: " + machine.type);
-	machineType = "";
+	var machineType = "";
 	switch(machine.type){
 		case ROUTER.toString():
 			machineType = "Router";
@@ -209,12 +209,12 @@ function diag_showMachineInfoModal(d){
 			machineType = "Server";
 			break;
 	}
-	machine.template = template_list("all")[machine.template];
+	var machineTemplate = template_list("all")[machine.template];
 
 	$("#machineInfoModal .modal-dialog .modal-content .modal-header .modal-title").text(machine.name);
 	$("#machineData_property .name .name").text(machine.name);
 	$("#machineData_property .machineType .machineType").text(machineType);
-	$("#machineData_property .template .template").text(machine.template);
+	$("#machineData_property .template .template").text(machineTemplate);
 	$("#machineData_property .comment .comment").text(machine.comment);
 
 	$("#machineNetwork_list").empty();

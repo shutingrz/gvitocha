@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
-		<title>vitocha</title>
+		<title>Gvit(beta)</title>
 
 		<script src="./js/lib/jquery-2.1.1.min.js"></script>
 		<script src="./js/lib/bootstrap.min.js"></script>
@@ -9,6 +9,7 @@
 		<script src="./js/lib/bootstrap-switch.js"></script>
 		<script src="./js/lib/webshell.js"></script>
 		<script src="./js/lib/d3.js"></script>
+		<script src="./js/lib/jasny-bootstrap.js"></script>
 		<script src="./js/app.js"></script>
 		<script src="./js/jail.js"></script>
 		<script src="./js/db.js"></script>
@@ -17,15 +18,15 @@
 		<script src="./js/diagram.js"></script>
 		<script src="./js/console.js"></script>
 	
-		<link rel="stylesheet" type="text/css" href="./css/top.css" />
 		<link rel="stylesheet" type="text/css" href="./css/diagram.css" />
 		<link rel="stylesheet" type="text/css" href="./css/dropdown.css" />
 		<link rel="stylesheet" type="text/css" href="./css/tabs.css" />
 		<link rel="stylesheet" type="text/css" href="./css/lib/bootstrap.min.css" />
-	<!--	<link rel="stylesheet" type="text/css" href="./css/lib/bootstrap-glyphicons.css" />-->
-		<link href="./css/lib/font-awesome-4.2.0/css/font-awesome.css" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="./css/lib/font-awesome-4.2.0/css/font-awesome.css" />
 		<link rel="stylesheet" type="text/css" href="./css/lib/bootstrap-switch.css" />
 		<link rel="stylesheet" type="text/css" href="./css/lib/webshell.css" />
+		<link rel="stylesheet" type="text/css" href="./css/lib/jasny-bootstrap.css" />
+		<link rel="stylesheet" type="text/css" href="./css/top.css" />
 	
 	
   </head>
@@ -58,15 +59,29 @@
 					<li class="active"><a href="#machinePane_list" role="tab" data-toggle="tab">マシンリスト</a></li>
 					<li ><a href="#" data-toggle="modal" data-target="#newMachineModal"><i class="fa fa-plus"></i>
 新規マシン</a></li>
-					<li><hr></li>
+					<li><hr style="background-color:black;color:black;"></li>
 					<li class="machine"><a href="#">masterRouter</a></li>
 				</ul>
 				
 				<!-- Tab panes -->
 				
-				<div class="tab-content tab-content2">
+				<div class="tab-content">
 					<div class="tab-pane active" id="machinePane_list">
-						未実装
+  						<!-- Table -->
+  						<table class="table table-bordered table-hover" id="machineTable">
+  							<thead>
+  								<tr bgcolor="#cccccc">
+  									<th>Name</th>
+  									<th>Type</th>
+									<th>Template</th>
+									<th>コメント</th>
+									<th>ステータス</th>
+									<th>作成日時</th>
+									<th>最終更新日時</th>
+ 								</tr>
+ 							</thead>
+ 							<tbody class="rowlink" data-link="row"></tbody>
+  						</table>
 					</div>
 				</div>
 				
