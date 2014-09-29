@@ -31,11 +31,12 @@ div.top div.header div.right{
 }
 
 #mainArea{
+	height: 91.5%;
 	background-color: #434343;
 }
 
 #mainArea .tab-content{
-	height: 94%;
+	height: 96%;
 	background-color: #ececec;
 	overflow-x: scroll;
 	overflow-y: scroll;
@@ -196,7 +197,7 @@ img.minimumNowloadingIcon{
 
 
 .nav-tabs-left{
-	height: 99%;
+	height: 96%;
 	overflow-y: scroll;
 }
 

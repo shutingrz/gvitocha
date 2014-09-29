@@ -45,7 +45,7 @@
 	</div>
 	<div class="tabbable" id="mainArea"> <!-- tabbable -->
 		<!-- Nav tabs -->
-		<ul class="nav nav-pills " role="tablist">
+		<ul class="nav nav-pills" role="tablist">
 			<li class="active"><a href="#machinePane" role="tab" data-toggle="tab">マシン</a></li>
 			<li class=""><a href="#networkPane" role="tab" data-toggle="tab">ネットワーク</a></li>
 		</ul>
@@ -67,9 +67,11 @@
 				
 				<div class="tab-content">
 					<div class="tab-pane active" id="machinePane_list">
-						<button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newPackageModal" >パッケージの追加</button>
-						<button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newTemplateModal">テンプレートの作成</button>
-						<button class="btn btn-primary btn-xs" id="deleteAllMachine" >全マシンの削除</button>
+						<div align="right">
+							<button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newPackageModal" >パッケージの追加</button>
+							<button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#newTemplateModal">テンプレートの作成</button>
+							<button class="btn btn-primary btn-xs" id="deleteAllMachine" >全マシンの削除</button>
+						</div>
   						<!-- Table -->
   						<table class="table table-bordered table-hover" id="machineTable">
   							<thead>
@@ -89,7 +91,20 @@
 				</div>
 				
 			</div>
-			<div class="tab-pane" id="networkPane"></div>
+			<div class="tab-pane" id="networkPane">
+				<div oncontextmenu="return false;" class="diagram" id="diagram"></div>
+				<h3>簡易作成<img id="easyCreateLoading" /></h3>
+				<button class="btn btn-primary btn-s easyBtn" id="easyServerBtn">Server</button>
+				<button class="btn btn-primary btn-s easyBtn" id="easyRouterBtn">Router</button>
+				<button class="btn btn-primary btn-s easyBtn" id="easySwitchBtn">Switch</button>
+				<h3>表示設定</h3>
+				Ciscoライクなネットワーク図にする<br>
+				<div class="make-switch ciscoSwitch">
+					<label class="ciscolabel" >
+						<input id="ciscoSwitch" class="ciscoSwitch" type="checkbox">
+					</label>
+				</div>
+			</div>
 		</div>
 	</div>
 
@@ -332,38 +347,8 @@
 		</div><!-- /.modal -->
 
 
-<!-- タブの構成について
-	tabbableクラスのブロックの中にNav tabsとTab panes。
-	Tab panesエリアのブロックは全てtab-paneクラスが必須。
-
-	タブ表示時に見せたいペインの木構造に全てactiveをつけることを忘れずに。
--->
-
 	  </div>
 	  </div>
-
-		<div class="network" id="network">
-		<div class="header">Network</div>
-			<div oncontextmenu="return false;" class="diagram" id="diagram"></div>
-			<h3>簡易作成<img id="easyCreateLoading" /></h3>
-			<button class="btn btn-primary btn-s easyBtn" id="easyServerBtn">Server</button>
-			<button class="btn btn-primary btn-s easyBtn" id="easyRouterBtn">Router</button>
-			<button class="btn btn-primary btn-s easyBtn" id="easySwitchBtn">Switch</button>
-			<h3>表示設定</h3>
-			Ciscoライクなネットワーク図にする<br>
-			<div class="make-switch ciscoSwitch">
-				<label class="ciscolabel" >
-					<input id="ciscoSwitch" class="ciscoSwitch" type="checkbox">
-				</label>
-			</div>
-			<div class="info" id="netInfo">
-				Name<br><div id="jName"></div>
-				<br>
-				IPAddresses<br>
-				<div id="jIP"></div>
-			</div>
-		</div>
-
 	<div id="contextMenu" class="dropdown clearfix contextMenu">
 		<ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu" style="display:block;position:static;margin-bottom:5px;">
 		<input class="name" type="hidden" value="">
@@ -426,11 +411,3 @@
 		</div>
 
 		-->
-
-
-		<ul class="nav nav-tabs nav-justified" role="tablist">
-  ...
-</ul>
-<ul class="nav nav-pills nav-justified">
-  ...
-</ul>
