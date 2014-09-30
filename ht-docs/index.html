@@ -54,7 +54,6 @@
 		<div class="tab-content">
 			<div class="tab-pane tabbable tabs-left active" id="machinePane"><!-- tabbable -->
 				<!-- Tab panes -->
-				
 				<ul class="nav nav-tabs nav-tabs-left">
 					<li class="active"><a href="#machinePane_list" role="tab" data-toggle="tab">マシンリスト</a></li>
 					<li ><a href="#" data-toggle="modal" data-target="#newMachineModal"><i class="fa fa-plus"></i>新規マシン</a></li>
@@ -87,18 +86,29 @@
 				</div>
 				
 			</div>
-			<div class="tab-pane" id="networkPane">
-				<div oncontextmenu="return false;" class="diagram" id="diagram"></div>
-				<h3>簡易作成<img id="easyCreateLoading" /></h3>
-				<button class="btn btn-primary btn-s easyBtn" id="easyServerBtn">Server</button>
-				<button class="btn btn-primary btn-s easyBtn" id="easyRouterBtn">Router</button>
-				<button class="btn btn-primary btn-s easyBtn" id="easySwitchBtn">Switch</button>
-				<h3>表示設定</h3>
-				Ciscoライクなネットワーク図にする<br>
-				<div class="make-switch ciscoSwitch">
-					<label class="ciscolabel" >
-						<input id="ciscoSwitch" class="ciscoSwitch" type="checkbox">
-					</label>
+			<div class="tab-pane tabbable tabs-left" id="networkPane">
+				<!-- Tab panes -->
+				<ul class="nav nav-tabs nav-tabs-left">
+					<h3>簡易作成</h3>
+					<li ><a href="#" id="easyServerBtn"><i class="fa fa-plus"></i>Server</a></li>
+					<li ><a href="#" id="easyRouterBtn"><i class="fa fa-plus"></i>Router</a></li>
+					<li ><a href="#" id="easySwitchBtn"><i class="fa fa-plus"></i>Switch</a></li>
+					<hr>
+					<h3>表示設定</h3>
+					Ciscoモード<br>
+					<div class="make-switch ciscoSwitch">
+						<label class="ciscolabel" >
+							<input id="ciscoSwitch" class="ciscoSwitch" type="checkbox">
+						</label>
+					</div>
+
+				</ul>
+
+				<!-- Tab panes -->
+				<div class="tab-content">
+					<div class="tab-pane active" id="networkPane_diag">
+						<div oncontextmenu="return false;" class="diagram" id="diagram"></div>
+					</div>
 				</div>
 			</div>
 		</div>
