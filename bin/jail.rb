@@ -373,7 +373,7 @@ class Jail
 			name = "_Server#{id}"
 		end
 
-		machine = { "name" => name , "machineType" => type.to_s, "template" => template.to_s, "flavour" => flavour.to_s, "comment" => "create by easyCreate" }
+		machine = { "name" => name , "machineType" => type.to_s, "template" => template.to_s, "flavour" => flavour.to_s, "comment" => "created by easyCreate" }
 	
 		cmdLog, cause = create(machine)
 
