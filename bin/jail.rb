@@ -42,6 +42,9 @@ class Jail
 	end
 
 	def self.create(machine)
+		time = Time.now.strftime("%Y-%m-%d %H:%M:%S")
+		machine['createTime'] = time.to_s
+		machine['modifyTime'] = time.to_s
 		
 		cmdLog = mkQjail(machine['flavour'],machine['name'])
 		if(cmdLog == false) then
@@ -188,7 +191,7 @@ class Jail
 			if(machine != false) then
 				machine.delete_at(0)
 				machine.each do |value|
-					machineList["key#{value[0]}"] = {"id" => value[0].to_s, "name" => value[1], "type" => value[2].to_s, "template" => value[3].to_s, "flavour" => value[4].to_s, "comment" => value[5]}
+					machineList["key#{value[0]}"] = {"id" => value[0].to_s, "name" => value[1], "type" => value[2].to_s, "template" => value[3].to_s, "flavour" => value[4].to_s, "comment" => value[5], "createTime" => value[6], "modifyTime" => value[7]}
 				end
 			else
 				return false
@@ -224,7 +227,6 @@ class Jail
 
 	def self.mkQjail(flavour,machine)
 		fname = SQL.select("flavour",flavour)
-		puts fname
 		cmdLog,e = Open3.capture3("qjail list")
 		s,e = Open3.capture3("qjail create -f #{fname} -4 0.0.0.0 #{machine}")
 		puts s

@@ -85,8 +85,8 @@ function jail_show(name){
               <td>' + machineTemplate + '</td>\
               <td>' + jail.comment + '</td>\
               <td bgcolor="#BDC0BA">' + machineStatus + '</td>\
-              <td>2014/01/01 00:00:00</td>\
-              <td>2014/01/01 00:00:00</td>\
+              <td>' + jail.createTime + '</td>\
+              <td>' + jail.modifyTime + '</td>\
             </tr>\
             '
       $("#machineTable tbody").append(tableData); 
