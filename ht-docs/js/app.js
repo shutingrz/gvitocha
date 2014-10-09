@@ -176,7 +176,7 @@ function send(msgType,msg){
   if(msgType == MACHINE){	//machine関係の操作はセンシティブなのでdiagを触れないようにする
   	diag_nowloading();
   }
-  
+  console.log(jsonSendMsg);
 	if(initok == true){
 		ws.send(jsonSendMsg);
 	}
