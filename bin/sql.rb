@@ -58,7 +58,7 @@ class SQL
 
 			Jail.create(machine)
 			Jail.start("masterRouter")
-			s,e = Open3.capture3("ln -s /sharedfs/pkg #{$jails}/masterRouter/pkg")
+	#		s,e = Open3.capture3("ln -s /sharedfs/pkg #{$jails}/masterRouter/pkg")
 
 			
 =begin
@@ -109,7 +109,7 @@ class SQL
 
 		elsif (mode == "machine") then
 			if (id == "all")
-				return @@db.execute("select id, name, type, template, flavour, comment, createTime, modifyTime from machine")
+				return @@db.execute("select id, name, type, template, flavour, comment, createTime, modifyTime from machine where id>=0")
 			elsif (id == "maxid")
 				return @@db.execute("select max(id) from machine")[0][0]		#maxid
 			elsif (id == "name")

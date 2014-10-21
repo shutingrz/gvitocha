@@ -8,25 +8,16 @@ class Network
 	def initialize()
 		@@tomocha = Operator.new
 		begin
-		#	@@tomocha.load($daichoPath)
-	#		@@daicho = eval(File.open($daichoPath).read)
 			@@daicho = SQL.select("daicho")
 			if(@@daicho == "") then
 				@@daicho = Hash.new
+				Network.init()
 			else
-				begin
-					@@daicho = eval(@@daicho)
-				rescue
-					@@daicho = Hash.new
-				end
+				@@daicho = eval(@@daicho)
 			end
-		rescue Errno::ENOENT
-	#		puts "no daicho.dat file."
-	#		tmp = File.open($daichoPath,"w")
-	#		tmp.close
+		rescue 
 			@@daicho = Hash.new
 			Network.init()
-		#	retry
 		end
 		if(@@daicho != Hash.new) then
 		#	puts "start resume."
