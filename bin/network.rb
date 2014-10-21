@@ -221,6 +221,11 @@ class Network
 
 	def self.deleteLinkAll(jname)
 		epairList = []
+		puts jname
+		puts @@daicho
+		if(@@daicho != Hash.new) then
+			return
+		end
 		@@daicho.each do |key, value|
 			epair = key.to_s
 			name = value[0]

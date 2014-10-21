@@ -20,7 +20,6 @@ class Jail
 				machine = data["machine"] #machineを入れる
 				puts "machine creating."
 				cmdLog,cause = create(machine)
-				save($bootPath)
 			end
 		elsif (data["control"] == "delete") then
 			if(data["name"] == "_all") then
@@ -28,7 +27,6 @@ class Jail
 			else
 				cmdLog,cause = delete(data["name"])
 			end
-			save($bootPath)
 
 		elsif (data["control"] == "boot") then
 			cmdLog,cause = boot(data)
@@ -50,6 +48,8 @@ class Jail
 		if(cmdLog == false) then
 			return false,"qjail"
 		end
+
+		SQL.insert("boot",machine["name"])
 
 		start(machine['name'])
 		if(cmdLog == false) then
@@ -103,8 +103,10 @@ class Jail
 		if(isExist(jname)) then
 			return false,"削除に失敗"
 		end
-		s = SQL.delete("machine",jname)
-		puts s
+		#s = SQL.delete("machine",jname)
+		SQL.delete("machine",jname)
+		SQL.delete("boot",jname)
+		#puts s
 		return true
 	end
 
@@ -133,15 +135,13 @@ class Jail
 	end
 
 	def self.boot(data)
-		if(data["state"] == "start") then
+		if(data["state"] == 1) then
 			cmdLog,cause = self.start(data["name"])
 		else
 			Network.deleteLinkAll(data["name"])
 			cmdLog,cause = self.stop(data["name"])
 		end
 
-		save($bootPath)
-		
 		return cmdLog,cause
 
 	end
@@ -156,6 +156,7 @@ class Jail
 				s,e = Open3.capture3("jail -m name=#{machine} devfs_ruleset=5")
 				s,e = Open3.capture3("jail -m name=#{machine} allow.raw_sockets=1")
 				flag = true
+				save(machine,1)
 			end
 		end
 
@@ -172,6 +173,9 @@ class Jail
 			if(jail == machine) then	#upjailに存在したらfalse
 				flag = false
 			end
+		end
+		if(flag) then
+			save(machine,0)
 		end
 		return flag,"停止に失敗"
 	end
@@ -299,29 +303,27 @@ class Jail
 		return dbjail
 	end
 
-	def self.save(path)
-		upjail = upjail()
-		File::open(path,"w") do |f|
-			upjail.each do |ujail|
-    			f.puts ujail
-    		end
-    	end
-    end
+	def self.save(name,state)
+		data = Hash.new
+		data["name"] = name
+		data["state"] = state
+		SQL.update("boot",data)
+	end
 
-    def self.load(path)
-    	begin
-			ujail = File.open(path).read
-		rescue
+	def self.load()
+		state = SQL.select("boot")
+		if (!state) then
 			return false
 		end
-		ujail.each_line do |jail|
-			jail.chomp!
-			print "starting #{jail}..."
-			flg = self.start(jail)
-			if (flg) then
-				print "ok\n"
-			else
-				print "ng\n"
+		state.each do |jail| #jail[0] => name, jail[1] => state
+			if(jail[1] == 1) then
+				print "starting #{jail[0]}..."
+				flg = self.start(jail[0])
+				if (flg) then
+					print "ok\n"
+				else
+					print "ng\n"
+				end
 			end
 		end
 	end

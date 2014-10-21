@@ -53,12 +53,13 @@ Process.daemon(nochdir=true) if ARGV[0] == "-D"
 @channel = EM::Channel.new
 $channel = @channel
 
-#必ずmasterRouterは起動させる
-#Open3.capture3("qjail start masterRouter")
+sql = SQL.new		#初期化
+net = Network.new	#初期化
+#
 #boot情報からjailを起動させる
+Jail.load()
 
-Jail.load($bootPath)
-
+$init = true
 puts "init ok!"
 puts "websocket server start."
 EM::run do
@@ -67,9 +68,6 @@ EM::run do
 		$ws = ws
 		ws.onopen do				
 				sid = @channel.subscribe{|mes| ws.send mes}
-				sql = SQL.new		#初期化
-				#daicho
-				net = Network.new	#初期化
 		end
 		ws.onmessage do |message|
 			EventMachine::defer do

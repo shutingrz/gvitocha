@@ -5,7 +5,9 @@ class SendMsg
 	def self.asend(type,data)
 		msg = JSON.generate({"msgType" => type, "data" =>data})
 	#	puts msg
-		$ws.send(msg)
+		if ($init) then
+			$ws.send(msg)
+		end
 	end
 	def self.machine(mode,control,data)		#各モードに合わせてmsgの書式を変えていく
 		msg = {"mode" => mode, "control" => control, "msg" => data}

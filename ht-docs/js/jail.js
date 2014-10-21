@@ -97,7 +97,7 @@ function jail_show(name){
 function jail_start(jname){
 	  var data = { mode : "jail",
                control: "boot",
-                state : "start",
+                state : 1,
                 name : jname
               };
 
@@ -109,7 +109,7 @@ function jail_start(jname){
 function jail_stop(jname){
 	var data = { mode : "jail",
                control: "boot",
-                state : "stop",
+                state : 0,
                 name : jname 
               };
 //	console.log("jail_stop:"+ name);

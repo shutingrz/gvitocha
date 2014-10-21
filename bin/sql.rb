@@ -23,12 +23,15 @@ class SQL
 		begin
 			@@db.execute("select * from machine;")
 		rescue SQLite3::SQLException	#machineテーブルがない場合、初期状態とみなし、各テーブルをcreateし、insertし、masterRouterを作成
-			SendMsg.status(STATUS,"report","初期起動です。初期設定を行います。")
+			#SendMsg.status(STATUS,"report","初期起動です。初期設定を行います。")
+			puts "初期起動。初期設定を行います。"
 			@@db.execute("create table machine (id integer, name text, type integer, template integer, flavour integer, comment text, createTime text, modifyTime text);")
 			@@db.execute("create table template(id integer, name text, pkg text);")
 			@@db.execute("create table flavour (id integer, name text);")
 			@@db.execute("create table pkg(id integer, name text);")
 			@@db.execute("create table easyConf(type integer, id integer, template integer, flavour integer);")
+			@@db.execute("create table boot(name text, state integer)")
+
 			@@db.execute("insert into template (id, name, pkg) values (0, 'default', '');")
 			@@db.execute("insert into flavour (id, name) values (0, 'default');")
 			@@db.execute("insert into easyConf(type, id, template, flavour) values (#{SERVER.to_s}, 0, 0, 0);")
@@ -83,7 +86,6 @@ class SQL
 		if (mode == "pkg") then
 			if (id == "maxid")
 				res = @@db.execute("select max(id) from pkg")[0][0]		#maxid
-				puts "res = #{res}"
 				if (!res.is_a?Integer) then
 					return 0
 				end
@@ -119,6 +121,9 @@ class SQL
 
 		elsif (mode == "easyConf")
 				return @@db.execute("select type, id, template, flavour from easyConf where type='" + id.to_s + "';")[0]
+
+		elsif (mode == "boot")
+			return @@db.execute("select * from boot")[0]
 		end
 		rescue
 			return false
@@ -126,7 +131,11 @@ class SQL
 	end
 
 	def self.insert(table,data)
-		maxid = @@db.execute("select max(id) from #{table}")[0][0]		#maxid
+		begin
+			maxid = @@db.execute("select max(id) from #{table}")[0][0]		#maxid
+		rescue SQLite3::SQLException
+			maxid = 0
+		end
 		if (!maxid.is_a?Integer) then
 			maxid = 0
 		end
@@ -137,6 +146,9 @@ class SQL
 			sql = "insert into pkg (id,name) values ('" + (maxid+1).to_s + "','" + data + "');"
 		elsif(table == "template") then
 			sql = "insert into template(id,name,pkg) values('" + (maxid+1).to_s + "','" + data["name"] + "','" + data["pkglist"] + "');"
+
+		elsif(table == "boot") then
+			sql = "insert into boot(name, state) values('#{data}', 0);"
 		end
 
 		return @@db.execute(sql)
@@ -147,6 +159,8 @@ class SQL
 		
 		if(table == "machine") then
 			sql = "delete from machine where name='"+ data + "';"
+		elsif(table == "boot") then
+			sql = "delete from boot where name='#{data}';"
 		end
 
 	#	puts sql
@@ -158,6 +172,9 @@ class SQL
 
 		if(table == "easyConf") then
 			sql = "update easyConf set id=" + data["id"].to_s + ", template=" + data["template"].to_s + ", flavour=" + data["flavour"].to_s + " where type=" + data["type"].to_s + ";"
+
+		elsif(table == "boot") then
+			sql = "update boot set state=#{data["state"].to_s} where name='#{data["name"]}';"
 		end
 
 		return @@db.execute(sql)
