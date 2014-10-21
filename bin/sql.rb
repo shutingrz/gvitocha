@@ -31,12 +31,14 @@ class SQL
 			@@db.execute("create table pkg(id integer, name text);")
 			@@db.execute("create table easyConf(type integer, id integer, template integer, flavour integer);")
 			@@db.execute("create table boot(name text, state integer)")
+			@@db.execute("create table daicho(id integer, daicho text)")
 
 			@@db.execute("insert into template (id, name, pkg) values (0, 'default', '');")
 			@@db.execute("insert into flavour (id, name) values (0, 'default');")
 			@@db.execute("insert into easyConf(type, id, template, flavour) values (#{SERVER.to_s}, 0, 0, 0);")
 			@@db.execute("insert into easyConf(type, id, template, flavour) values (#{ROUTER.to_s}, 0, 1, 0);")
 			@@db.execute("insert into easyConf(type, id, template, flavour) values (#{SWITCH.to_s}, 0, 0, 0);")
+			@@db.execute("insert into daicho(id, daicho) values (0, '');")
 
 			@@db.execute("insert into machine (id, name, type, template, flavour, comment, createTime, modifyTime) values ( -1, 'dummy', 0, 0, 0, 'dummy', '2014-01-01 00:00:00', '2014-01-01 00:00:00');")
 		
@@ -124,6 +126,9 @@ class SQL
 
 		elsif (mode == "boot")
 			return @@db.execute("select * from boot")[0]
+
+		elsif (mode == "daicho")
+			return @@db.execute("select daicho from daicho where id=0")[0][0]
 		end
 		rescue
 			return false
@@ -175,6 +180,9 @@ class SQL
 
 		elsif(table == "boot") then
 			sql = "update boot set state=#{data["state"].to_s} where name='#{data["name"]}';"
+
+		elsif(table == "daicho") then
+			sql = "update daicho set daicho='#{data}' where id=0;"
 		end
 
 		return @@db.execute(sql)

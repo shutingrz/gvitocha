@@ -9,13 +9,24 @@ class Network
 		@@tomocha = Operator.new
 		begin
 		#	@@tomocha.load($daichoPath)
-			@@daicho = eval(File.open($daichoPath).read)
+	#		@@daicho = eval(File.open($daichoPath).read)
+			@@daicho = SQL.select("daicho")
+			if(@@daicho == "") then
+				@@daicho = Hash.new
+			else
+				begin
+					@@daicho = eval(@@daicho)
+				rescue
+					@@daicho = Hash.new
+				end
+			end
 		rescue Errno::ENOENT
-			puts "no daicho.dat file."
-			tmp = File.open($daichoPath,"w")
-			tmp.close
+	#		puts "no daicho.dat file."
+	#		tmp = File.open($daichoPath,"w")
+	#		tmp.close
+			@@daicho = Hash.new
 			Network.init()
-			retry
+		#	retry
 		end
 		if(@@daicho != Hash.new) then
 		#	puts "start resume."
@@ -93,6 +104,7 @@ class Network
 	#	@@tomocha.register(epairb,serverNAME,epairbIP,epairbMASK)
 		@@tomocha.up(serverNAME,epairb)
 	#	@@tomocha.save($daichoPath)
+		save(@@daicho)
 	end
 
 
@@ -198,8 +210,8 @@ class Network
 		puts "#{target}(#{epairb}) up"
 		@@tomocha.up(target,epairb)
 
-		@@tomocha.save($daichoPath)
-
+#		@@tomocha.save($daichoPath)
+		save(@@daicho)
 		return epaira, epairb
 
 	end
@@ -214,7 +226,8 @@ class Network
 		puts "#{epairaName},#{epairbName}"
 
 		@@tomocha.removepair(epairaName, epaira, epairbName, epairb)
-		@@tomocha.save($daichoPath)
+#		@@tomocha.save($daichoPath)
+		save(@@daicho)
 
 		SendMsg.status(NETWORK,"success","完了しました。")
 	end
@@ -251,8 +264,8 @@ class Network
 		if(ip6addr != "" && ip6mask != "") then
 			@@tomocha.assignip6(name,epair,ip6addr,ip6mask,as="")
 		end
-		@@tomocha.save($daichoPath)
-
+#		@@tomocha.save($daichoPath)
+		save(@@daicho)	
 		return true	
 	end
 
@@ -274,6 +287,10 @@ class Network
 		File::open(path,"w") do |f|
       		f.puts ""
     	end
+	end
+
+	def self.save(daicho)
+		SQL.update("daicho",daicho)
 	end
 
 	def self.resume(path)
