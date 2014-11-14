@@ -295,7 +295,6 @@ class Jail
 		dbjail = Array.new
 		dbjail2 = SQL.sql("select name from machine order by id asc ;")
 		dbjail2.delete_at(0)
-
 		dbjail2.each do |jail|
 			dbjail << jail[0]
 		end
@@ -311,14 +310,15 @@ class Jail
 	end
 
 	def self.load()
-		state = SQL.select("boot")
-		if (!state) then
-			return false
-		end
-		state.each do |jail| #jail[0] => name, jail[1] => state
-			if(jail[1] == 1) then
-				print "starting #{jail[0]}..."
-				flg = self.start(jail[0])
+		name = SQL.select("boot","name")
+		states = SQL.select("boot","state")
+
+		name.each_with_index do |jail, i|
+			jail = jail[0].chomp	#Array取り除き
+			state = states[i][0]	#Array取り除き
+			if(state == 1)then
+				print "starting #{jail}..."
+				flg = self.start(jail)
 				if (flg) then
 					print "ok\n"
 				else

@@ -9,7 +9,9 @@ class Network
 		@@tomocha = Operator.new
 		begin
 			@@daicho = SQL.select("daicho")
-			if(@@daicho == "") then
+			puts "daicho=>"
+			puts @@daicho
+			if(@@daicho == ""|| @@daicho == "{}") then
 				@@daicho = Hash.new
 				Network.init()
 			else
@@ -27,7 +29,7 @@ class Network
 
 	def self.main(data)
 		if(@@daicho != "") then
-			@@tomocha.load(@@daicho)	#毎回ファイルからdaichoを読み込む
+			@@daicho = load()	#毎回ファイルからdaichoを読み込む
 		end
 	#	@@daicho = @@tomocha.getDaicho()
 #		puts "Network.mainの最初"
@@ -35,6 +37,8 @@ class Network
 
 		if (data["mode"] == "list") then
 			link = to_link(@@daicho)
+			print "mode.link => "
+			puts link
 			if(link) then
 				SendMsg.diag("link",link)
 			end
@@ -95,11 +99,14 @@ class Network
 	#	@@tomocha.register(epairb,serverNAME,epairbIP,epairbMASK)
 		@@tomocha.up(serverNAME,epairb)
 	#	@@tomocha.save($daichoPath)
-		save(@@daicho)
+	#	@@daicho = @@tomocha.getDaicho
+	#	save(@@daicho)
+		@@tomocha.load(Hash.new)	#_hostとmasterRouterのlinkは記憶させない
 	end
 
 
 	def self.to_link(daicho)
+		puts "to_linkでのdaicho => #{daicho}"
 		num = 0
 		source = ""
 		target = ""
@@ -118,6 +125,7 @@ class Network
 	
 					if (num%2 == 0) then
 						source = name
+						puts "source => #{source}"
 					else
 						target = name
 						jailset_links_name << {"source" => source, "target" => target, "epair" => epair.chop}
@@ -281,7 +289,19 @@ class Network
 	end
 
 	def self.save(daicho)
+		print "savedaicho=> "
+		puts daicho
 		SQL.update("daicho",daicho)
+	end
+
+	def self.load()
+		begin
+			daicho = SQL.select("daicho")
+			daicho = eval(daicho)
+		rescue
+		end
+	#	puts "return するdaicho => #{daicho}"
+		return daicho
 	end
 
 	def self.resume(path)

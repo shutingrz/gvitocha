@@ -125,7 +125,11 @@ class SQL
 				return @@db.execute("select type, id, template, flavour from easyConf where type='" + id.to_s + "';")[0]
 
 		elsif (mode == "boot")
-			return @@db.execute("select * from boot")[0]
+			if(id == "name") then
+				return @@db.execute("select name from boot")
+			elsif(id == "state") then
+				return @@db.execute("select state from boot")
+			end
 
 		elsif (mode == "daicho")
 			return @@db.execute("select daicho from daicho where id=0")[0][0]

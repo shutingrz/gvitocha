@@ -17,6 +17,7 @@ function diag_getDiag(){
 function diag_link(data){
 //  if(data != "none"){ //noneだった場合は代入しない
 	linkDB = data;
+	console.log(linkDB);
 //  }
 }
 

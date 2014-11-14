@@ -113,11 +113,14 @@ EOS
 	end
 end
 
-net = Network.new	#初期化
-
 #
 #boot情報からjailを起動させる
 Jail.load()
+
+net = Network.new	#初期化
+
+
+
 
 $init = true
 puts "init ok!"
