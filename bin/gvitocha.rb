@@ -42,7 +42,7 @@ $jails = "/usr/jails"
 $ws
 $msg = ""
 $channel
-$webshellURI = "http://192.168.56.103:8022"
+$webshellURI = "http://192.168.56.104:8022"
 $qjailConfDir = "/usr/local/etc"
 
 Process.daemon(nochdir=true) if ARGV[0] == "-D"
@@ -50,6 +50,15 @@ Process.daemon(nochdir=true) if ARGV[0] == "-D"
 $channel = @channel
 
 sql = SQL.new		#初期化
+
+#puts Network.getL3
+#test statement
+#puts Network.registerL2(0,"_Server1", "_Server2")
+#Network.registerL3("epair3a","_Server2","192.168.30.1","255.255.255.0","","","")
+
+#s =  SQL.sql("select name from l3 where epair=0 and type='a'")[0][0]
+#puts "name = #{s}"
+
 
 #カーネルパニック検知
 s,e = Open3.capture3("ls -1 #{$qjailConfDir}/qjail.local/")

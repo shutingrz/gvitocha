@@ -5,45 +5,35 @@ class Network
 	@@tomocha
 	@@daicho
 
+
 	def initialize()
 		@@tomocha = Operator.new
 		begin
-			@@daicho = SQL.select("daicho")
-			puts "daicho=>"
-			puts @@daicho
-			if(@@daicho == ""|| @@daicho == "{}") then
-				@@daicho = Hash.new
+			l2DB = SQL.select("l2")
+
+			if(l2DB == Array.new) then
 				Network.init()
-			else
-				@@daicho = eval(@@daicho)
 			end
 		rescue 
-			@@daicho = Hash.new
+			l2DB = Array.new
 			Network.init()
 		end
-		if(@@daicho != Hash.new) then
+	#	if(@@daicho != Hash.new) then
 		#	puts "start resume."
 		#	Network.resume(@@daicho)
-		end
+	#	end
 	end
 
 	def self.main(data)
-		if(@@daicho != "") then
-			@@daicho = load()	#毎回ファイルからdaichoを読み込む
-		end
-	#	@@daicho = @@tomocha.getDaicho()
-#		puts "Network.mainの最初"
-#		puts @@tomocha.getDaicho()
 
 		if (data["mode"] == "list") then
-			link = to_link(@@daicho)
-			print "mode.link => "
-			puts link
+			link = getL2()
+
 			if(link) then
 				SendMsg.diag("link",link)
 			end
 
-			l3 = to_l3(@@daicho)
+			l3 = getL3()
 			if(l3) then
 				SendMsg.diag("l3",l3)
 			end
@@ -80,13 +70,15 @@ class Network
 
 	def self.init()
 		#hostjail connect masterRouter
+
 		epaira, epairb = @@tomocha.createpair
 		epairaIP = "10.254.254.1"
 		epairaMASK = "255.255.255.0"
 
 		ifconfig(epaira + " inet " + epairaIP + " netmask " + epairaMASK)
 		ifconfig(epaira + " up")
-	#	@@tomocha.register(epaira,"_host_",epairaIP,epairaMASK)
+
+		registerL3(epaira,"_host",epairaIP,epairaMASK)
 
 		#masterRouter to hostjail
 		serverNAME = "masterRouter"
@@ -95,76 +87,94 @@ class Network
 
 		@@tomocha.setuprouter(serverNAME)
 		@@tomocha.connect(serverNAME,epairb)
+		registerL2(epaira.chop,"_host",serverNAME)
 		@@tomocha.assignip(serverNAME,epairb,epairbIP,epairbMASK)
-	#	@@tomocha.register(epairb,serverNAME,epairbIP,epairbMASK)
+		registerL3(epairb,serverNAME,epairbIP,epairbMASK)
 		@@tomocha.up(serverNAME,epairb)
-	#	@@tomocha.save($daichoPath)
-	#	@@daicho = @@tomocha.getDaicho
-	#	save(@@daicho)
-		@@tomocha.load(Hash.new)	#_hostとmasterRouterのlinkは記憶させない
+
+
+
 	end
 
+	def self.registerL3(epairF,jailname,ip4="",mask="",as="",ip6="",prefixlen="")
+		# ex.	epairF	=>	epair0a
+		# 		epair 	=>	0 
+		# 		type 	=> 	a
+		epairF = epairF.gsub("epair","")
+		type = epairF[-1]
+		epair = epairF.chop
 
-	def self.to_link(daicho)
-		puts "to_linkでのdaicho => #{daicho}"
-		num = 0
-		source = ""
-		target = ""
-		jailset_links_name = []
+		data = {epair:epair, type:type, name: jailname, ip4: ip4, ip4mask: mask, ip6: ip6, ip6mask: prefixlen}
+		result = SQL.insert("l3",data)
 
-		if (daicho != Hash.new) then	#daichoにデータが書き込まれていたら
-			begin 
-				daicho.each do |key,value|
-					epair = key.to_s
-					name = value[0]
-					epairIP = value[1]
-					epairMASK = value[2]
-					epairIP6 = value[3]
-					epairIP6MASK = value[4]
-					as = value[5]
-	
-					if (num%2 == 0) then
-						source = name
-						puts "source => #{source}"
-					else
-						target = name
-						jailset_links_name << {"source" => source, "target" => target, "epair" => epair.chop}
-					end
-					num += 1
-				end
-			rescue#不正なデータが書き込まれていたら
-				jailset_links_name = "none"
-			end
-		else#daichoに何も書き込まれていなかったら
-			jailset_links_name = "none"
+		return result
+
+	end
+
+	def self.registerL2(epair,a,b)
+		epair = epair.gsub("epair","").to_i
+		data = {epair: epair, a: a, b: b}
+
+		result = SQL.insert("l2",data)
+
+		return result
+	end
+
+	def self.unregisterL2(epairaName,epaira, epairbName, epairb)
+		#ex. epair0a => 0a => 0
+
+		epair = epaira.gsub("epair","").chop.to_i
+		SQL.delete("l2",epair)
+		SQL.delete("l3",epair)
+
+	end
+
+	def self.getL2()
+
+		l2 = SQL.select("l2")
+		l2List = []
+
+		if (l2 == Array.new) then
+			puts "Array.new!"
+			return "none"
 		end
-		return jailset_links_name
-	end
 
-	def self.to_l3(daicho)
-		jailset_network = []
-		if (daicho != Hash.new) then		#daichoにデータが書き込まれていたら
-			begin
-				daicho.each do |key, value|
-					epair = key.to_s
-					name = value[0]
-					epairIP = value[1]
-					epairMASK = value[2]
-					epairIP6 = value[3]
-					epairIP6MASK = value[4]
-					as = value[5]
-
-					jailset_network <<  {"epair" => epair, "name" => name, "ipaddr" => epairIP, "ipmask" =>  epairMASK, "ip6addr" => epairIP6, "ip6mask" => epairIP6MASK, "as" => as}
-				end
-			rescue	#不正なデータが書き込まれていたら
-				jailset_network = "none"
-			end
-		else	#daichoに何も書き込まれていなかったら
-			jailset_network = "none"
+		l2.each do |value|
+			epair = "epair" + value[0].to_s
+			a = value[1]
+			b = value[2]
+			l2List << {source: a, target: b, epair: epair}
 		end
-		
-		return jailset_network
+		return l2List
 	end
+
+	def self.getL3()
+
+		l3 = SQL.select("l3")
+		l3List = []
+
+		if (l3 == Array.new) then
+			puts "Array.new!"
+			return "none"
+		end
+
+		l3.each do |value|
+			epair = value[0]	#=> 0
+			type = value[1]		#=> a
+			epair = "epair" + epair.to_s + type	#=>epair0a
+
+			name = value[2]
+			ipaddr = value[3]
+			ipmask = value[4]
+			ip6addr = value[5]
+			ip6mask = value[6]
+
+			l3List << {epair: epair, name: name, ipaddr: ipaddr, ipmask: ipmask, ip6addr: ip6addr, ip6mask: ip6mask }
+		end
+
+		return l3List
+	end
+
 
 	def self.createBridge(name)
 		@@tomocha.setupbridge(name)
@@ -209,52 +219,58 @@ class Network
 		puts "#{target}(#{epairb}) up"
 		@@tomocha.up(target,epairb)
 
-#		@@tomocha.save($daichoPath)
-		save(@@daicho)
+		registerL2(epaira.chop, source, target)
+		registerL3(epaira,source,"","","","","")
+		registerL3(epairb,target,"","","","","")
+
 		return epaira, epairb
 
 	end
 
 	def self.deleteLink(link)
+		epairNum = link.gsub("epair","").to_i 	#epairの数字部分のみ取り出す
 		epair = link
 		epaira = epair + "a"
 		epairb = epair + "b"
-		epairaName = epairToname(@@daicho,epaira)
-		epairbName = epairToname(@@daicho,epairb)
 
+		epairData = SQL.select("l2",epairNum)[0] 	#第2引数に数字を入れればその番号のepairのみ取り出す
+		epairaName = epairData[1]
+		epairbName = epairData[2]
 		puts "#{epairaName},#{epairbName}"
-
+		unregisterL2(epairaName,epaira, epairbName, epairb) 			#バグ？removepairのあとにunregisterL2を記述すると、epairaの文字列の最後が削られてしまう。
+																		#(ex. 	epair1aがepair1に変化)　unregisterL2をremovepairよりも先に書けば大丈夫
 		@@tomocha.removepair(epairaName, epaira, epairbName, epairb)
-#		@@tomocha.save($daichoPath)
-		save(@@daicho)
+		
 
 		SendMsg.status(NETWORK,"success","完了しました。")
 	end
 
 	def self.deleteLinkAll(jname)
+
 		epairList = []
-		puts jname
-		puts @@daicho
-		if(@@daicho != Hash.new) then
-			return
-		end
-		@@daicho.each do |key, value|
-			epair = key.to_s
-			name = value[0]
-			if (name == jname) then
-				epairList << epair.chop
+
+		l2DB = SQL.select("l2")
+		l2DB.each do |l2|
+			if(l2[1] == jname || l2[2] == jname)then
+				epairList << ("epair" + l2[0].to_s)
 			end
 		end
+
 		if(epairList != []) then
 			epairList.each do |epair|
 				deleteLink(epair)
 			end
 		end
+
 	end
 
-	def self.createL3(epair,ipaddr,ipmask,ip6addr,ip6mask,as)
-		name = epairToname(@@daicho,epair)
 
+
+	def self.createL3(epair,ipaddr,ipmask,ip6addr,ip6mask,as)
+
+		type = epair[-1]
+		epairNum = epair.chop[-1]
+		name = SQL.sql("select name from l3 where epair=#{epairNum} and type='#{type}'")[0][0]
 		
 		@@tomocha.setupserver(name)
 		if(ipaddr != "" && ipmask != "") then
@@ -263,23 +279,10 @@ class Network
 		if(ip6addr != "" && ip6mask != "") then
 			@@tomocha.assignip6(name,epair,ip6addr,ip6mask,as="")
 		end
-#		@@tomocha.save($daichoPath)
-		save(@@daicho)	
+
+		
+		registerL3(epair,name,ipaddr,ipmask,"",ip6addr,ip6mask)
 		return true	
-	end
-
-	def self.epairToname(daicho,epair)
-		epairName = ""
-		daicho.each do |key, value|
-			if(key.to_s == epair) then
-				epairName = value[0]
-			end
-		end
-		return epairName
-	end
-
-	def self.nameToepair(daicho,name)
-
 	end
 
 	def self.destroyDaicho(daichoPath)

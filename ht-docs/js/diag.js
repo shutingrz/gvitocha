@@ -35,16 +35,19 @@ function diag_l3(data){
 function diag_createLink(){
 	var source,target;
 	if(linkDB != "none") { //noneだった場合は生成しない
-		linkDB.forEach(function(lvalues,lindex){
-		machineDB.forEach(function(nvalues,nindex){
-			if(lvalues.source == nvalues.name){
-			source = nindex;
+		linkDB.forEach(function(lvalues,lindex){ //_hostがsource/targetに含まれている場合はd3形式に入れない(_hostはネットワーク図に描画しないため)
+			if(lvalues.source == "_host" || lvalues.target == "_host"){
+				return;
 			}
-			if(lvalues.target == nvalues.name){
-			target = nindex;
-			}
-		});
-		d3linkDB.push({source : source, target : target, epair : lvalues.epair});
+			machineDB.forEach(function(nvalues,nindex){
+				if(lvalues.source == nvalues.name){
+					source = nindex;
+				}
+				if(lvalues.target == nvalues.name){
+					target = nindex;
+				}
+			});
+			d3linkDB.push({source : source, target : target, epair : lvalues.epair});
 		});
 	}
 }
@@ -104,17 +107,16 @@ function diag_selectTargetNode(epair){
 	var target;
 	var targetName = "epair0a";   //念のためepair0aで初期化しておく
 	var epairNum = epair.slice(0,-1); //末尾削除
-	
-	if(epair.slice(-1) == "a"){   //末尾確認
-	target = epairNum + "b";
-	}else{
-	target = epairNum + "a";
-	}
+	var sourceType = epair.slice(-1);
 
-	l3DB.forEach(function(values,index){
-	if(target == values.epair){
-		targetName = values.name;
-	}
+	linkDB.forEach(function(values,index){
+		if(epairNum == values.epair){
+			if(sourceType == "a"){
+				targetName = values.target;
+			}else{
+				targetName = values.source;
+			}
+		}
 	});
 	return targetName;
 
@@ -275,10 +277,17 @@ var l3str = '\
 		</div>\
 		';
 
+
 function diag_getepairList(name){
 	var epairList = [];
-	diag_selectNode(name).forEach(function(value,index){
-		epairList.push({"caption": l3DB[value].epair, "epair" : l3DB[value].epair });
+
+	linkDB.forEach(function(value, index){
+		if( value.source == name ){
+  			epairList.push({"caption": value.epair + "a", "epair" : value.epair + "a" });
+		}
+		else if( value.target == name){
+			epairList.push({"caption": value.epair + "b", "epair" : value.epair + "b" });
+		}
 	});
 	return epairList;
 }
@@ -294,7 +303,9 @@ function tabs_addPane(content,str){
 function diag_showNetwork(epair){
 	var index = db_selectDB("l3",epair);
 	var db = l3DB[index];
-	var str = '<h4>相手側:' + diag_selectTargetNode(epair) + '</h4>' + l3str;
+	console.log(db);
+	var target = diag_selectTargetNode(epair);
+	var str = '<h4>相手側:' + target + '</h4>' + l3str;
 
 	$("#machineNetwork_data").html(str);
 	$("#l3inputData .epair").val(epair);

@@ -133,19 +133,25 @@ class Operator
   end
 
   def assignip(obj,epair,ip,mask,as="")
-    eval("$#{obj}.assignip('#{epair}','#{ip}','#{mask}')")
-    ip6=self.find(epair)[4]
-    prefixlen=self.find(epair)[5]
-    @daicho[epair.to_sym]=[obj,ip,mask,as,ip6,prefixlen]
-    puts "#{epair} of #{obj} has #{ip}/#{mask}."
+    begin
+      eval("$#{obj}.assignip('#{epair}','#{ip}','#{mask}')")
+      ip6=self.find(epair)[4]
+      prefixlen=self.find(epair)[5]
+      @daicho[epair.to_sym]=[obj,ip,mask,as,ip6,prefixlen]
+      puts "#{epair} of #{obj} has #{ip}/#{mask}."
+    rescue
+    end
   end
 
   def assignip6(obj,epair,ip6,prefixlen,as="")
-    eval("$#{obj}.assignip6('#{epair}','#{ip6}','#{prefixlen}')")
-    ip4=self.find(epair)[1]
-    mask=self.find(epair)[2]
-    @daicho[epair.to_sym]=[obj,ip4,mask,as,ip6,prefixlen]
-    puts "#{epair} of #{obj} has #{ip6}/#{prefixlen}."
+    begin
+      eval("$#{obj}.assignip6('#{epair}','#{ip6}','#{prefixlen}')")
+      ip4=self.find(epair)[1]
+      mask=self.find(epair)[2]
+      @daicho[epair.to_sym]=[obj,ip4,mask,as,ip6,prefixlen]
+      puts "#{epair} of #{obj} has #{ip6}/#{prefixlen}."
+    rescue
+    end
   end
 
   def assigngw(obj,gw)

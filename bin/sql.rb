@@ -31,14 +31,15 @@ class SQL
 			@@db.execute("create table pkg(id integer, name text);")
 			@@db.execute("create table easyConf(type integer, id integer, template integer, flavour integer);")
 			@@db.execute("create table boot(name text, state integer)")
-			@@db.execute("create table daicho(id integer, daicho text)")
+			@@db.execute("create table l2(epair integer, a text, b text, UNIQUE(epair))")
+			@@db.execute("create table l3(epair integer, type text, name text, ip4 text, ip4mask text, ip6 text, ip6mask text, UNIQUE(epair, type))")
 
 			@@db.execute("insert into template (id, name, pkg) values (0, 'default', '');")
 			@@db.execute("insert into flavour (id, name) values (0, 'default');")
 			@@db.execute("insert into easyConf(type, id, template, flavour) values (#{SERVER.to_s}, 0, 0, 0);")
 			@@db.execute("insert into easyConf(type, id, template, flavour) values (#{ROUTER.to_s}, 0, 1, 0);")
 			@@db.execute("insert into easyConf(type, id, template, flavour) values (#{SWITCH.to_s}, 0, 0, 0);")
-			@@db.execute("insert into daicho(id, daicho) values (0, '');")
+		#	@@db.execute("insert into daicho(id, daicho) values (0, '');")
 
 			@@db.execute("insert into machine (id, name, type, template, flavour, comment, createTime, modifyTime) values ( -1, 'dummy', 0, 0, 0, 'dummy', '2014-01-01 00:00:00', '2014-01-01 00:00:00');")
 		
@@ -133,6 +134,14 @@ class SQL
 
 		elsif (mode == "daicho")
 			return @@db.execute("select daicho from daicho where id=0")[0][0]
+		elsif (mode == "l2")
+			if(id.class == Fixnum ) then
+				return @@db.execute("select * from l2 where epair=#{id}")
+			else
+				return @@db.execute("select * from l2")
+			end
+		elsif (mode == "l3")
+			return @@db.execute("select * from l3")
 		end
 		rescue
 			return false
@@ -155,9 +164,12 @@ class SQL
 			sql = "insert into pkg (id,name) values ('" + (maxid+1).to_s + "','" + data + "');"
 		elsif(table == "template") then
 			sql = "insert into template(id,name,pkg) values('" + (maxid+1).to_s + "','" + data["name"] + "','" + data["pkglist"] + "');"
-
 		elsif(table == "boot") then
 			sql = "insert into boot(name, state) values('#{data}', 0);"
+		elsif(table == "l2") then
+			sql = "replace into l2(epair, a, b) values (#{data[:epair].to_s}, '#{data[:a]}', '#{data[:b]}');"
+		elsif(table == "l3") then
+			sql = "replace into l3(epair, type, name, ip4, ip4mask, ip6, ip6mask) values (#{data[:epair].to_s}, '#{data[:type]}', '#{data[:name]}', '#{data[:ip4]}', '#{data[:ip4mask]}', '#{data[:ip6]}', '#{data[:ip6mask]}');"
 		end
 
 		return @@db.execute(sql)
@@ -170,6 +182,10 @@ class SQL
 			sql = "delete from machine where name='"+ data + "';"
 		elsif(table == "boot") then
 			sql = "delete from boot where name='#{data}';"
+		elsif(table == "l2") then
+			sql = "delete from l2 where epair=#{data.to_s};"
+		elsif(table == "l3") then
+			sql = "delete from l3 where epair=#{data.to_s};"
 		end
 
 	#	puts sql
