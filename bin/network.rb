@@ -2,11 +2,14 @@
 
 class Network
 
+	#Vitochaインスタンス用変数を宣言
+	#コンストラクタで初期化する。
 	@@tomocha
-	@@daicho
-
 
 	def initialize()
+		#コンストラクタ
+		#はじめにデータベースからL2情報を取得。
+		#L2情報が空の配列、もしくは取得すらできない（初回起動）の場合は初期化メソッドinitを呼び出す
 		@@tomocha = Operator.new
 		begin
 			l2DB = SQL.select("l2")
@@ -18,13 +21,13 @@ class Network
 			l2DB = Array.new
 			Network.init()
 		end
-	#	if(@@daicho != Hash.new) then
-		#	puts "start resume."
-		#	Network.resume(@@daicho)
-	#	end
 	end
 
 	def self.main(data)
+		#メインメソッド
+		#クライアントからの全てのNetworkの処理は一旦mainメソッドで受け取る
+		#jsonデータ構造
+		#data = { mode: `L2であるかL3であるか`,  control: `modeに対しての処理`',  msg: `データ`}
 
 		if (data["mode"] == "list") then
 			link = getL2()
@@ -69,7 +72,8 @@ class Network
 	end
 
 	def self.init()
-		#hostjail connect masterRouter
+		#初期化メソッド
+		#NAT用にホストとmasterRouterをつなぐ。
 
 		epaira, epairb = @@tomocha.createpair
 		epairaIP = "10.254.254.1"
@@ -97,6 +101,17 @@ class Network
 	end
 
 	def self.registerL3(epairF,jailname,ip4="",mask="",as="",ip6="",prefixlen="")
+		#epairに対してL3(IPv4(=ip4),IPv6(=ip6))を登録する。
+		#
+		#epairF ・・・	epairの完全名(epair0aなど)。必須。
+		#jailname ・・・	jail名。必須。
+		#ip4　・・・		IPv4アドレス。
+		#mask ・・・		IPv4のサブネットマスク。ip4がある場合は必須。
+		#as ・・・		未使用。Vitochaとの後方互換性用。
+		#ip6　・・・		IPv6アドレス。
+		#prefixlen　・・・IPv6のプレフィックス長。ip6がある場合は必須。	
+		#
+		#データベースにepairを格納する場合はepairの数値とabをそれぞれepair,typeに分ける。
 		# ex.	epairF	=>	epair0a
 		# 		epair 	=>	0 
 		# 		type 	=> 	a
@@ -112,6 +127,10 @@ class Network
 	end
 
 	def self.registerL2(epair,a,b)
+		#epairに接続する2つのjail(またはホスト)を登録する。
+		#データベースにepairを登録する場合はepairの文字列を削除する。
+		#ex.	epair 	=>	epair5
+		#				=>  5
 		epair = epair.gsub("epair","").to_i
 		data = {epair: epair, a: a, b: b}
 
@@ -121,6 +140,9 @@ class Network
 	end
 
 	def self.unregisterL2(epairaName,epaira, epairbName, epairb)
+		#データベースからepairの情報を削除する。
+		#L2を削除するということは同時にL3も削除することから、L3のデータベースからも削除することになる。
+		#データベースに問い合わせをするときは、epairの文字列を削除する。
 		#ex. epair0a => 0a => 0
 
 		epair = epaira.gsub("epair","").chop.to_i
@@ -129,7 +151,16 @@ class Network
 
 	end
 
-	def self.getL2()
+	def self.getL2(epairNum=nil)
+		#データベースから全てのL2情報を取得する。
+		#第一引数に数値が存在する場合、その番号のL2情報を返す。
+		#返すデータ構造は、
+		#l2List = [{source: `L2情報のtypeがaのjail名`, target: `L2情報のtypeがbのjail名`, epair: `epair名`},{...}]
+		#データベースのL2情報が空の場合、"none"という文字列を返す。
+
+		if (epairNum.class == Fixnum) then
+			return SQL.select("l2",epairNum)[0]
+		end
 
 		l2 = SQL.select("l2")
 		l2List = []
@@ -149,6 +180,11 @@ class Network
 	end
 
 	def self.getL3()
+		#データベースから全てのL3情報を取得する。
+		#他メソッドはこのメソッドから全てのL3情報を取得し、そこから必要な情報を取り出すことになる。
+		#返すデータ構造は、
+		#l3List = [{epair: `epair名`, name: `jail名`, ipaddr: `IPv4アドレス`, ipmask: `IPv4サブネットマスク`, ip6addr: `IPv6アドレス`, ip6mask: `IPv6プレフィックス長`}, {...}]
+		#データベースのL3情報が空の場合、"none"という文字列を返す。
 
 		l3 = SQL.select("l3")
 		l3List = []
@@ -177,36 +213,33 @@ class Network
 
 
 	def self.createBridge(name)
+		#name(jail名)の名前でブリッジを作成する。
+
 		@@tomocha.setupbridge(name)
 	end
 
 	def self.createLink(source,target)
-		#{"source"=>"server01", "target"=>"server03"}
+		#source,targetの2つのjail名でepairを作成する。
+		#
+		#ex. source　=>　"server01",　target　=>　"server03"
 		#SERVER = 0
 		#ROUTER = 1
 		#SWITCH = 2		#データベースのtypeの数値
 
+		machines = [source, target]
 
-		case (SQL.select("machine","name",source))[2]
-			when SERVER then
-				@@tomocha.setupserver(source)
-			when ROUTER then
-				@@tomocha.setuprouter(source)
-			when SWITCH then
-				@@tomocha.setupbridge(source)
-			else
-				@@tomocha.setupserver(source)	#何も一致しなかった時はserverとして
-		end
-
-		case (SQL.select("machine","name",target))[2]
-			when SERVER then
-				@@tomocha.setupserver(target)
-			when ROUTER then
-				@@tomocha.setuprouter(target)
-			when SWITCH then
-				@@tomocha.setupbridge(target)
-			else
-				@@tomocha.setupserver(target)	#何も一致しなかった時はserverとして
+		machines.each do |name|
+			machineType = SQL.select("machine","name",name)[2]
+			case machineType
+				when SERVER then
+					@@tomocha.setupserver(name)
+				when ROUTER then
+					@@tomocha.setuprouter(name)
+				when SWITCH then
+					@@tomocha.setupbridge(name)
+				else
+					@@tomocha.setupserver(name)	#何も一致しなかった時はserverとして
+			end
 		end
 		epaira, epairb = @@tomocha.createpair
 
@@ -220,6 +253,8 @@ class Network
 		@@tomocha.up(target,epairb)
 
 		registerL2(epaira.chop, source, target)
+
+		#各jailのregisterL3を、名前だけで発行する(検索用)
 		registerL3(epaira,source,"","","","","")
 		registerL3(epairb,target,"","","","","")
 
@@ -228,15 +263,17 @@ class Network
 	end
 
 	def self.deleteLink(link)
+		#epairを削除する。
+		#
+
 		epairNum = link.gsub("epair","").to_i 	#epairの数字部分のみ取り出す
 		epair = link
 		epaira = epair + "a"
 		epairb = epair + "b"
 
-		epairData = SQL.select("l2",epairNum)[0] 	#第2引数に数字を入れればその番号のepairのみ取り出す
+		epairData = getL2(epairNum) 	#getL2の引数に数字を入れればその番号のepairのみ取り出す
 		epairaName = epairData[1]
 		epairbName = epairData[2]
-		puts "#{epairaName},#{epairbName}"
 		unregisterL2(epairaName,epaira, epairbName, epairb) 			#バグ？removepairのあとにunregisterL2を記述すると、epairaの文字列の最後が削られてしまう。
 																		#(ex. 	epair1aがepair1に変化)　unregisterL2をremovepairよりも先に書けば大丈夫
 		@@tomocha.removepair(epairaName, epaira, epairbName, epairb)
@@ -246,12 +283,13 @@ class Network
 	end
 
 	def self.deleteLinkAll(jname)
+		#引数のjailに接続している全てのepairを削除する。
 
 		epairList = []
 
 		l2DB = SQL.select("l2")
 		l2DB.each do |l2|
-			if(l2[1] == jname || l2[2] == jname)then
+			if(l2[1] == jname || l2[2] == jname)then	#L2情報のaまたはbにjnameが入っていた場合にそのepairを削除する
 				epairList << ("epair" + l2[0].to_s)
 			end
 		end
@@ -267,10 +305,12 @@ class Network
 
 
 	def self.createL3(epair,ipaddr,ipmask,ip6addr,ip6mask,as)
+		#L3(IPv4またはIPv6)をepairの片方に割り当てる。
 
-		type = epair[-1]
-		epairNum = epair.chop[-1]
-		name = SQL.sql("select name from l3 where epair=#{epairNum} and type='#{type}'")[0][0]
+		type = epair[-1] 	#文字列の最後部
+		epairNum = epair.gsub("epair","").chop
+		puts "epairNum => #{epairNum}"
+		name = SQL.sql("select name from l3 where epair=#{epairNum} and type='#{type}'")[0][0] 	#直接SQLを操作
 		
 		@@tomocha.setupserver(name)
 		if(ipaddr != "" && ipmask != "") then
@@ -280,65 +320,8 @@ class Network
 			@@tomocha.assignip6(name,epair,ip6addr,ip6mask,as="")
 		end
 
-		
 		registerL3(epair,name,ipaddr,ipmask,"",ip6addr,ip6mask)
 		return true	
-	end
-
-	def self.destroyDaicho(daichoPath)
-		File::open(path,"w") do |f|
-      		f.puts ""
-    	end
-	end
-
-	def self.save(daicho)
-		print "savedaicho=> "
-		puts daicho
-		SQL.update("daicho",daicho)
-	end
-
-	def self.load()
-		begin
-			daicho = SQL.select("daicho")
-			daicho = eval(daicho)
-		rescue
-		end
-	#	puts "return するdaicho => #{daicho}"
-		return daicho
-	end
-
-	def self.resume(path)
-		@@tomocha.daicho = ""
-		if(@@daicho != "") then
-			num = 0
-			source = ""
-			target = ""
-			epaira = ""
-			epairb = ""
-			valuea = []
-			valueb = []
-			@@daicho.each do |key, value|	
-			#	name = value[0]
-			#	ipaddr = value[1]
-			#	ipmask = value[2]
-			#	ip6addr = value[3]
-			#	ip6mask = value[4]
-			#	as = value[5]
-			#######################
-				if (num%2 == 0) then			#a
-					valuea = value
-					source = valuea[0]
-				else							#b
-					valueb = value
-					target = valueb[0]
-					epaira, epairb = createLink(source,target)
-
-					createL3(epaira,valuea[1], valuea[2], valuea[3], valuea[4], valuea[5])
-					createL3(epairb,valueb[1], valueb[2], valueb[3], valueb[4], valueb[5])
-				end
-				num += 1
-			end
-		end
 	end
 
 end

@@ -1,6 +1,7 @@
 #!/usr/local/bin/ruby
 # -*- coding: utf-8 -*-
 
+
 require './vitocha/vitocha.rb'
 require 'em-websocket'
 require 'open3'
@@ -8,7 +9,6 @@ require 'json'
 
 
 require './console.rb'
-require './machine.rb'
 require './sql.rb'
 require './jail.rb'
 require './pkg.rb'
@@ -17,15 +17,10 @@ require './template.rb'
 require './network.rb'
 
 
-#STDIN .set_encoding( Encoding.locale_charmap, "UTF-8" )
-#STDOUT.set_encoding( Encoding.locale_charmap, "UTF-8" )
-#STDERR.set_encoding( Encoding.locale_charmap, "UTF-8" )
-
 CONSOLE = 1;
 STATUS = 2;
 MACHINE = 3;
 NETWORK = 4;
-ETC = 10;
 INIT = 101;
 
 #machine
@@ -38,27 +33,23 @@ CREATE = 201;
 SELECT = 202;
 INSERT = 203;
 
+$DB_FILE = "/usr/jails/gvitocha.db"
 $jails = "/usr/jails"
 $ws
 $msg = ""
-$channel
+#$channel
 $webshellURI = "http://192.168.56.104:8022"
 $qjailConfDir = "/usr/local/etc"
 
+#サーバ側での起動初期化が完了したか
+#initがfalseなら各クラスはwebsocketを使わない
+$init = false
+
 Process.daemon(nochdir=true) if ARGV[0] == "-D"
-@channel = EM::Channel.new
-$channel = @channel
+#@channel = EM::Channel.new
+#$channel = @channel
 
 sql = SQL.new		#初期化
-
-#puts Network.getL3
-#test statement
-#puts Network.registerL2(0,"_Server1", "_Server2")
-#Network.registerL3("epair3a","_Server2","192.168.30.1","255.255.255.0","","","")
-
-#s =  SQL.sql("select name from l3 where epair=0 and type='a'")[0][0]
-#puts "name = #{s}"
-
 
 #カーネルパニック検知
 s,e = Open3.capture3("ls -1 #{$qjailConfDir}/qjail.local/")
@@ -139,29 +130,40 @@ EM::run do
 	#start network then connect to client
 		$ws = ws
 		ws.onopen do				
-				sid = @channel.subscribe{|mes| ws.send mes}
+			#	sid = @channel.subscribe{|mes| ws.send mes}
 		end
 		ws.onmessage do |message|
+			#クライアントから送られてきたメッセージをパースして、msgTypeに合致する各クラスへ送る
+			#EventMachine::deferを用いることで並列処理を行う(=サーバ側からのプッシュができる)。
+			#
+
 			EventMachine::defer do
 				STDOUT.sync = true
+
+				#デバッグ文
 				puts "raw:" + message
+
         		msg = JSON.parse(message)
-        		message = msg[1]
         		if (msg["msgType"] == CONSOLE) then
         			Console.main(msg["data"])
-	
-				elsif (msg["msgType"] == STATUS) then
-        			p "STATUS"
 
         		elsif (msg["msgType"] == MACHINE) then
-        			machine(msg["data"])
+        			data = msg["data"]
+
+        			if (data["mode"] == "jail") then
+						Jail.main(data)
+
+
+					elsif (data["mode"] == "pkg" ) then
+						Pkg.main(data)
+
+					elsif (data["mode"] == "template") then
+						Templete.main(data)
+					end 
+
 
         		elsif (msg["msgType"] == NETWORK) then
         			Network.main(msg["data"])
-
-        		elsif (msg["msgType"] == ETC) then
-        			p "ETC"
-
         		end		
    			end
 		end

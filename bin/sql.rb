@@ -12,7 +12,9 @@ class SQL
 	@@db = nil
 
 	def initialize()
-		db_file = "/usr/jails/gvitocha.db"
+	#SQLクラスのコンストラクタ。
+	#db_file
+		db_file = $DB_FILE
     	begin
 			@@db = Database.new(db_file)
 		rescue SQLite3::CantOpenException
