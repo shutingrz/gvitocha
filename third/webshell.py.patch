@@ -1,123 +1,229 @@
-6c6,39
-< version = "0.9.6"
----
-> """
-> # Copyright 2012 iXsystems, Inc.
-> # All rights reserved
-> #
-> # Redistribution and use in source and binary forms, with or without
-> # modification, are permitted providing that the following conditions
-> # are met:
-> # 1. Redistributions of source code must retain the above copyright
-> # notice, this list of conditions and the following disclaimer.
-> # 2. Redistributions in binary form must reproduce the above copyright
-> # notice, this list of conditions and the following disclaimer in the
-> # documentation and/or other materials provided with the distribution.
-> #
-> # THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
-> # IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-> # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-> # ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
-> # DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-> # DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-> # OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-> # HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-> # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
-> # IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-> # POSSIBILITY OF SUCH DAMAGE.
-> #
-> """
-> 
-> 
-> """
-> This source code(0.9.7) was changed by Shuto Imai.
-> Released under the GPL 2.0 by Shuto Imai 
-> """
-> 
-> version = "0.9.7"
-1053c1086
-< 	def proc_keepalive(self, sid, w, h):
----
-> 	def proc_keepalive(self, sid, jid, w, h):
-1056a1090
-> 				'jid':jid,
-1081a1116
-> 		shell = self.cmd
-1091a1127,1170
-> 			"""
-> 			try:
-> 				ls = os.environ['LANG'].split('.')
-> 			except KeyError:
-> 				ls = []
-> 			if len(ls) < 2:
-> 				ls = ['en_US', 'UTF-8']
-> 			try:
-> 				env = {
-> 					'COLUMNS': str(w),
-> 					'LINES': str(h),
-> 					'TERM': self.env_term,
-> 					'PATH': (
-> 						'/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:'
-> 						'/usr/local/sbin'),
-> 					'LANG': ls[0] + '.UTF-8',
-> 					'HOME': '/root',
-> 					'SHELL': shell,
-> 				}
-> 
-> 				libc = cdll.LoadLibrary('libc.so.7')
-> 				buff = create_string_buffer(len(self.cmd) + 1)
-> 				buff.value = self.cmd
-> 				libc.setproctitle(byref(buff))
-> 				if self.session[sid]['jid']:
-> 					
-> 					os.execve(
-> 						"/usr/sbin/jexec",
-> 						(
-> 							shell.split("/")[-1:] +
-> 							[self.session[sid]['jid'], shell]
-> 						),
-> 						env
-> 					)
-> 					
-> 					cmd = 
-> 				else:
-> 					os.execve(shell, shell.split("/")[-1:], env)
-> 			except Exception, e:
-> 				pass
-> 			#	log.error("Impossible to start a subshell (%r): %s", e, e)
-> 			#self.proc_finish(sid)
-> 			os._exit(0)
-> 			"""
-1094a1174
-> 				"""
-1096a1177
-> 				
-1104a1186,1196
-> 				"""
-> 				
-> 				if self.session[sid]['jid']:
-> 				#	cmd = '/usr/sbin/jexec'
-> 				#	cmd += str(self.session[sid]['jid'])
-> 				#	cmd += '/bin/tcsh'
-> 					cmd = '/usr/sbin/jexec ' + str(self.session[sid]['jid']) + ' /bin/tcsh'
-> 				else:
-> 					cmd = '/bin/tcsh'
-> 				#	os.execve(shell, shell.split("/")[-1:], env)
-> 
-1117a1210
-> 				os.putenv('HOME', "/root")
-1122a1216
-> 			
-1258a1353
-> 				jid = int(p['jid'][0])
-1263c1358
-< 				if multiplex.proc_keepalive(sid, w, h):
----
-> 				if multiplex.proc_keepalive(sid, jid, w, h):
-1268c1363,1364
-< 					content_data = '<?xml version="1.0" encoding="UTF-8"?>' + multiplex.proc_dump(sid)
----
-> 				#	content_data = '<?xml version="1.0" encoding="UTF-8"?>' + multiplex.proc_dump(sid)
-> 					content_data = multiplex.proc_dump(sid)
-1299a1396
-> 			self.send_header('Access-Control-Allow-Origin','*')
+*** webshell.py	2008-10-22 06:13:50.000000000 +0900
+--- webshell_fixed.py	2014-10-21 23:32:26.000000000 +0900
+***************
+*** 3,9 ****
+  """ WebShell Server """
+  """ Released under the GPL 2.0 by Marc S. Ressl """
+  
+! version = "0.9.6"
+  
+  import array, time, glob, optparse, random, re
+  import socket, os, sys, pty, signal, select, gzip
+--- 3,42 ----
+  """ WebShell Server """
+  """ Released under the GPL 2.0 by Marc S. Ressl """
+  
+! """
+! # Copyright 2012 iXsystems, Inc.
+! # All rights reserved
+! #
+! # Redistribution and use in source and binary forms, with or without
+! # modification, are permitted providing that the following conditions
+! # are met:
+! # 1. Redistributions of source code must retain the above copyright
+! # notice, this list of conditions and the following disclaimer.
+! # 2. Redistributions in binary form must reproduce the above copyright
+! # notice, this list of conditions and the following disclaimer in the
+! # documentation and/or other materials provided with the distribution.
+! #
+! # THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+! # IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+! # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+! # ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+! # DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+! # DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+! # OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+! # HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+! # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+! # IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+! # POSSIBILITY OF SUCH DAMAGE.
+! #
+! """
+! 
+! 
+! """
+! This source code(0.9.7) was changed by Shuto Imai.
+! Released under the GPL 2.0 by Shuto Imai 
+! """
+! 
+! version = "0.9.7"
+  
+  import array, time, glob, optparse, random, re
+  import socket, os, sys, pty, signal, select, gzip
+***************
+*** 1050,1059 ****
+  		# Stop supervisor thread
+  		self.signal_stop = 1
+  		self.thread.join()
+! 	def proc_keepalive(self, sid, w, h):
+  		if not sid in self.session:
+  			# Start a new session
+  			self.session[sid] = {
+  				'state':'unborn',
+  				'term':	Terminal(w, h),
+  				'time':	time.time(),
+--- 1083,1093 ----
+  		# Stop supervisor thread
+  		self.signal_stop = 1
+  		self.thread.join()
+! 	def proc_keepalive(self, sid, jid, w, h):
+  		if not sid in self.session:
+  			# Start a new session
+  			self.session[sid] = {
++ 				'jid':jid,
+  				'state':'unborn',
+  				'term':	Terminal(w, h),
+  				'time':	time.time(),
+***************
+*** 1079,1084 ****
+--- 1113,1119 ----
+  		else:
+  			return False
+  	def proc_spawn(self, sid):
++ 		shell = self.cmd
+  		# Session
+  		self.session[sid]['state'] = 'alive'
+  		w, h = self.session[sid]['w'], self.session[sid]['h']
+***************
+*** 1089,1099 ****
+--- 1124,1180 ----
+  			self.session[sid]['state'] = 'dead'
+  			return False
+  		if pid == 0:
++ 			"""
++ 			try:
++ 				ls = os.environ['LANG'].split('.')
++ 			except KeyError:
++ 				ls = []
++ 			if len(ls) < 2:
++ 				ls = ['en_US', 'UTF-8']
++ 			try:
++ 				env = {
++ 					'COLUMNS': str(w),
++ 					'LINES': str(h),
++ 					'TERM': self.env_term,
++ 					'PATH': (
++ 						'/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:'
++ 						'/usr/local/sbin'),
++ 					'LANG': ls[0] + '.UTF-8',
++ 					'HOME': '/root',
++ 					'SHELL': shell,
++ 				}
++ 
++ 				libc = cdll.LoadLibrary('libc.so.7')
++ 				buff = create_string_buffer(len(self.cmd) + 1)
++ 				buff.value = self.cmd
++ 				libc.setproctitle(byref(buff))
++ 				if self.session[sid]['jid']:
++ 					
++ 					os.execve(
++ 						"/usr/sbin/jexec",
++ 						(
++ 							shell.split("/")[-1:] +
++ 							[self.session[sid]['jid'], shell]
++ 						),
++ 						env
++ 					)
++ 					
++ 					cmd = 
++ 				else:
++ 					os.execve(shell, shell.split("/")[-1:], env)
++ 			except Exception, e:
++ 				pass
++ 			#	log.error("Impossible to start a subshell (%r): %s", e, e)
++ 			#self.proc_finish(sid)
++ 			os._exit(0)
++ 			"""
+  			if self.cmd:
+  				cmd = self.cmd
+  			else:
++ 				"""
+  				sys.stdout.write("Login: ")
+  				login = sys.stdin.readline().strip()
++ 				
+  				if re.match('^[0-9A-Za-z-_.]+$', login):
+  					cmd = 'ssh'
+  					cmd += ' -oPreferredAuthentications=keyboard-interactive,password'
+***************
+*** 1102,1107 ****
+--- 1183,1199 ----
+  					cmd += ' -F/dev/null -l' + login +' localhost'
+  				else:
+  					os._exit(0)
++ 				"""
++ 				
++ 				if self.session[sid]['jid']:
++ 				#	cmd = '/usr/sbin/jexec'
++ 				#	cmd += str(self.session[sid]['jid'])
++ 				#	cmd += '/bin/tcsh'
++ 					cmd = '/usr/sbin/jexec ' + str(self.session[sid]['jid']) + ' /bin/tcsh'
++ 				else:
++ 					cmd = '/bin/tcsh'
++ 				#	os.execve(shell, shell.split("/")[-1:], env)
++ 
+  			# Safe way to make it work under BSD and Linux
+  			try:
+  				ls = os.environ['LANG'].split('.')
+***************
+*** 1115,1125 ****
+--- 1207,1219 ----
+  				os.putenv('TERM', self.env_term)
+  				os.putenv('PATH', os.environ['PATH'])
+  				os.putenv('LANG', ls[0] + '.UTF-8')
++ 				os.putenv('HOME', "/root")
+  				os.system(cmd)
+  			except (IOError, OSError):
+  				pass
+  #			self.proc_finish(sid)
+  			os._exit(0)
++ 			
+  		else:
+  			# Store session vars
+  			self.session[sid]['pid'] = pid
+***************
+*** 1256,1271 ****
+  			try:
+  				p = cgi.parse_qs(path[1], True)
+  				sid = int(p['s'][0])
+  				k = p['k'][0]
+  				w = int(p['w'][0])
+  				h = int(p['h'][0])
+  				multiplex = self.server.webshell_multiplex			
+! 				if multiplex.proc_keepalive(sid, w, h):
+  					if k:
+  						multiplex.proc_write(sid, k)
+  					time.sleep(0.002)
+  					content_type = 'text/xml'
+! 					content_data = '<?xml version="1.0" encoding="UTF-8"?>' + multiplex.proc_dump(sid)
+  					content_gzip = True
+  				else:
+  					self.send_error(400, 'Disconnected')
+--- 1350,1367 ----
+  			try:
+  				p = cgi.parse_qs(path[1], True)
+  				sid = int(p['s'][0])
++ 				jid = int(p['jid'][0])
+  				k = p['k'][0]
+  				w = int(p['w'][0])
+  				h = int(p['h'][0])
+  				multiplex = self.server.webshell_multiplex			
+! 				if multiplex.proc_keepalive(sid, jid, w, h):
+  					if k:
+  						multiplex.proc_write(sid, k)
+  					time.sleep(0.002)
+  					content_type = 'text/xml'
+! 				#	content_data = '<?xml version="1.0" encoding="UTF-8"?>' + multiplex.proc_dump(sid)
+! 					content_data = multiplex.proc_dump(sid)
+  					content_gzip = True
+  				else:
+  					self.send_error(400, 'Disconnected')
+***************
+*** 1297,1302 ****
+--- 1393,1399 ----
+  			zfile.close()
+  			content_data = zout.getvalue()
+  			self.send_header('Content-Encoding', 'gzip')
++ 			self.send_header('Access-Control-Allow-Origin','*')
+  		self.send_header('Content-Length', len(content_data))
+  		self.end_headers()
+  		self.wfile.write(content_data)

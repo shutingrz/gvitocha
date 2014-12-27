@@ -1,16 +1,70 @@
-460c460
-<     echo "ip4.addr            =  ${ip4};"
----
->   #  echo "ip4.addr            =  ${ip4};"
-488c488
-<     echo "devfs_ruleset       =  \"4\";"
----
->     echo "devfs_ruleset       =  \"5\";"
-508c508
-<     if [ ${vnet} ]; then 
----
->   #  if [ ${vnet} ]; then 
-529c529
-<     fi           
----
->  #   fi           
+*** qjail-3.4	2014-12-28 02:41:44.000000000 +0900
+--- qjail-3.4_fix	2014-12-28 02:38:54.000000000 +0900
+***************
+*** 457,463 ****
+      echo "mount.devfs;"
+                    
+      [ ${ip4} ]                && \
+!     echo "ip4.addr            =  ${ip4};"
+                       
+      [ ${ip6} ]                && \
+      echo "ip6.addr            =  ${ip6};"
+--- 457,463 ----
+      echo "mount.devfs;"
+                    
+      [ ${ip4} ]                && \
+!   #  echo "ip4.addr            =  ${ip4};"
+                       
+      [ ${ip6} ]                && \
+      echo "ip6.addr            =  ${ip6};"
+***************
+*** 485,491 ****
+      echo "devfs_ruleset       =  \"${devfs_ruleset_number}\";"
+                   
+      [ ${devfs_ruleset_number} ] || \
+!     echo "devfs_ruleset       =  \"4\";"
+   
+      [ ${allow_sysvipc} ]      && \
+      echo "allow.sysvipc;"
+--- 485,491 ----
+      echo "devfs_ruleset       =  \"${devfs_ruleset_number}\";"
+                   
+      [ ${devfs_ruleset_number} ] || \
+!     echo "devfs_ruleset       =  \"5\";"
+   
+      [ ${allow_sysvipc} ]      && \
+      echo "allow.sysvipc;"
+***************
+*** 505,511 ****
+        echo "allow.mount.zfs;"
+      fi       
+               
+!     if [ ${vnet} ]; then 
+        # ${vnet} is loaded with ipfw, ipfilter, pf, or none for firewall
+        # selection, which is followed by [ng] or [be] for network configuration
+        # selection. This is inserted by the qjail config -v logic.
+--- 505,511 ----
+        echo "allow.mount.zfs;"
+      fi       
+               
+!   #  if [ ${vnet} ]; then 
+        # ${vnet} is loaded with ipfw, ipfilter, pf, or none for firewall
+        # selection, which is followed by [ng] or [be] for network configuration
+        # selection. This is inserted by the qjail config -v logic.
+***************
+*** 526,532 ****
+          echo "exec.prestop=\"${path}/qjail.vnet.ng stop ${passed_parms}\";"
+        fi              
+                   
+!     fi           
+                   
+      echo "}"    
+    )       
+--- 526,532 ----
+          echo "exec.prestop=\"${path}/qjail.vnet.ng stop ${passed_parms}\";"
+        fi              
+                   
+!  #   fi           
+                   
+      echo "}"    
+    )       
