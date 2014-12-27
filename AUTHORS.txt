@@ -36,7 +36,7 @@ EventMachine is copyrighted free software owned by Francis Cianfrocca
 https://raw.githubusercontent.com/eventmachine/eventmachine/master/LICENSE
 
 
-qjail3.6
+qjail3.4
 BSD License
 http://sourceforge.net/projects/qjail/
 

@@ -1,0 +1,16 @@
+460c460
+<     echo "ip4.addr            =  ${ip4};"
+---
+>   #  echo "ip4.addr            =  ${ip4};"
+488c488
+<     echo "devfs_ruleset       =  \"4\";"
+---
+>     echo "devfs_ruleset       =  \"5\";"
+508c508
+<     if [ ${vnet} ]; then 
+---
+>   #  if [ ${vnet} ]; then 
+529c529
+<     fi           
+---
+>  #   fi           
