@@ -34,29 +34,16 @@ CREATE = 201;
 SELECT = 202;
 INSERT = 203;
 
-$DB_FILE = "/usr/jails/gvitocha.db"
-$jails = "/usr/jails"
 $ws
 $msg = ""
-$webshellURI = "http://127.0.0.1:8022"
-$qjailConfDir = "/usr/local/etc"
 
 #サーバ側での起動初期化が完了したか
 #initがfalseなら各クラスはwebsocketを使わない
 $init = false
 
-System.init()
-
 Process.daemon(nochdir=true) if ARGV[0] == "-D"
 
-sql = SQL.new(System.getConf("dbFile"))		#初期化
-
-Jail.init()
-Pkg.init()
-
-net = Network.new	#初期化
-
-
+System.init()
 
 
 $init = true

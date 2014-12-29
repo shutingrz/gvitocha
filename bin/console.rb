@@ -5,6 +5,11 @@ class Console
 
 	@task = Hash.new
 	@runningFlg = true
+	@webshellURI
+
+	def self.init()
+		@webshellURI = System.getConf("webshellURI")
+	end
 
 	def self.main(data)
 
@@ -80,7 +85,7 @@ class Console
 	def self.send(param)
 		#puts "send:" + param
 		begin
-			url = URI.parse($webshellURI)
+			url = URI.parse(@webshellURI)
 			req = Net::HTTP::Get.new(param)
 			res = Net::HTTP.start(url.host, url.port) {|http|
 			  http.request(req)

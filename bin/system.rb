@@ -25,6 +25,13 @@ class System
 	def self.init()
 		checkConf()
 		checkPanic()
+
+		sql = SQL.new(System.getConf("dbFile"))		#初期化
+		Jail.init()
+		Pkg.init()
+		Console.init()
+
+		net = Network.new	#初期化
 	end
 
 	def self.getConf(key)
