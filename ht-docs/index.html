@@ -326,6 +326,7 @@
 						<!-- Nav tabs -->
 						<ul class="nav nav-tabs nav-tabs-left" role="tablist">
 							<li class="active"><a href="#machineData_property" role="tab" data-toggle="tab">基本情報</a></li>
+							<li><a href="#machineData_console" role="tab" data-toggle="tab">端末設定</a></li>
 						</ul>
 						<!-- Tab panes -->
 						<div class="tab-content tab-content2">
@@ -345,6 +346,13 @@
 								<div class="comment">
 									<h4>Comment</h4>
 									<span class="comment align-right br"></span>
+								</div>
+							</div>
+							<div class="tab-pane" id="machineData_console">
+								<div class="clear">
+									<h4>コンソールの初期化</h4>
+									コンソールでexitなどをし、コンソールが終了してしまった場合に使用してください。<br>
+									<button type="button" class="btn btn-default" id="consoleUnregisterBtn">初期化</button>
 								</div>
 							</div>
 						</div>
@@ -372,10 +380,11 @@
 
 
 			  </div>
+
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default" id="machineInfo_submit" disabled>適用</button>
-				  <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
-				</form>
+			<!--		<button type="button" class="btn btn-default" id="machineInfo_submit" disabled>適用</button>
+				  <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>	-->
+			<!--	</form> -->
 				</div>
 			</div><!-- /.modal-content -->
 		  </div><!-- /.modal-dialog -->

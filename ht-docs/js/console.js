@@ -23,3 +23,8 @@ function console_unregister(jname){
 	message = {"mode" : "unregister", "jname" : jname};
 	send(CONSOLE,message);
 }
+
+function console_suspend(){
+	message = {"mode" : "suspend"};
+	send(CONSOLE,message);
+}

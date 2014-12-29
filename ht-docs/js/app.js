@@ -464,6 +464,15 @@ $(document).ready(function(){
   });
 
 
+  //コンソールの初期化ボタン	
+  $("#consoleUnregisterBtn").click(function(){
+  		if(consoleName != ""){
+  			console_unregister(consoleName);
+  			consoleName = ""
+  		}
+  });
+
+
   //フォーカスイベント
 
 
@@ -538,7 +547,8 @@ $(document).ready(function(){
 	//machineInfoモーダルが消えたら
   $("#machineInfoModal").on("hidden.bs.modal", function(){
   		if(consoleName != ""){
-  			console_unregister(consoleName);
+  	//		console_unregister(consoleName);
+  			console_suspend();
   			consoleName = ""
   		}
   	});

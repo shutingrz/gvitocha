@@ -145,6 +145,8 @@ img.minimumNowloadingIcon{
 	height : 340px;
 }
 
+
+
 .l3inputName, .connectServerName {
 	float: left;
 }
@@ -154,13 +156,17 @@ img.minimumNowloadingIcon{
 }
 
 #machineInfoModal .modal-dialog .modal-content .modal-body{
-	height: 50%;
+	height: 70%;
 }
 
 #machineInfoModal .modal-dialog{
 	width: 50%;
 }
 
+#shellWindow{
+	height: 80%;
+	overflow-y: scroll;
+}
 
 .nav-tabs-left{
 	height: 96%;

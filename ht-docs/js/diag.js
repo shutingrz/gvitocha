@@ -248,7 +248,7 @@ var l3str = '\
 				IP6Plefixlen:<br>\
 				ASNum:<br>\
 			</div>\
-				<form id="l3inputData" action="javascript:diag_l3DataConstract()">\
+			<form id="l3inputData" action="javascript:diag_l3DataConstract()">\
 				<input class="ipaddr1" type="text" style="width: 36px" maxlength=3 pattern="[0-9]{1,3}">.\
 				<input class="ipaddr2" type="text" style="width: 36px" maxlength=3 pattern="[0-9]{1,3}">.\
 				<input class="ipaddr3" type="text" style="width: 36px" maxlength=3 pattern="[0-9]{1,3}">.\
@@ -273,7 +273,10 @@ var l3str = '\
 				<input class="ip6addr_b" type="hidden" value="" >\
 				<input class="ip6mask_b" type="hidden" value="" >\
 				<input class="as_b" type="hidden" value="" >\
-				</form>\
+				<br>\
+				<br>\
+				<button type="button" class="btn btn-default" id="machineInfo_submit" disabled>適用</button>\
+			</form>\
 		</div>\
 		';
 

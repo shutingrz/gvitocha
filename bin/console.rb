@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 require 'net/http'
+require 'digest/md5'
 	#console msg
 class Console
 
 	@task = Hash.new
+	@runningFlg = true
 
 	def self.main(data)
 
@@ -25,14 +27,27 @@ class Console
 			jid = Jail.nameTojid(jname)
 			unregister(jid)
 		end
+		if(data["mode"] == "suspend") then
+			suspend()
+		end
 	end
 
 	def self.register(jid)
-		@task[jid] = true
+	#	sid = Digest::MD5.hexdigest(jid.to_s + Time.now.to_s)
+		if(@task[jid] == false || @task[jid] == nil) then
+			sid = jid+Time.now.to_i.to_s
+			@task[jid] = sid
+		end
+		@runningFlg = true
+	end
+
+	def self.suspend()
+		@runningFlg = false
 	end
 
 	def self.unregister(jid)
 		@task[jid] = false
+		@runningFlg = false
 	end
 
 	def self.unregisterAll()
@@ -42,13 +57,15 @@ class Console
 	end
 
 	def self.write(jid,cmd)
-		param = "/u?s=00000#{jid}&jid=#{jid}&w=80&h=24&k=#{cmd}"
+		param = "/u?s=#{@task[jid]}&jid=#{jid}&w=80&h=22&k=#{cmd}"
+	#	param = "/u?s=0000#{jid}&jid=#{jid}&w=80&h=22&k=#{cmd}"
 		res = self.send(param)
 		SendMsg.console(res.gsub("\n","<br>"))
 	end
 
 	def self.read(jid)
-		param = "/u?s=00000#{jid}&jid=#{jid}&w=80&h=24&k="
+		param = "/u?s=#{@task[jid]}&jid=#{jid}&w=80&h=22&k="
+	#	param = "/u?s=0000#{jid}&jid=#{jid}&w=80&h=22&k="
 		res = self.send(param)
 		return res
 	end
@@ -56,14 +73,14 @@ class Console
 	def self.loop(jid)
 		EM::defer do
 			#puts "task:#{@task[jid]}"
-			while(@task[jid]) do
+			while(@runningFlg) do
 				res = self.read(jid)
 				if(res != "") then
 					SendMsg.console(res.gsub("\n","<br>"))
 				end
 				sleep(1)
 			end
-			puts "#{jid} unregisterd."
+			puts "#{jid} was suspended."
 		end
 	end
 
