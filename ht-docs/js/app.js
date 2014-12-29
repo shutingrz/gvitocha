@@ -247,8 +247,8 @@ function getMachineLog(machineLog){
 }
 
 function reloadDB(){
-  jail_getList();
   template_getList();
+  jail_getList();
   setTimeout(function(){
 	diag_getDiag();
   },300);
