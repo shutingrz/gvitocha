@@ -28,6 +28,7 @@ div.top div.header div.left{
 div.top div.header div.right{
 	float : right;
 	text-align : right;
+	color: white;
 }
 
 .header .left .sub{
@@ -122,6 +123,14 @@ img.minimumNowloadingIcon{
 	height : 94%;
 }
 
+#connectServerModal .modal-dialog {
+    width: 30%;
+    padding: 1%;
+}
+
+#connectServerModal .modal-dialog .modal-content .modal-body {
+	height: 5em;
+}
 
 #shellModal .modal-dialog .modal-content .modal-body{
 	height : 340px;
@@ -136,11 +145,11 @@ img.minimumNowloadingIcon{
 	height : 340px;
 }
 
-.l3inputName {
+.l3inputName, .connectServerName {
 	float: left;
 }
 
-.l3inputData {
+.l3inputData, .connectServerData {
 	float: right;
 }
 

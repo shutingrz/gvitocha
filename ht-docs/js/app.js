@@ -30,7 +30,10 @@ var jname = "masterRouter";
 var initok = false;		//初期化が済んだか
 var openContext = false;	//contextmenuが開いているかどうか
 var openConsole = false;	//shellが開いたかどうか
-var consoleName = ""
+var consoleName = "";
+
+var serverHost = "0.0.0.0";	//接続中のホスト名
+var serverPortNum = "3000";	//接続中のホストのポート番号
 
 function init(){
    $("#powerSwitch").bootstrapSwitch('size', 'normal');
@@ -42,23 +45,32 @@ function init(){
 		nodeStyle = CIRCLE;
 	}
 
-	wsConnection();
-   setTimeout(function(){
-	t=webshell.Terminal("term",80,24,handler);
-   },1000);
+	$("#connectServerModal").modal("show");
+
+//	wsConnection();
  //  diagram();
 }
 
 //WebSocket
-function wsConnection(){
-  ws = new WebSocket("ws://192.168.56.104:3000");
+function wsConnection(host,port){
+  ws = new WebSocket("ws://" + host + ":" + port );
 
 	
 		//接続時
   ws.onopen = function(event){
 	initok = true;
+	serverHost = host;
+	serverPortNum = port;
+	$("#connectServerHostCaption").text(serverHost);
+
 	status({"mode":STATUS, "msg" : {"msg" : "connected."}});
 	reloadDB();
+
+	$("#connectServerModal").modal("hide");
+
+	setTimeout(function(){
+		t=webshell.Terminal("term",80,24,handler);
+   	},1000);
 
 //	setTimeout(function(){window.scrollTo(0, 1);}, 100);
 //	startMsgAnim('Connecting',0,false);
@@ -113,6 +125,9 @@ function wsConnection(){
 	  
   //エラー時のメッセージ
   ws.onerror = function (event) {
+  	if(initok == false){
+  		$("#connectServerModal .modal-dialog .modal-content .modal-footer .connectServerMsg").text("接続できませんでした。");
+  	}
 	status('WebSocket Error ' + event);
   }
 
@@ -306,6 +321,14 @@ $(document).ready(function(){
 	  update();	
 
 	  $("#ciscoSwitch").bootstrapSwitch('toggleState');
+  });
+
+  //serverConnectModalの接続ボタン
+  $("#connectServerForm").submit(function(){
+  	$("#connectServerModal .modal-dialog .modal-content .modal-footer .connectServerMsg").html('<i class="fa fa-spinner fa-spin"></i>接続中...');
+  	var host = $("#serverHost").val();
+  	var port = $("#serverPortNum").val();
+  	wsConnection(host, port);
   });
 
   //machinePropertyのdeleteボタン
