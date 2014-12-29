@@ -199,6 +199,11 @@ function diag_nowloading(){
 
 function diag_showMachineInfoModal(name){
 	machine = db_machine("select",name);
+
+	//停止状態なら何もしない
+	if(machine.boot == "0"){
+		return;
+	}
 //	console.log("machine.type: " + machine.type);
 	var machineType = "";
 	switch(machine.type){
