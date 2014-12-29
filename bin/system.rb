@@ -23,6 +23,7 @@ class System
 	@qjailFstabConfDir = "/usr/local/etc/qjail.fstab"
 
 	def self.init()
+		checkEnv()
 		checkConf()
 		checkPanic()
 
@@ -89,12 +90,25 @@ class System
 
 
 	def self.confError(section,name,msg)
-		puts "confError: #{msg} ([#{section}]#{name}=#{eval("@ini[\"#{section}\"][\"#{name}\"]")})"
+		puts "Error[conf]: #{msg} ([#{section}]#{name}=#{eval("@ini[\"#{section}\"][\"#{name}\"]")})"
 
 	end
 
 	def self.checkEnv
 
+		#OSの判定
+		begin
+			s,e = Open3.capture3("freebsd-version")
+		rescue
+			puts "Error[env]: 本ソフトウェアはFreeBSD専用です。"
+			exit
+		end
+		#バージョンの判定
+		mejor = s.split("-")[0].split(".")[0]
+		if(mejor != "10") then
+			puts "Error[env]: 本ソフトウェアはFreeBSD-10.x用です。"
+			exit
+		end
 
 	end
 
@@ -123,13 +137,6 @@ class System
 				end
 			end
 		end
-	end
-
-
-	def self.checkOS
-
-
-
 	end
 
 
