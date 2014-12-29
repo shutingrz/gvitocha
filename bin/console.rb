@@ -9,22 +9,19 @@ class Console
 
 	def self.main(data)
 
+		jname = data["jname"]
+		jid = Jail.nameTojid(jname)
+
 		if(data["mode"] == "write") then
-			jname = data["msg"]["jname"]
-			jid = Jail.nameTojid(jname)
-			cmd = data["msg"]["cmd"]
+			cmd = data["cmd"]
 			self.write(jid,cmd)
 		end
 
 		if(data["mode"] == "register" ) then
-			jname = data["jname"]
-			jid = Jail.nameTojid(jname)
 			register(jid)
 			self.loop(jid)
 		end	
 		if(data["mode"] == "unregister") then
-			jname = data["jname"]
-			jid = Jail.nameTojid(jname)
 			unregister(jid)
 		end
 		if(data["mode"] == "suspend") then
@@ -35,7 +32,7 @@ class Console
 	def self.register(jid)
 	#	sid = Digest::MD5.hexdigest(jid.to_s + Time.now.to_s)
 		if(@task[jid] == false || @task[jid] == nil) then
-			sid = jid+Time.now.to_i.to_s
+			sid = jid.to_s+Time.now.to_i.to_s
 			@task[jid] = sid
 		end
 		@runningFlg = true
@@ -78,7 +75,7 @@ class Console
 				if(res != "") then
 					SendMsg.console(res.gsub("\n","<br>"))
 				end
-				sleep(1)
+				sleep(0.1)
 			end
 			puts "#{jid} was suspended."
 		end

@@ -7,7 +7,7 @@ function console_dump(msg){
 
 
 function console_write(jname,cmd){
-	message = {"mode" : "write" , "msg" : {"jname" : jname, "cmd" : cmd}};
+	message = {"mode" : "write" , "jname" : jname, "cmd" : cmd};
 	send(CONSOLE,message);
 }
 
