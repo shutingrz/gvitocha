@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 require 'inifile'
+require "fileutils"
 
 
 class System
@@ -23,8 +24,8 @@ class System
 	@qjailFstabConfDir = "/usr/local/etc/qjail.fstab"
 
 	def self.init()
-		checkEnv()
 		checkConf()
+		checkEnv()
 		checkPanic()
 
 		sql = SQL.new(System.getConf("dbFile"))		#初期化
@@ -96,17 +97,38 @@ class System
 
 	def self.checkEnv
 
+		#root権限の判定
+		s,e = Open3.capture3("whoami")
+		if(s.chomp != "root") then
+			puts "Error[env]: Please execute on superuser."
+			exit
+		end
+
 		#OSの判定
 		begin
 			s,e = Open3.capture3("freebsd-version")
 		rescue
-			puts "Error[env]: 本ソフトウェアはFreeBSD専用です。"
+			puts "Error[env]: FreeBSD Only."
 			exit
 		end
+
 		#バージョンの判定
 		mejor = s.split("-")[0].split(".")[0]
 		if(mejor != "10") then
-			puts "Error[env]: 本ソフトウェアはFreeBSD-10.x用です。"
+			puts "Error[env]: FreeBSD-10.x Only."
+			exit
+		end
+
+		#VIMAGE有効判定
+		s,e = Open3.capture3("sysctl -n kern.features.vimage")
+		if(s.chomp != "1") then
+			puts "Error[env]: VIMAGE is disabled."
+			exit
+		end
+
+		#qjailのディレクトリが作成されているか
+		if(!File.exist?(@qjailLocalConfDir)) then
+			puts "Error[env]: qjail directory is not exist.(#{@qjailLocalConfDir})"
 			exit
 		end
 
@@ -117,7 +139,7 @@ class System
 		s,e = Open3.capture3("ls -1 #{$qjailConfDir}/qjail.local/")
 		s.each_line do |line|
 			if(line.chomp == "jail.core") then
-				puts "カーネルパニックを検知。初期化します"
+				puts "The karnelpanic happened to system. system initting..."
 				Open3.capture3("rm -rf #{@qjailLocalConfDir}/*")
 				Open3.capture3("rm -rf #{$qjailGlobalConfDir}/*")
 				machine = SQL.select("machine","all")
