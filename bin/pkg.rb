@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 
-#FreeBSD10だとtrue,9だとfalse
-flg = false
-if flg then
-	PKGDIR = "/var/cache/pkg/All"
-else
-	PKGDIR = "/var/cache/pkg"
-end
+
 
 class Pkg
 
+	@pkgDir
+	@jailDir
 
+	def self.init()
+		@pkgDir = System.getConf("pkgDir")
+		@jailDir = System.getConf("jailDir")
+	end
 
 	def self.main(data)
 		if (data["control"] == "search") then
@@ -73,9 +73,9 @@ class Pkg
     		    end
     		end
 		end
-		cmdLog,e = Open3.capture3("ls #{$jails}/sharedfs/pkg")
-		s,e = Open3.capture3("cp -pn #{PKGDIR}/* #{$jails}/sharedfs/pkg/")	#sharedfsにコピー(qjail)
-		cmdLog2,e = Open3.capture3("ls #{$jails}/sharedfs/pkg")
+		cmdLog,e = Open3.capture3("ls #{@jailDir}/sharedfs/pkg")
+		s,e = Open3.capture3("cp -pn #{@pkgDir}/* #{@jailDir}/sharedfs/pkg/")	#sharedfsにコピー(qjail)
+		cmdLog2,e = Open3.capture3("ls #{@jailDir}/sharedfs/pkg")
 =begin
 		if(cmdLog == cmdLog2)		#ダウンロード前後にlsの結果を取って、要素が同じならばダウンロードに失敗しているとわかる（ファイルが増えていない）
 			puts ("pkgcopyerror")
@@ -91,9 +91,9 @@ class Pkg
 		SendMsg.status(MACHINE,"report","pkgdownload")
 		
 		
-		cmdLog,e = Open3.capture3("ls #{$jails}/sharedfs/pkg/#{pname}.txz")
+		cmdLog,e = Open3.capture3("ls #{@jailDir}/sharedfs/pkg/#{pname}.txz")
 		cmdLog = cmdLog.chomp	#改行削除
-		if(cmdLog != "#{$jails}/sharedfs/pkg/#{pname}.txz")
+		if(cmdLog != "#{@jailDir}/sharedfs/pkg/#{pname}.txz")
 			return false,"copy"
 		end
 		

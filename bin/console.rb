@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 require 'net/http'
-require 'digest/md5'
-	#console msg
+
 class Console
 
 	@task = Hash.new
@@ -30,7 +29,6 @@ class Console
 	end
 
 	def self.register(jid)
-	#	sid = Digest::MD5.hexdigest(jid.to_s + Time.now.to_s)
 		if(@task[jid] == false || @task[jid] == nil) then
 			sid = jid.to_s+Time.now.to_i.to_s
 			@task[jid] = sid
@@ -55,14 +53,12 @@ class Console
 
 	def self.write(jid,cmd)
 		param = "/u?s=#{@task[jid]}&jid=#{jid}&w=80&h=22&k=#{cmd}"
-	#	param = "/u?s=0000#{jid}&jid=#{jid}&w=80&h=22&k=#{cmd}"
 		res = self.send(param)
 		SendMsg.console(res.gsub("\n","<br>"))
 	end
 
 	def self.read(jid)
 		param = "/u?s=#{@task[jid]}&jid=#{jid}&w=80&h=22&k="
-	#	param = "/u?s=0000#{jid}&jid=#{jid}&w=80&h=22&k="
 		res = self.send(param)
 		return res
 	end
@@ -83,13 +79,17 @@ class Console
 
 	def self.send(param)
 		#puts "send:" + param
-		url = URI.parse($webshellURI)
-		req = Net::HTTP::Get.new(param)
-		res = Net::HTTP.start(url.host, url.port) {|http|
-		  http.request(req)
-		}
+		begin
+			url = URI.parse($webshellURI)
+			req = Net::HTTP::Get.new(param)
+			res = Net::HTTP.start(url.host, url.port) {|http|
+			  http.request(req)
+			}
+			return res.body
+		rescue
+			return ""
+		end
 		#puts "body:" + res.body
-		return res.body
 	end
 
 end

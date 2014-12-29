@@ -4,7 +4,11 @@ require 'open3'
 
 class Jail
 
-	def initialize()
+	@jailDir
+
+	def self.init()
+		@jailDir = System.getConf("jailDir")
+		load()
 	end
 
 	def self.main(data)
@@ -239,7 +243,7 @@ class Jail
 			puts ("qjailerror")
 			return false
 		end
-		cmdLog,e = Open3.capture3("ln -s /sharedfs/pkg #{$jails}/#{machine}/pkg")
+		cmdLog,e = Open3.capture3("ln -s /sharedfs/pkg #{@jailDir}/#{machine}/pkg")
 	end
 
 	def self.bootcheck()
@@ -275,7 +279,7 @@ class Jail
 	def self.upjail()
 		snum = 0
 		upjail = Array.new
-		s,e = Open3.capture3("jls |grep #{$jails}")	#Path($jails)が含まれているものを抜き出せば最初の行を取り除ける
+		s,e = Open3.capture3("jls |grep #{@jailDir}")	#Path(@jailDir)が含まれているものを抜き出せば最初の行を取り除ける
 
 		s.each_line do |line|
 			str = line.split(" ")
@@ -330,7 +334,7 @@ class Jail
 
 	def self.nameTojid(name)
 		jid = 0
-		s,e = Open3.capture3("jls |grep #{$jails}|grep #{name}")
+		s,e = Open3.capture3("jls |grep #{@jailDir}|grep #{name}")
 		s.each_line do |line|
 			str = line.split(" ")
 			if(str[2] == name) then
@@ -343,7 +347,7 @@ class Jail
 
 	def self.isExist(name)
 		isExist = false
-		s,e = Open3.capture3("jls |grep #{$jails}|grep #{name}")
+		s,e = Open3.capture3("jls |grep #{@jailDir}|grep #{name}")
 		s.each_line do |line|
 			str = line.split(" ")
 			if(str[2] == name) then
