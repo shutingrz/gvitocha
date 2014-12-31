@@ -17,7 +17,6 @@ require './template.rb'
 require './network.rb'
 require './system.rb'
 
-
 CONSOLE = 1;
 STATUS = 2;
 MACHINE = 3;

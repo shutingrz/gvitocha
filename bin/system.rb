@@ -78,7 +78,7 @@ class System
 		##WebShell
 		if(@ini["WebShell"]["port"]) then
 			if(@ini["WebShell"]["port"] < 1 ||@ini["WebShell"]["port"] > 65535) then
-				puts confError("WebShell","port","1-65535の値を入力してください。")
+				puts confError("WebShell","port","Please type 1 to 65535.")
 				exit
 			end
 			@webshellPort = @ini["WebShell"]["port"].to_s
@@ -123,6 +123,13 @@ class System
 		s,e = Open3.capture3("sysctl -n kern.features.vimage")
 		if(s.chomp != "1") then
 			puts "Error[env]: VIMAGE is disabled."
+			exit
+		end
+
+		#devfsに50番目のルールが入っているか
+		s,e = Open3.capture3("devfs rule -s 50 show")
+		if(s == "") then
+			puts "Error[env]: devfs.rule config(50) is not found."
 			exit
 		end
 

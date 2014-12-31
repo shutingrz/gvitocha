@@ -485,7 +485,7 @@ build_config_def () {
     echo "devfs_ruleset       =  \"${devfs_ruleset_number}\";"
                  
     [ ${devfs_ruleset_number} ] || \
-    echo "devfs_ruleset       =  \"5\";"
+    echo "devfs_ruleset       =  \"50\";"
  
     [ ${allow_sysvipc} ]      && \
     echo "allow.sysvipc;"
