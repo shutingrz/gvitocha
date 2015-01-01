@@ -5,9 +5,13 @@ require 'open3'
 class Jail
 
 	@jailDir
+	@qjailBinPath
+	@qjailExec
 
 	def self.init()
 		@jailDir = System.getConf("jailDir")
+		@qjailBinPath = System.getConf("qjailBinPath")
+		@qjailExec = "sh #{@qjailBinPath}"
 		load()
 	end
 
@@ -103,7 +107,7 @@ class Jail
 		if(cmdLog == false) then
 			return cmdLog,cause
 		end
-		s,e = Open3.capture3("qjail delete #{jname}")
+		s,e = Open3.capture3("#{@qjailExec} delete #{jname}")
 		if(isExist(jname)) then
 			return false,"削除に失敗"
 		end
@@ -151,7 +155,7 @@ class Jail
 	end
 
 	def self.start(machine)
-		s,e = Open3.capture3("qjail start #{machine}")
+		s,e = Open3.capture3("#{@qjailExec} start #{machine}")
 		flag = false
 		
 		upjail = upjail()
@@ -169,7 +173,7 @@ class Jail
 	end
 
 	def self.stop(machine)
-		s,e = Open3.capture3("qjail stop #{machine}")
+		s,e = Open3.capture3("#{@qjailExec} stop #{machine}")
 
 		upjail = upjail()
 		flag = true
@@ -235,10 +239,10 @@ class Jail
 
 	def self.mkQjail(flavour,machine)
 		fname = SQL.select("flavour",flavour)
-		cmdLog,e = Open3.capture3("qjail list")
-		s,e = Open3.capture3("qjail create -f #{fname} -4 0.0.0.0 #{machine}")
+		cmdLog,e = Open3.capture3("#{@qjailExec} list")
+		s,e = Open3.capture3("#{@qjailExec} create -f #{fname} -4 0.0.0.0 #{machine}")
 		puts s
-		cmdLog2,e = Open3.capture3("qjail list")
+		cmdLog2,e = Open3.capture3("#{@qjailExec} list")
 		if(cmdLog == cmdLog2)		#ダウンロード前後にlsの結果を取って、要素が同じならばダウンロードに失敗しているとわかる（ファイルが増えていない）
 			puts ("qjailerror")
 			return false

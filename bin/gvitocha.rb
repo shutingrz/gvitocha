@@ -104,11 +104,14 @@ EM::run do
 
 	#webshellの自動起動
 	EM::defer do
+		webshellBinPath = System.getConf("webshellBinPath")
+		webshellExec = "python #{webshellBinPath}"
+
 		port = System.getConf("webshellPort")
         loop do
             s,e = Open3.capture3("ps|grep webshell|grep -v grep")
             if(s=="") then
-                s,e = Open3.capture3("python ../third/webshell.py -d -p #{port} --ssl-disable")
+                s,e = Open3.capture3("#{webshellExec} -d -p #{port} --ssl-disable")
                 puts "webshell started."
             end
             sleep 1

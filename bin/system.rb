@@ -14,10 +14,12 @@ class System
 	@gvitHost = "0.0.0.0"
 	@gvitPort = 3000
 
+	@webshellBinPath = "./third/webshell.py"
 	@webshellHost = "127.0.0.1"
 	@webshellPort = "8022"
 	@webshellURI = ""
 
+	@qjailBinPath = "./third/qjail"
 	@qjailLocalConfDir = "/usr/local/etc/qjail.local"
 	@qjailGlobalConfDir = "/usr/local/etc/qjail.global"
 	@qjailVnetConfDir = "/usr/local/etc/qjail.vnet"
