@@ -114,7 +114,7 @@ class System
 			exit
 		end
 
-		#バージョンの判定
+		#OSバージョンの判定
 		mejor = s.split("-")[0].split(".")[0]
 		if(mejor != "10") then
 			puts "Error[env]: FreeBSD-10.x Only."
@@ -140,6 +140,25 @@ class System
 			puts "Error[env]: qjail directory is not exist.(#{@qjailLocalConfDir})"
 			exit
 		end
+
+		#Pythonのパスが通っているか
+		s,e = Open3.capture3("which python")
+		if(s == "") then
+			puts "Error[env]: Python not found."
+			exit
+		end
+
+		#Pythonのバージョンが2.7.xか
+		s,e = Open3.capture3("python -V")
+		pyVer = e.split(" ")[1]
+		pyVer1st = pyVer.split(".")[0]
+		pyVer2nd = pyVer.split(".")[1]
+		if(!(pyVer1st == "2" && pyVer2nd == "7")) then
+			puts "Error[env]: Python version is not 2.7.x (Your Python version is #{pyVer})"
+			exit
+		end
+
+
 
 	end
 
