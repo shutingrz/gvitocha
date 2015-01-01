@@ -6,7 +6,7 @@ require "fileutils"
 class System
 
 	@ini
-	@gvitdConfFile = "./gvitd.conf"
+	@gvitdConfFile = "./conf/gvitd.conf"
 	@dbFile = "/usr/jails/gvitocha.db"
 	@jailDir = "/usr/jails"
 	@pkgDir = "/var/cache/pkg"
@@ -42,7 +42,7 @@ class System
 		eval("return @#{key}")
 	end
 
-	def self.checkConf(conf="./gvitd.conf")
+	def self.checkConf(conf=@gvitdConfFile)
 		@ini = IniFile.load(conf)
 
 		##gvitocha
