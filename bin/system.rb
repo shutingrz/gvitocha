@@ -162,6 +162,12 @@ class System
 			exit
 		end
 
+		#pkgngのキャッシュディレクトリが存在するか
+		if(!File.exist?(@pkgDir)) then
+			puts "Error[env]: pkgng cache directory is not found.(#{@pkgDir})"
+			exit
+		end
+
 
 
 	end

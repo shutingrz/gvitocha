@@ -1,35 +1,75 @@
-#README
-##dependence
-###VIMAGE
-You need KernelCompile your System.  
+#依存関係
+以下のソフトウェアの設定・インストールを予め済ませておいてください。
+##VIMAGE
+カーネルコンパイルが必要です。
 
 
 \#vi /usr/src/sys/amd64/conf/VIMAGE
 > 
 ident VIMAGE  
 include GENERIC  
-Options VIMAGE  
+ptions VIMAGE  
 
 \#cd /usr/src  
 \#make buildkernel KERNCONF=VIMAGE  
 \#make installkernel KERNCONF=VIMAGE  
+\#reboot
 
-###ruby2.0
+##ruby2.0
 \#pkg install ruby
-###rubygems
+
+##rubygems
 \#pkg install ruby20-gems  
 \#gem update --system  
-###bundler
+
+##bundler
 \#gem install bundler
-###python2.7
+
+##SQLite3
+\#pkg install sqlite3
+
+##python2.7
 \#pkg install python27
-###qjail
+
+##qjail
 \#pkg install qjail
 
+##Encoding
+端末の文字コードをUTF-8に変更してください。
 
+\#vi ~/.cshrc  
+> 
+setenv  LC_CTYPE en_US.UTF-8  
+setenv  LANG     en_US.UTF-8
+
+##devfs.rules
+devfsのルールセットをdevfs.rulesに追加します。  
+ルールセット1行のみだと全てのデバイスがJailに見えるようになります。  
+ルールセットの中身は都合に合わせて追記してください。
+
+\#echo "[devfsrules_jail=50]" >> /etc/devfs.rules
+
+#設定ファイル
+./bin/gvit.confに設定ファイルがありますので自分の環境に合わせて修正してください。  
+特にPythonのパスとpkgngのキャッシュのパスに注意してください。  
+修正する場合は各パラメータのコメントアウトを外してください。  
+
+#インストール
+\#git clone https://github.com/shutingrz/gvitocha  
+\#cd gvitocha  
+\#bundle install  
+
+#起動
+\#ruby bin/gvitocha.rb
+> websoket server start.  
+
+と表示が出れば起動は完了です。  
+クライアント側でht-docs以下のindex.htmlをブラウザで開いて表示してください。
 
 #License
-##./bin/*
+##./bin/*.rb
+BSDライセンス。  
+
 Copyright (c) 2014, Shuto Imai
 All rights reserved.
 
@@ -46,7 +86,7 @@ Copyright (c) 2014, Shuto Imai
 All rights reserved.
 GPL 2.0
 
-##./third/webshell.py
+##./bin/third/webshell.py
 Copyright (c) 2014, Shuto Imai
 All rights reserved.
 GPL 2.0
