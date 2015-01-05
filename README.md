@@ -55,7 +55,7 @@ devfsのルールセット、50番をdevfs.rulesに追加します。
 \#echo "[devfsrules_jail=50]" >> /etc/devfs.rules
 
 #設定ファイル
-./bin/gvit.confに設定ファイルがあるので自分の環境に合わせて修正してください。  
+./bin/conf/gvit.confに設定ファイルがあるので自分の環境に合わせて修正してください。  
 特にPythonのパスとpkgngのキャッシュのパスに注意してください。  
 修正する場合は各パラメータのコメントアウトを外してください。  
 
