@@ -1,3 +1,8 @@
+#概要
+FreeBSD上で動作するコンテナ技術であるJailと、仮想インターフェイスのVIMAGEをWebインターフェイスから操作可能にするシステムです。  
+このリポジトリは実験用です。コミットのタイミングによっては動かないバージョンもあります。  
+安定版はそのうちリリースします。
+
 #依存関係
 以下のソフトウェアの設定・インストールを予め済ませておいてください。
 ##VIMAGE
@@ -8,7 +13,7 @@
 > 
 ident VIMAGE  
 include GENERIC  
-ptions VIMAGE  
+options VIMAGE  
 
 \#cd /usr/src  
 \#make buildkernel KERNCONF=VIMAGE  
@@ -43,14 +48,14 @@ setenv  LC_CTYPE en_US.UTF-8
 setenv  LANG     en_US.UTF-8
 
 ##devfs.rules
-devfsのルールセットをdevfs.rulesに追加します。  
+devfsのルールセット、50番をdevfs.rulesに追加します。  
 ルールセット1行のみだと全てのデバイスがJailに見えるようになります。  
 ルールセットの中身は都合に合わせて追記してください。
 
 \#echo "[devfsrules_jail=50]" >> /etc/devfs.rules
 
 #設定ファイル
-./bin/gvit.confに設定ファイルがありますので自分の環境に合わせて修正してください。  
+./bin/gvit.confに設定ファイルがあるので自分の環境に合わせて修正してください。  
 特にPythonのパスとpkgngのキャッシュのパスに注意してください。  
 修正する場合は各パラメータのコメントアウトを外してください。  
 
@@ -64,7 +69,7 @@ devfsのルールセットをdevfs.rulesに追加します。
 > websoket server start.  
 
 と表示が出れば起動は完了です。  
-クライアント側でht-docs以下のindex.htmlをブラウザで開いて表示してください。
+クライアント側でht-docs以下のindex.htmlをWebブラウザ(Firefox推奨)で開いて表示してください。
 
 #License
 ##./bin/*.rb
