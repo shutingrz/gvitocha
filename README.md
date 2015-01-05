@@ -3,43 +3,53 @@ FreeBSD上で動作するコンテナ技術であるJailと、仮想インター
 このリポジトリは実験用です。コミットのタイミングによっては動かないバージョンもあります。  
 安定版はそのうちリリースします。
 
-#依存関係
+#システム要件
+* FreeBSD10.x (64bitシステム推奨)
+
+
+##依存関係
 以下のソフトウェアの設定・インストールを予め済ませておいてください。
-##VIMAGE
+###VIMAGE
 カーネルコンパイルが必要です。
 
+* (64bitシステムの場合)  
+\#vi /usr/src/sys/amd64/conf/VIMAGE  
 
-\#vi /usr/src/sys/amd64/conf/VIMAGE
+* (32bitシステムの場合)  
+\#vi /usr/src/sys/i386/conf/VIMAGE
+
+上記ファイルに以下の3行を記述します。
 > 
 ident VIMAGE  
 include GENERIC  
 options VIMAGE  
+
 
 \#cd /usr/src  
 \#make buildkernel KERNCONF=VIMAGE  
 \#make installkernel KERNCONF=VIMAGE  
 \#reboot
 
-##ruby2.0
+###Ruby2.0
 \#pkg install ruby
 
-##rubygems
+###RubyGems
 \#pkg install ruby20-gems  
 \#gem update --system  
 
-##bundler
+###bundler
 \#gem install bundler
 
-##SQLite3
+###SQLite3
 \#pkg install sqlite3
 
-##python2.7
+###python2.7
 \#pkg install python27
 
-##qjail
+###qjail
 \#pkg install qjail
 
-##Encoding
+###Encoding
 端末の文字コードをUTF-8に変更してください。
 
 \#vi ~/.cshrc  
@@ -47,7 +57,7 @@ options VIMAGE
 setenv  LC_CTYPE en_US.UTF-8  
 setenv  LANG     en_US.UTF-8
 
-##devfs.rules
+###devfs.rules
 devfsのルールセット、50番をdevfs.rulesに追加します。  
 ルールセット1行のみだと全てのデバイスがJailに見えるようになります。  
 ルールセットの中身は都合に合わせて追記してください。
