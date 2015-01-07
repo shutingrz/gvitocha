@@ -289,6 +289,10 @@ var l3str = '\
 function diag_getepairList(name){
 	var epairList = [];
 
+	if(linkDB == "none"){
+		return ""
+	}
+	
 	linkDB.forEach(function(value, index){
 		if( value.source == name ){
   			epairList.push({"caption": value.epair + "a", "epair" : value.epair + "a" });
