@@ -168,6 +168,9 @@ class System
 			exit
 		end
 
+		#sharedfs/pkgディレクトリを作成する
+		FileUtils.mkdir_p("#{@jailDir}/sharedfs/pkg") unless FileTest.exist?("#{@jailDir}/sharedfs/pkg")
+
 
 
 	end

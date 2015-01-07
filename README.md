@@ -48,6 +48,7 @@ options VIMAGE
 
 ###qjail
 \#pkg install qjail
+\#qjail install
 
 ###Encoding
 端末の文字コードをUTF-8に変更してください。
@@ -62,7 +63,9 @@ devfsのルールセット、50番をdevfs.rulesに追加します。
 ルールセット1行のみだと全てのデバイスがJailに見えるようになります。  
 ルールセットの中身は都合に合わせて追記してください。
 
-\#echo "[devfsrules_jail=50]" >> /etc/devfs.rules
+\#echo "[devfsrules_jail_gvit=50]" >> /etc/devfs.rules
+\#echo "add include $devfsrules_jail" >> /etc/devfs.rules
+\#service devfs restart
 
 #設定ファイル
 ./bin/conf/gvit.confに設定ファイルがあるので自分の環境に合わせて修正してください。  
