@@ -12,7 +12,6 @@ class Jail
 		@jailDir = System.getConf("jailDir")
 		@qjailBinPath = System.getConf("qjailBinPath")
 		@qjailExec = "sh #{@qjailBinPath}"
-		load()
 	end
 
 	def self.main(data)

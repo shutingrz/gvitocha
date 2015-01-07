@@ -32,12 +32,14 @@ class System
 		checkEnv()
 		checkPanic()
 
-		sql = SQL.new(System.getConf("dbFile"))		#初期化
 		Jail.init()
+		sql = SQL.new(System.getConf("dbFile"))		#初期化
 		Pkg.init()
 		Console.init()
+		Jail.load()
 
 		net = Network.new	#初期化
+
 	end
 
 	def self.getConf(key)
