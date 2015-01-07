@@ -19,7 +19,7 @@ class System
 	@webshellPort = "8022"
 	@webshellURI = ""
 
-	@qjailBinPath = "./third/qjail"
+	@qjailBinPath = "./third/qjail-3.6"
 	@qjailLocalConfDir = "/usr/local/etc/qjail.local"
 	@qjailGlobalConfDir = "/usr/local/etc/qjail.global"
 	@qjailVnetConfDir = "/usr/local/etc/qjail.vnet"
