@@ -105,7 +105,8 @@ EM::run do
 	#webshellの自動起動
 	EM::defer do
 		webshellBinPath = System.getConf("webshellBinPath")
-		webshellExec = "python #{webshellBinPath}"
+		pythonExecPath = System.getConf("pythonExecPath")
+		webshellExec = "#{pythonExecPath} #{webshellBinPath}"
 
 		port = System.getConf("webshellPort")
         loop do
