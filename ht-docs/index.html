@@ -160,8 +160,8 @@
 			  </div>
 			  <form method="post" id="newMachineForm" action="javascript:void(0);">
 				<div class="modal-body">  
-					Name<br>
-					<input type="text" class="name" name="name" required>
+					Name (英数字と"_"と"-"が使えます。ただし先頭に"_"が付いたり、数字のみのJailは作成できません。)<br>
+					<input type="text" class="name" name="name" pattern="^[^_][0-9a-zA-Z\-]*" required>
 					<hr>MachineType<br>
 					<select class="machineType" name="machineType">
 					  <option value="0">Server</option>

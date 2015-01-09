@@ -51,6 +51,10 @@ class Jail
 		machine['createTime'] = time.to_s
 		machine['modifyTime'] = time.to_s
 		
+		if(machine['name'].length == machine['name'].to_i.to_s.length) then
+			#数値化したものを文字列にまた戻して同じ桁数ならそれは数字のみで構成された文字列である
+			return false,"数字のみの名前はJailに使えません。"
+		end
 		cmdLog = mkQjail(machine['flavour'],machine['name'])
 		if(cmdLog == false) then
 			return false,"qjail"
