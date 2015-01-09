@@ -156,7 +156,7 @@ class Jail
 		if(data["state"] == 1) then
 			cmdLog,cause = self.start(data["name"])
 		else
-			Network.deleteLinkAll(data["name"])
+			Network.deleteLinkAtJail(data["name"])
 			cmdLog,cause = self.stop(data["name"])
 		end
 
