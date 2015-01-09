@@ -21,6 +21,7 @@ class Templete
 	end
 
 	def self.create(data)
+		#";"で区切られた任意のpkgの数の文字列が格納される
 		SQL.insert("template",data)
 		return true
 	end

@@ -85,16 +85,23 @@ class Jail
 		if (sqlid != nextid ) then #sqlidがnextidではない（恐らくnextid-1)場合は、machineが正常に作成されていない
 			return false,"database"
 		end	
-=begin
 		#ネットワーク関係の仕上げ操作
 		if machine['machineType'] == SERVER.to_s then
 			#reserved
 		elsif machine["machineType"] == SWITCH.to_s then
 			#reserved
+		elsif machine["machineType"] == ROUTER.to_s then
+			routerPkgId = "1"
+
+			routerPkg = (SQL.select("template",routerPkgId))[2]
+			routerPkg = routerPkg.split(";")
+			routerPkg.each do |pname|
+			Pkg.add(machine['name'], pname)		#templateに入っている全てのpkgをインストール
+		end
 		else
 			#reserved
 		end
-=end		
+
 		return true
 	end
 
