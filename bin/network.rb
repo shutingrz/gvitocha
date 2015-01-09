@@ -52,9 +52,12 @@ class Network
 			elsif (data["control"] == "delete") then
 				link = data["msg"]
 				if(link == "_all")then
-					deleteLinkAll()
+					res = deleteLinkAll()
 				else
-					deleteLink(link)
+					res = deleteLink(link)
+				end
+				if(res) then
+					SendMsg.status(NETWORK,"success","完了しました。")
 				end
 			end
 		elsif (data["mode"] == "l3") then
@@ -282,7 +285,7 @@ class Network
 		@@tomocha.removepair(epairaName, epaira, epairbName, epairb)
 		
 
-		SendMsg.status(NETWORK,"success","完了しました。")
+		return true
 	end
 
 	def self.deleteLinkAtJail(jname)
@@ -319,6 +322,8 @@ class Network
 
 		#_hostとmasterRouterを接続する
 		init()
+
+		return true
 	end
 
 
