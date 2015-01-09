@@ -275,7 +275,6 @@ class Network
 		epairb = epair + "b"
 
 		epairData = getL2(epairNum) 	#getL2の引数に数字を入れればその番号のepairのみ取り出す
-		puts epairData
 		epairaName = epairData[:source]
 		epairbName = epairData[:target]
 		unregisterL2(epairaName,epaira, epairbName, epairb) 			#バグ？removepairのあとにunregisterL2を記述すると、epairaの文字列の最後が削られてしまう。
