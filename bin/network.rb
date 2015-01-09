@@ -51,7 +51,11 @@ class Network
 				end
 			elsif (data["control"] == "delete") then
 				link = data["msg"]
-				deleteLink(link)
+				if(link == "_all")then
+					deleteLinkAll()
+				else
+					deleteLink(link)
+				end
 			end
 		elsif (data["mode"] == "l3") then
 			if (data["control"] == "create") then
@@ -159,14 +163,14 @@ class Network
 		#データベースのL2情報が空の場合、"none"という文字列を返す。
 
 		if (epairNum.class == Fixnum) then
-			return SQL.select("l2",epairNum)[0]
+			l2Data = SQL.select("l2",epairNum)[0]
+			return {source: l2Data[1], target: l2Data[2], epair: l2Data[0]}
 		end
 
 		l2 = SQL.select("l2")
 		l2List = []
 
 		if (l2 == Array.new) then
-			puts "Array.new!"
 			return "none"
 		end
 
@@ -190,7 +194,6 @@ class Network
 		l3List = []
 
 		if (l3 == Array.new) then
-			puts "Array.new!"
 			return "none"
 		end
 
@@ -272,8 +275,9 @@ class Network
 		epairb = epair + "b"
 
 		epairData = getL2(epairNum) 	#getL2の引数に数字を入れればその番号のepairのみ取り出す
-		epairaName = epairData[1]
-		epairbName = epairData[2]
+		puts epairData
+		epairaName = epairData[:source]
+		epairbName = epairData[:target]
 		unregisterL2(epairaName,epaira, epairbName, epairb) 			#バグ？removepairのあとにunregisterL2を記述すると、epairaの文字列の最後が削られてしまう。
 																		#(ex. 	epair1aがepair1に変化)　unregisterL2をremovepairよりも先に書けば大丈夫
 		@@tomocha.removepair(epairaName, epaira, epairbName, epairb)
@@ -282,8 +286,9 @@ class Network
 		SendMsg.status(NETWORK,"success","完了しました。")
 	end
 
-	def self.deleteLinkAll(jname)
+	def self.deleteLinkAtJail(jname)
 		#引数のjailに接続している全てのepairを削除する。
+		#このメソッドは指定したJailに対して作用する。
 
 		epairList = []
 
@@ -300,6 +305,21 @@ class Network
 			end
 		end
 
+	end
+
+	def self.deleteLinkAll()
+		#L2DBの全てのepairを削除する。
+		#このメソッドはL2DBの全てのJailに対して作用する。
+
+		epairList = []
+
+		l2DB = getL2()
+		l2DB.each do |l2|
+			deleteLink(l2[:epair])
+		end
+
+		#_hostとmasterRouterを接続する
+		init()
 	end
 
 

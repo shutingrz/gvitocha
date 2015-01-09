@@ -427,6 +427,14 @@ $(document).ready(function(){
 	confirm_show();
   });
 
+  //deleteAllNetworkボタン
+  $("#deleteAllNetwork").click(function(){
+	confirm_addHead("全ネットワークの削除");
+	confirm_addBody("全てのネットワークを削除します。よろしいですか？");
+	confirm_addCmd("diag_deleteLink('_all');");
+	confirm_show();
+  });
+
   //ConfirmOKボタン
   $("#confirmForm").submit(function(){
 	$("#confirmModal").modal("hide");

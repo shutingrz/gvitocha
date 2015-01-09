@@ -88,8 +88,12 @@ class Operator
   def removepair(jailname,epaira,jailname2,epairb)
     sh=Shell.new
     sh.transact{
-      ifconfig("#{epaira} -vnet #{jailname}")
-      ifconfig("#{epairb} -vnet #{jailname2}")
+      if(jailname != "_host")then
+        ifconfig("#{epaira} -vnet #{jailname}")
+      end
+      if(jailname2 != "_host")then
+        ifconfig("#{epairb} -vnet #{jailname2}")
+      end
     }
     @daicho.delete("#{epaira}".to_sym)
     @daicho.delete("#{epairb}".to_sym)

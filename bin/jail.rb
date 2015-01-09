@@ -108,7 +108,7 @@ class Jail
 	def self.delete(name)
 		jname = ""
 		jname = name
-		Network.deleteLinkAll(jname)
+		Network.deleteLinkAtJail(jname)
 		cmdLog,cause = stop(jname)
 		if(cmdLog == false) then
 			return cmdLog,cause
