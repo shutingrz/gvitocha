@@ -12,6 +12,7 @@ class Jail
 		@jailDir = System.getConf("jailDir")
 		@qjailBinPath = System.getConf("qjailBinPath")
 		@qjailExec = "sh #{@qjailBinPath}"
+		@devfsRuleset = System.getConf("devfsRuleset")
 	end
 
 	def self.main(data)
@@ -171,7 +172,7 @@ class Jail
 		upjail = upjail()
 		upjail.each do |jail|
 			if(jail == machine) then	#upjailに存在したらtrue
-				s,e = Open3.capture3("jail -m name=#{machine} devfs_ruleset=5")
+				s,e = Open3.capture3("jail -m name=#{machine} devfs_ruleset=#{@devfsRuleset}")
 				s,e = Open3.capture3("jail -m name=#{machine} allow.raw_sockets=1")
 				flag = true
 				save(machine,1)

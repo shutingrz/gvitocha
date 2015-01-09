@@ -7,25 +7,28 @@ class System
 
 	@ini
 	@gvitdConfFile = "./conf/gvitd.conf"
-	@dbFile = "/usr/jails/gvitocha.db"
-	@jailDir = "/usr/jails"
-	@pkgDir = "/var/cache/pkg"
 
+	#gvitocha
 	@gvitHost = "0.0.0.0"
 	@gvitPort = 3000
+	@dbFile = "/usr/jails/gvitocha.db"
+	@devfsRuleset = "50"
 
-	@webshellBinPath = "./third/webshell.py"
-	@webshellHost = "127.0.0.1"
-	@webshellPort = "8022"
-	@webshellURI = ""
-
+	#OS
+	@jailDir = "/usr/jails"
+	@pkgDir = "/var/cache/pkg"
 	@qjailBinPath = "./third/qjail-3.6"
 	@qjailLocalConfDir = "/usr/local/etc/qjail.local"
 	@qjailGlobalConfDir = "/usr/local/etc/qjail.global"
 	@qjailVnetConfDir = "/usr/local/etc/qjail.vnet"
 	@qjailFstabConfDir = "/usr/local/etc/qjail.fstab"
-
 	@pythonExecPath = "/usr/local/bin/python2.7"
+
+	#WebShell
+	@webshellBinPath = "./third/webshell.py"
+	@webshellHost = "127.0.0.1"
+	@webshellPort = "8022"
+	@webshellURI = ""
 
 	def self.init()
 		checkConf()
@@ -58,6 +61,9 @@ class System
 		end
 		if(@ini["gvitocha"]["port"]) then
 			@gvitPort = @ini["gvitocha"]["port"]
+		end
+		if(@ini["gvitocha"]["devfsRuleset"]) then
+			@devfsRuleset = @ini["gvitocha"]["devfsRuleset"].to_s
 		end
 
 		##OS
@@ -135,10 +141,10 @@ class System
 			exit
 		end
 
-		#devfsに50番目のルールが入っているか
-		s,e = Open3.capture3("devfs rule -s 50 show")
+		#devfsにルールが入っているか
+		s,e = Open3.capture3("devfs rule -s #{@devfsRuleset} show")
 		if(s == "") then
-			puts "Error[env]: devfs.rule config(50) is not found."
+			puts "Error[env]: devfs.rule ruleset(#{@devfsRuleset}) is not found."
 			exit
 		end
 
