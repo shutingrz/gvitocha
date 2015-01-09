@@ -163,8 +163,8 @@ img.minimumNowloadingIcon{
 	width: 50%;
 }
 
-#shellWindow{
-	height: 80%;
+#term{
+	height: 98%;
 	overflow-y: scroll;
 }
 
