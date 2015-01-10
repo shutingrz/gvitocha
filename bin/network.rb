@@ -334,13 +334,25 @@ class Network
 		type = epair[-1] 	#文字列の最後部
 		epairNum = epair.gsub("epair","").chop
 		puts "epairNum => #{epairNum}"
-		name = SQL.sql("select name from l3 where epair=#{epairNum} and type='#{type}'")[0][0] 	#直接SQLを操作
+		l3Data = SQL.sql("select name,ip4,ip6 from l3 where epair=#{epairNum} and type='#{type}'")[0] 	#直接SQLを操作
+		name = l3Data[0]
+		oldIpaddr = l3Data[1]
+		oldIp6addr = l3Data[2]
+
 		
 		@@tomocha.setupserver(name)
-		if(ipaddr != "" && ipmask != "") then
+		if(ipaddr != "..." && ipmask != "...") then
+			if(oldIpaddr != "")then
+				puts "withdraw"
+				@@tomocha.withdrawip(name,epair,oldIpaddr)
+			end
 			@@tomocha.assignip(name,epair,ipaddr,ipmask,as="")
 		end
 		if(ip6addr != "" && ip6mask != "") then
+			if(oldIp6addr != "")then
+				puts "withdraw6"
+				@@tomocha.withdrawip6(name,epair,oldIp6addr)
+			end
 			@@tomocha.assignip6(name,epair,ip6addr,ip6mask,as="")
 		end
 

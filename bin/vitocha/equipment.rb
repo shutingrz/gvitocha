@@ -29,108 +29,124 @@
 
 class Equipment
 
-  def initialize(jailname)
-    @name=jailname
-    @epairs=[]
+	def initialize(jailname)
+		@name=jailname
+		@epairs=[]
 =begin
-    sh=Shell.new
-    sh.transact{
-      if jls("host.hostname").to_a.index("#{jailname}\n")==nil
-        jailc(jailname)
-        mt_devfs(jailname)
-        mt_nullfs(jailname)
-        jexec(jailname,"ifconfig lo0 127.0.0.1/24 up")
-        jexec(jailname,"ipfw add allow ip from any to any")   #ここ後で使うかも
-      end
-    }
+		sh=Shell.new
+		sh.transact{
+			if jls("host.hostname").to_a.index("#{jailname}\n")==nil
+				jailc(jailname)
+				mt_devfs(jailname)
+				mt_nullfs(jailname)
+				jexec(jailname,"ifconfig lo0 127.0.0.1/24 up")
+				jexec(jailname,"ipfw add allow ip from any to any")   #ここ後で使うかも
+			end
+		}
 =end
-  end
+	end
 
-  def destroy
-    puts "destroy #{@name}"
-    jname=@name 
-    sh=Shell.new
-    sh.transact{
-      ifnames=jexec(jname,"ifconfig -l").to_s.split(" ")
-      epairs=ifnames.select{|item| item =~ /epair.*/}
-      puts epairs
-      epairs.each{|epair| 
-        ifconfig("#{epair} -vnet #{jname}")
-        ifconfig("#{epair} destroy")
-      }
-      bridges=ifnames.select{|item| item =~ /vbridge.*/}
-      puts bridges
-      bridges.each{|bridge|
-        ifconfig("#{bridge} -vnet #{jname}")
-        ifconfig("#{bridge} destroy")
-      }
+	def destroy
+		puts "destroy #{@name}"
+		jname=@name 
+		sh=Shell.new
+		sh.transact{
+			ifnames=jexec(jname,"ifconfig -l").to_s.split(" ")
+			epairs=ifnames.select{|item| item =~ /epair.*/}
+			puts epairs
+			epairs.each{|epair| 
+				ifconfig("#{epair} -vnet #{jname}")
+				ifconfig("#{epair} destroy")
+			}
+			bridges=ifnames.select{|item| item =~ /vbridge.*/}
+			puts bridges
+			bridges.each{|bridge|
+				ifconfig("#{bridge} -vnet #{jname}")
+				ifconfig("#{bridge} destroy")
+			}
 =begin
-      puts "do umount_nullfs #{jname}"
-      umt_nullfs(jname)
-      puts "done umount_nullfs #{jname}"
-      jail("-r",jname)
-      puts "do umount_devfs #{jname}"
-      umt_devfs(jname)
-      puts "done umount_devfs #{jname}"
+			puts "do umount_nullfs #{jname}"
+			umt_nullfs(jname)
+			puts "done umount_nullfs #{jname}"
+			jail("-r",jname)
+			puts "do umount_devfs #{jname}"
+			umt_devfs(jname)
+			puts "done umount_devfs #{jname}"
 =end
-     }
-  end
+		 }
+	end
 
-  def connect(epair)
-    name=@name 
-    sh=Shell.new
-    sh.transact{
-      ifconfig("#{epair} vnet #{name}")
-    }
-  end
+	def connect(epair)
+		name=@name 
+		sh=Shell.new
+		sh.transact{
+			ifconfig("#{epair} vnet #{name}")
+		}
+	end
 
-  def disconnect(epair)
-    name=@name 
-    sh=Shell.new
-    sh.transact{
-      ifconfig("#{epair} -vnet #{name}")
-    }
-  end
+	def disconnect(epair)
+		name=@name 
+		sh=Shell.new
+		sh.transact{
+			ifconfig("#{epair} -vnet #{name}")
+		}
+	end
 
-  def assignip(epair,ip,mask)
-    name=@name 
-    sh=Shell.new
-    sh.transact{
-      jexec(name,"ifconfig #{epair} inet #{ip} netmask #{mask}")
-    }
-  end
+	def assignip(epair,ip,mask)
+		name=@name 
+		sh=Shell.new
+		sh.transact{
+			jexec(name,"ifconfig #{epair} inet #{ip} netmask #{mask}")
+		}
+	end
 
-  def assignip6(epair,ip,prefixlen)
-    name=@name 
-    sh=Shell.new
-    sh.transact{
-      jexec(name,"ifconfig #{epair} inet6 #{ip}/#{prefixlen}")
-    }
-  end
+	def assignip6(epair,ip,prefixlen)
+		name=@name 
+		sh=Shell.new
+		sh.transact{
+			jexec(name,"ifconfig #{epair} inet6 #{ip}/#{prefixlen}")
+		}
+	end
 
-  def up(epair)
-    name=@name 
-    sh=Shell.new
-    sh.transact{
-      jexec(name,"ifconfig #{epair} up")
-    }
-  end
+	def withdrawip(epair,ip)
+		name=@name
+		sh=Shell.new
+		sh.transact{
+			jexec(name,"ifconfig #{epair} inet #{ip} -alias")
+		}
+	end
 
-  def down(epair)
-    name=@name 
-    sh=Shell.new
-    sh.transact{
-      jexec(name,"ifconfig #{epair} down")
-    }
-  end
+	def withdrawip6(epair,ip)
+		name=@name
+		sh=Shell.new
+		sh.transact{
+			jexec(name,"ifconfig #{epair} inet6 #{ip} -alias")
+		}
+	end
 
-  def start(program)
-    name=@name
-    sh=Shell.new
-    sh.transact{
-      jexec(name,"/usr/local/etc/rc.d/#{program} start")
-    }
-  end
+	def up(epair)
+		name=@name 
+		sh=Shell.new
+		sh.transact{
+			jexec(name,"ifconfig #{epair} up")
+		}
+	end
 
-  attr_accessor :epairs
+	def down(epair)
+		name=@name 
+		sh=Shell.new
+		sh.transact{
+			jexec(name,"ifconfig #{epair} down")
+		}
+	end
+
+	def start(program)
+		name=@name
+		sh=Shell.new
+		sh.transact{
+			jexec(name,"/usr/local/etc/rc.d/#{program} start")
+		}
+	end
+
+	attr_accessor :epairs
 end
